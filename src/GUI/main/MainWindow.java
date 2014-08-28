@@ -14,15 +14,14 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainWindow extends javax.swing.JDialog {
 
-    public static MainWindow mainWindow;
-
+    //public static MainWindow mainWindow;
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
 
-        mainWindow = this;
-        setTitle("STRIDE");
+        //mainWindow = this;
+        setTitle("FREEVAL-DSS");
         try {
             // Set System L&F
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
