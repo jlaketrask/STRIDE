@@ -5,7 +5,7 @@
  */
 package main;
 
-import GUI.main.MainWindow;
+import GUI.major.MainWindowStart;
 
 /**
  *
@@ -17,7 +17,7 @@ public class STRIDE {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MainWindow mainWindow = new MainWindow();
+        MainWindowStart mainWindow = new MainWindowStart();
     }
 
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI.main;
+package GUI.major;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -12,13 +12,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author jltrask
  */
-public class MainWindow extends javax.swing.JDialog {
+public class MainWindowStart extends javax.swing.JDialog {
 
     //public static MainWindow mainWindow;
     /**
      * Creates new form MainWindow
      */
-    public MainWindow() {
+    public MainWindowStart() {
 
         //mainWindow = this;
         setTitle("FREEVAL-DSS");
