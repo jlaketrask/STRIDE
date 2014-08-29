@@ -5,6 +5,10 @@
  */
 package GUI.major;
 
+import GUI.major.PasswordHelper.PassDialog;
+import GUI.major.PasswordHelper.PasswordHash;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -28,9 +32,8 @@ public class MainWindowStart extends javax.swing.JDialog {
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             // handle exception
         }
-
         initComponents();
-
+        this.setLocationRelativeTo(null);
         setVisible(true);
 
     }
@@ -106,7 +109,8 @@ public class MainWindowStart extends javax.swing.JDialog {
         passDialog.setVisible(true);
 
         if (passDialog.verified) {
-
+            this.setVisible(false);
+            MainWindow mainWindow = new MainWindow(this);
         }
         passDialog.dispose();
     }//GEN-LAST:event_adminButtonActionPerformed

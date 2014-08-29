@@ -3,9 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI.major;
+package GUI.major.PasswordHelper;
 
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import reliabilityAnalysis.DataStruct.WeatherData;
 
 /**
  *
@@ -17,23 +23,54 @@ public class PassDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form PassDialog
+     * @param parent
+     * @param modal 
      */
     public PassDialog(java.awt.Dialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
         incorrectLabel.setVisible(false);
-
     }
 
     public boolean verify(char[] password) {
-        if (Arrays.equals(password, new char[]{'t', 'e', 's', 't'})) {
-            incorrectLabel.setVisible(false);
-            return true;
-        } else {
-            incorrectLabel.setVisible(true);
+        String hash = getHashFromDB();
+        try {
+            if (PasswordHash.validatePassword(password, hash)) {
+                incorrectLabel.setVisible(false);
+                return true;
+            } else {
+                incorrectLabel.setVisible(true);
+                return false;
+            } 
+        } catch(NoSuchAlgorithmException | InvalidKeySpecException e) {
             return false;
         }
+        
+    }
+    
+    private String getHashFromDB() {
+        String hash = null;
+        BufferedReader br = null;
+
+        try {
+            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/GUI/major/PasswordHelper/pass.db")));
+//                    br = new BufferedReader(new FileReader(csvFile));
+            hash = br.readLine();  //Reads and skips header row
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return hash;
     }
 
     /**
@@ -126,10 +163,10 @@ public class PassDialog extends javax.swing.JDialog {
 
     private void passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passActionPerformed
         if (verify(pass.getPassword())) {
+            verified = true;
             this.setVisible(false);
-            //incorrectLabel.setVisible(false);
         } else {
-            //incorrectLabel.setVisible(true);
+            verified = false;
         }
     }//GEN-LAST:event_passActionPerformed
 

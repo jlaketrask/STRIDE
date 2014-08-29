@@ -40,6 +40,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class MainWindow extends javax.swing.JFrame {
 
     private static MainWindow mainWindow;
+    private MainWindowStart mainWindowStart;
 
     private ArrayList<Seed> seedList = new ArrayList<>();
     private Seed activeSeed;
@@ -65,11 +66,13 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
      * Constructor. Creates new form mainWindow
+     * 
+     * @param mainWindowStart
      */
-    public MainWindow() {
+    public MainWindow(MainWindowStart mainWindowStart) {
 
         mainWindow = this;
-
+        this.mainWindowStart = mainWindowStart;
         try {
             // Set System L&F
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -88,7 +91,7 @@ public class MainWindow extends javax.swing.JFrame {
         setNullSeed();
         toolbox.setNullSeed();
         menuBar.setNullSeed();
-
+        System.out.println("here");
         setVisible(true);
 
         //load last opened files
@@ -1019,7 +1022,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1226,6 +1229,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         ConfigIO.saveSeedListToConfig(seedList);
+        
+        mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
     private void showInputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showInputButtonActionPerformed
