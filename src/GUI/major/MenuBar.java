@@ -533,19 +533,19 @@ public class MenuBar extends JMenuBar {
 //        mainWindow.runBatchRL();
 //    }
     private void showRLSummaryMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        mainWindow.showRLSummary();
+        //mainWindow.showRLSummary();
     }
 
     private void assignATDMItemActionPerformed(java.awt.event.ActionEvent evt) {
-        mainWindow.generateATDM();
+        //mainWindow.generateATDM();
     }
 
     private void deleteATDMItemActionPerformed(java.awt.event.ActionEvent evt) {
-        mainWindow.deleteAllATDM();
+        //mainWindow.deleteAllATDM();
     }
 
     private void showATDMSummaryItemActionPerformed(java.awt.event.ActionEvent evt) {
-        mainWindow.showATDMSummary();
+        //mainWindow.showATDMSummary();
     }
     // </editor-fold>
 
@@ -609,7 +609,7 @@ public class MenuBar extends JMenuBar {
     }
 
     private void createFloatingWindowItemActionPerformed(java.awt.event.ActionEvent evt) {
-        mainWindow.createFloatingWindow();
+        //mainWindow.createFloatingWindow();
     }
 
     private void firstAPMenuItemActionPerformed(java.awt.event.ActionEvent evt) {

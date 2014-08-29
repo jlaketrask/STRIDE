@@ -119,7 +119,7 @@ public class MainWindow extends javax.swing.JFrame {
         graphicDisplay.setMainWindow(this);
         navigator.setMainWindow(this);
         tableDisplay.setMainWindow(this);
-        comparePanel.setMainWindow(this);
+        //comparePanel.setMainWindow(this);
     }
     // </editor-fold>
 
@@ -338,15 +338,15 @@ public class MainWindow extends javax.swing.JFrame {
 
                 tableDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
                 graphicDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
-                contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
-                periodSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
-                segmentSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
+                //contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
+                //periodSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
+                //segmentSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
             } else {
                 tableDisplay.selectSeedScenATDMPeriod(null, 0, - 1, 0);
                 graphicDisplay.selectSeedScenATDMPeriod(null, 0, -1, 0);
-                contourPanel.selectSeedScenATDM(null, 0, -1);
-                periodSummaryPanel.selectSeedScenATDM(null, 0, -1);
-                segmentSummaryPanel.selectSeedScenATDM(null, 0, -1);
+                //contourPanel.selectSeedScenATDM(null, 0, -1);
+                //periodSummaryPanel.selectSeedScenATDM(null, 0, -1);
+                //segmentSummaryPanel.selectSeedScenATDM(null, 0, -1);
             }
             update();
         } catch (Exception e) {
@@ -427,23 +427,19 @@ public class MainWindow extends javax.swing.JFrame {
         if (!inOutCB.getModel().equals(INPUT_OUTPUT_MODEL)) {
             inOutCB.setModel(INPUT_OUTPUT_MODEL);
         }
+        //MARKDEDFORDELETION
+//        if (tabPanel.indexOfComponent(contourPanel) < 0) {
+//            tabPanel.addTab(CONTOUR, contourPanel);
+//        }
+//
+//        if (tabPanel.indexOfComponent(periodSummaryPanel) < 0) {
+//            tabPanel.addTab(PERIOD, periodSummaryPanel);
+//        }
+//
+//        if (tabPanel.indexOfComponent(segmentSummaryPanel) < 0) {
+//            tabPanel.addTab(SEGMENT, segmentSummaryPanel);
+//        }
 
-        if (tabPanel.indexOfComponent(contourPanel) < 0) {
-            tabPanel.addTab(CONTOUR, contourPanel);
-        }
-        
-
-
-        if (tabPanel.indexOfComponent(periodSummaryPanel) < 0) {
-            tabPanel.addTab(PERIOD, periodSummaryPanel);
-        }
-        
-
-        
-        if (tabPanel.indexOfComponent(segmentSummaryPanel) < 0) {
-            tabPanel.addTab(SEGMENT, segmentSummaryPanel);
-        }
-        
     }
 
     private void disableOutput() {
@@ -455,32 +451,28 @@ public class MainWindow extends javax.swing.JFrame {
         if (!inOutCB.getModel().equals(INPUT_ONLY_MODEL)) {
             inOutCB.setModel(INPUT_ONLY_MODEL);
         }
-        
-        if (tabPanel.indexOfComponent(contourPanel) >= 0) {
-            if (tabPanel.getSelectedComponent() == contourPanel) {
-                tabPanel.setSelectedComponent(singleScenSplitPanel);
-            }
-            tabPanel.remove(contourPanel);
-        }
-        
+        //MARKEDFORDENSITY
+//        if (tabPanel.indexOfComponent(contourPanel) >= 0) {
+//            if (tabPanel.getSelectedComponent() == contourPanel) {
+//                tabPanel.setSelectedComponent(singleScenSplitPanel);
+//            }
+//            tabPanel.remove(contourPanel);
+//        }
+//
+//        if (tabPanel.indexOfComponent(periodSummaryPanel) >= 0) {
+//            if (tabPanel.getSelectedComponent() == periodSummaryPanel) {
+//                tabPanel.setSelectedComponent(singleScenSplitPanel);
+//            }
+//            tabPanel.remove(periodSummaryPanel);
+//        }
+//
+//        if (tabPanel.indexOfComponent(segmentSummaryPanel) >= 0) {
+//            if (tabPanel.getSelectedComponent() == segmentSummaryPanel) {
+//                tabPanel.setSelectedComponent(singleScenSplitPanel);
+//            }
+//            tabPanel.remove(segmentSummaryPanel);
+//        }
 
-        
-        if (tabPanel.indexOfComponent(periodSummaryPanel) >= 0) {
-            if (tabPanel.getSelectedComponent() == periodSummaryPanel) {
-                tabPanel.setSelectedComponent(singleScenSplitPanel);
-            }
-            tabPanel.remove(periodSummaryPanel);
-        }
-
-
-
-        if (tabPanel.indexOfComponent(segmentSummaryPanel) >= 0) {
-            if (tabPanel.getSelectedComponent() == segmentSummaryPanel) {
-                tabPanel.setSelectedComponent(singleScenSplitPanel);
-            }
-            tabPanel.remove(segmentSummaryPanel);
-        }
-        
     }
 
     private void enableManagedLane() {
@@ -499,26 +491,6 @@ public class MainWindow extends javax.swing.JFrame {
         toolbox.disableML();
         menuBar.disableML();
         configGPMLDisplay();
-    }
-
-    private void enableRL() {
-        toolbox.enableRL();
-        menuBar.enableRL();
-    }
-
-    private void disableRL() {
-        toolbox.disableRL();
-        menuBar.disableRL();
-    }
-
-    private void enableATDM() {
-        toolbox.enableATDM();
-        menuBar.enableATDM();
-    }
-
-    private void disableATDM() {
-        toolbox.disableATDM();
-        menuBar.disableATDM();
     }
 
     /**
@@ -540,7 +512,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainWindow.update();
     }
-
 
     /**
      * Print log message in log display area in main window
@@ -681,8 +652,8 @@ public class MainWindow extends javax.swing.JFrame {
         //timing ends
         long timingEnd = new Date().getTime();
 
-        contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
-
+        //MARKEDFORDELETION
+        //contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
         return ("Run seed finished ("
                 + ((timingEnd - timingStart) > 1000
                 ? (timingEnd - timingStart) / 1000 + " s)"
@@ -911,16 +882,8 @@ public class MainWindow extends javax.swing.JFrame {
 
             if (activeSeed.isManagedLaneUsed()) {
                 enableManagedLane();
-                disableRL();
-                disableATDM();
             } else {
                 disableManagedLane();
-                enableRL();
-                if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
-                    enableATDM();
-                } else {
-                    disableATDM();
-                }
             }
 
             if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
@@ -954,8 +917,9 @@ public class MainWindow extends javax.swing.JFrame {
         updateTitle();
         //comparePanel.updateList();
 
-        periodSummaryPanel.update();
-        segmentSummaryPanel.update();
+        //MARKEDFORDELETION
+        //periodSummaryPanel.update();
+        //segmentSummaryPanel.update();
         //TODO integrate and add more updates here
     }
 
@@ -996,7 +960,8 @@ public class MainWindow extends javax.swing.JFrame {
         if (!seed.hasValidOutput(scen, atdm)) {
             seed.singleRun(scen, atdm);
         }
-        comparePanel.addScenarioToCompare(seed, scen, atdm, name);
+        //MARKEDFORDELETION
+        // comparePanel.addScenarioToCompare(seed, scen, atdm, name);
     }
     // </editor-fold>
     // </editor-fold>
@@ -1038,10 +1003,6 @@ public class MainWindow extends javax.swing.JFrame {
         lastButton = new javax.swing.JButton();
         jumpToButton = new javax.swing.JButton();
         jumpText = new javax.swing.JTextField();
-        comparePanel = new GUI.major.outputPanel.ComparePanel();
-        contourPanel = new GUI.major.outputPanel.ContourPanel();
-        periodSummaryPanel = new GUI.major.outputPanel.FacilityPeriodSummaryPanel();
-        segmentSummaryPanel = new GUI.major.outputPanel.FacilitySegmentSummaryPanel();
         menuBar = new GUI.major.MenuBar();
 
         showInputButton.setText("Input");
@@ -1229,10 +1190,6 @@ public class MainWindow extends javax.swing.JFrame {
         singleScenSplitPanel.setLeftComponent(jPanel1);
 
         tabPanel.addTab("Single Scenario I/O", singleScenSplitPanel);
-        tabPanel.addTab("Compare Scenarios", comparePanel);
-        tabPanel.addTab("Result Contour", contourPanel);
-        tabPanel.addTab("Period Summary", periodSummaryPanel);
-        tabPanel.addTab("Segment & Facility Summary", segmentSummaryPanel);
 
         navigatorSplitPanel.setRightComponent(tabPanel);
 
@@ -1424,10 +1381,11 @@ public class MainWindow extends javax.swing.JFrame {
     public void setTableFont(Font newTableFont) {
         tableFont = newTableFont;
         tableDisplay.setTableFont(newTableFont);
-        comparePanel.setTableFont(newTableFont);
-        contourPanel.setTableFont(newTableFont);
-        periodSummaryPanel.setTableFont(newTableFont);
-        segmentSummaryPanel.setTableFont(newTableFont);
+        //MARKEDFORDELETION
+        //comparePanel.setTableFont(newTableFont);
+        //contourPanel.setTableFont(newTableFont);
+        //periodSummaryPanel.setTableFont(newTableFont);
+        //segmentSummaryPanel.setTableFont(newTableFont);
         //periodSummaryPanel_ML.setTableFont(newTableFont);
         //segmentSummaryPanel_ML.setTableFont(newTableFont);
     }
@@ -1435,53 +1393,11 @@ public class MainWindow extends javax.swing.JFrame {
     public boolean isOutputEnabled() {
         return isOutputEnabled;
     }
-
-    public boolean isToolboxInFloat() {
-        return isToolboxInFloat;
-    }
-
-    public boolean isContourInFloat() {
-        return isContourInFloat;
-    }
-
-    public boolean isCompareInFloat() {
-        return isCompareInFloat;
-    }
-
-    public boolean isSingleInFloat() {
-        return isSingleInFloat;
-    }
-
-    public boolean isLogInFloat() {
-        return isLogInFloat;
-    }
-
-    public boolean isNavigatorInFloat() {
-        return isNavigatorInFloat;
-    }
-
-    public boolean isPeriodInFloat() {
-        return isPeriodInFloat;
-    }
-
-    public boolean isSegmentInFloat() {
-        return isSegmentInFloat;
-    }
-
-    public boolean isPeriodMLInFloat() {
-        return isPeriodInFloat_ML;
-    }
-
-    public boolean isSegmentMLInFloat() {
-        return isSegmentInFloat_ML;
-    }
     // </editor-fold>
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel APPanel;
     private javax.swing.JComboBox GPMLCB;
-    private GUI.major.outputPanel.ComparePanel comparePanel;
-    private GUI.major.outputPanel.ContourPanel contourPanel;
     private javax.swing.JButton firstButton;
     private GUI.major.GraphicDisplay graphicDisplay;
     private javax.swing.JComboBox inOutCB;
@@ -1499,9 +1415,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSplitPane navigatorSplitPanel;
     private javax.swing.JButton nextButton;
     private javax.swing.JLabel periodLabel;
-    private GUI.major.outputPanel.FacilityPeriodSummaryPanel periodSummaryPanel;
     private javax.swing.JButton previousButton;
-    private GUI.major.outputPanel.FacilitySegmentSummaryPanel segmentSummaryPanel;
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;

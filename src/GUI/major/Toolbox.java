@@ -48,17 +48,9 @@ public class Toolbox extends javax.swing.JPanel {
         singleRunButton = new javax.swing.JButton();
         batchRunButton = new javax.swing.JButton();
         atdmBatchRunButton = new javax.swing.JButton();
-        raPanel = new javax.swing.JPanel();
-        geneScenButton = new javax.swing.JButton();
-        deleteAllScenButton = new javax.swing.JButton();
-        showRLSummaryButton = new javax.swing.JButton();
         cfgPanel = new javax.swing.JPanel();
         globalButton = new javax.swing.JButton();
         fillButton = new javax.swing.JButton();
-        atdmPanel = new javax.swing.JPanel();
-        atdmAssignButton = new javax.swing.JButton();
-        atdmDeleteButton = new javax.swing.JButton();
-        atdmSummaryButton = new javax.swing.JButton();
         mlPanel = new javax.swing.JPanel();
         mlButton = new javax.swing.JButton();
 
@@ -204,33 +196,6 @@ public class Toolbox extends javax.swing.JPanel {
             }
         });
 
-        raPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Reliability Analysis (RL)"));
-        raPanel.setLayout(new java.awt.GridLayout(1, 3));
-
-        geneScenButton.setText("Generate");
-        geneScenButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                geneScenButtonActionPerformed(evt);
-            }
-        });
-        raPanel.add(geneScenButton);
-
-        deleteAllScenButton.setText("Delete All");
-        deleteAllScenButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteAllScenButtonActionPerformed(evt);
-            }
-        });
-        raPanel.add(deleteAllScenButton);
-
-        showRLSummaryButton.setText("Summary");
-        showRLSummaryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showRLSummaryButtonActionPerformed(evt);
-            }
-        });
-        raPanel.add(showRLSummaryButton);
-
         cfgPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Edit"));
         cfgPanel.setLayout(new java.awt.GridLayout(1, 4));
 
@@ -249,33 +214,6 @@ public class Toolbox extends javax.swing.JPanel {
             }
         });
         cfgPanel.add(fillButton);
-
-        atdmPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("ATDM Analysis"));
-        atdmPanel.setLayout(new java.awt.GridLayout(1, 3));
-
-        atdmAssignButton.setText("Assign");
-        atdmAssignButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atdmAssignButtonActionPerformed(evt);
-            }
-        });
-        atdmPanel.add(atdmAssignButton);
-
-        atdmDeleteButton.setText("Delete All");
-        atdmDeleteButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atdmDeleteButtonActionPerformed(evt);
-            }
-        });
-        atdmPanel.add(atdmDeleteButton);
-
-        atdmSummaryButton.setText("Summary");
-        atdmSummaryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atdmSummaryButtonActionPerformed(evt);
-            }
-        });
-        atdmPanel.add(atdmSummaryButton);
 
         mlPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Managed Lanes"));
         mlPanel.setLayout(new java.awt.GridLayout(1, 0));
@@ -296,20 +234,14 @@ public class Toolbox extends javax.swing.JPanel {
                 .addComponent(cfgPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(raPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(atdmPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addGap(486, 486, 486))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cfgPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(raPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(atdmPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -345,10 +277,6 @@ public class Toolbox extends javax.swing.JPanel {
     private void showOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showOutputButtonActionPerformed
         mainWindow.showOutput();
     }//GEN-LAST:event_showOutputButtonActionPerformed
-
-    private void geneScenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_geneScenButtonActionPerformed
-        mainWindow.generateRL();
-    }//GEN-LAST:event_geneScenButtonActionPerformed
 
     private void batchRunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batchRunButtonActionPerformed
         //mainWindow.runBatchRL();
@@ -395,33 +323,13 @@ public class Toolbox extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jumpToButtonActionPerformed
 
-    private void showRLSummaryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRLSummaryButtonActionPerformed
-        mainWindow.showRLSummary();
-    }//GEN-LAST:event_showRLSummaryButtonActionPerformed
-
-    private void atdmAssignButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atdmAssignButtonActionPerformed
-        mainWindow.generateATDM();
-    }//GEN-LAST:event_atdmAssignButtonActionPerformed
-
-    private void deleteAllScenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAllScenButtonActionPerformed
-        mainWindow.deleteAllScen();
-    }//GEN-LAST:event_deleteAllScenButtonActionPerformed
-
     private void mlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mlButtonActionPerformed
         mainWindow.toggleManagedLane();
     }//GEN-LAST:event_mlButtonActionPerformed
 
-    private void atdmDeleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atdmDeleteButtonActionPerformed
-        mainWindow.deleteAllATDM();
-    }//GEN-LAST:event_atdmDeleteButtonActionPerformed
-
     private void atdmBatchRunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atdmBatchRunButtonActionPerformed
         //mainWindow.runBatchATDM();
     }//GEN-LAST:event_atdmBatchRunButtonActionPerformed
-
-    private void atdmSummaryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atdmSummaryButtonActionPerformed
-        mainWindow.showATDMSummary();
-    }//GEN-LAST:event_atdmSummaryButtonActionPerformed
 
 //    /**
 //     * Show a particular analysis period data
@@ -437,7 +345,6 @@ public class Toolbox extends javax.swing.JPanel {
 ////            timeLabel.setText(mainWindow.getActiveSeed().getValueString(CEConst.IDS_PERIOD_TIME, 0, period));
 ////        }
 //    }
-
 //    /**
 //     * Show input
 //     */
@@ -471,7 +378,6 @@ public class Toolbox extends javax.swing.JPanel {
 ////        showContourButton.setEnabled(false);
 ////        showFacilityButton.setEnabled(false);
 //    }
-
     /**
      * Configure display when the seed is null
      */
@@ -479,11 +385,11 @@ public class Toolbox extends javax.swing.JPanel {
         caPanel.setEnabled(false);
         APPanel.setEnabled(false);
         //IOPanel.setEnabled(false);
-        raPanel.setEnabled(false);
+        //raPanel.setEnabled(false);
         //addPeriodButton.setEnabled(false);
         //addSegButton.setEnabled(false);
         batchRunButton.setEnabled(false);
-        showRLSummaryButton.setEnabled(false);
+        //showRLSummaryButton.setEnabled(false);
         cfgPanel.setEnabled(false);
         closeButton.setEnabled(false);
         copyButton.setEnabled(false);
@@ -491,8 +397,8 @@ public class Toolbox extends javax.swing.JPanel {
         //delSegButton.setEnabled(false);
         fillButton.setEnabled(false);
         firstButton.setEnabled(false);
-        geneScenButton.setEnabled(false);
-        deleteAllScenButton.setEnabled(false);
+        //geneScenButton.setEnabled(false);
+        //deleteAllScenButton.setEnabled(false);
         globalButton.setEnabled(false);
         jumpText.setEnabled(false);
         jumpToButton.setEnabled(false);
@@ -509,13 +415,13 @@ public class Toolbox extends javax.swing.JPanel {
         showInputButton.setEnabled(false);
         showOutputButton.setEnabled(false);
         singleRunButton.setEnabled(false);
-        atdmPanel.setEnabled(false);
-        atdmAssignButton.setEnabled(false);
-        atdmDeleteButton.setEnabled(false);
+        //atdmPanel.setEnabled(false);
+        //atdmAssignButton.setEnabled(false);
+        //atdmDeleteButton.setEnabled(false);
         atdmBatchRunButton.setEnabled(false);
-        atdmSummaryButton.setEnabled(false);
+        //atdmSummaryButton.setEnabled(false);
 //        atdmButton3.setEnabled(false);
-        
+
         mlPanel.setEnabled(false);
         mlButton.setEnabled(false);
     }
@@ -527,11 +433,11 @@ public class Toolbox extends javax.swing.JPanel {
         caPanel.setEnabled(true);
         APPanel.setEnabled(true);
         //IOPanel.setEnabled(true);
-        raPanel.setEnabled(true);
+        //raPanel.setEnabled(true);
         //addPeriodButton.setEnabled(true);
         //addSegButton.setEnabled(true);
         batchRunButton.setEnabled(true);
-        showRLSummaryButton.setEnabled(true);
+        //showRLSummaryButton.setEnabled(true);
         cfgPanel.setEnabled(true);
         closeButton.setEnabled(true);
         copyButton.setEnabled(true);
@@ -539,8 +445,8 @@ public class Toolbox extends javax.swing.JPanel {
         //delSegButton.setEnabled(true);
         fillButton.setEnabled(true);
         firstButton.setEnabled(true);
-        geneScenButton.setEnabled(true);
-        deleteAllScenButton.setEnabled(true);
+        //geneScenButton.setEnabled(true);
+        //deleteAllScenButton.setEnabled(true);
         globalButton.setEnabled(true);
         jumpText.setEnabled(true);
         jumpToButton.setEnabled(true);
@@ -557,64 +463,34 @@ public class Toolbox extends javax.swing.JPanel {
         showInputButton.setEnabled(true);
         showOutputButton.setEnabled(true);
         singleRunButton.setEnabled(true);
-        atdmPanel.setEnabled(true);
-        atdmAssignButton.setEnabled(true);
-        atdmDeleteButton.setEnabled(true);
+        //atdmPanel.setEnabled(true);
+        //atdmAssignButton.setEnabled(true);
+        //atdmDeleteButton.setEnabled(true);
         atdmBatchRunButton.setEnabled(true);
-        atdmSummaryButton.setEnabled(true);
+        //atdmSummaryButton.setEnabled(true);
 //        atdmButton3.setEnabled(true);
-        
+
         mlPanel.setEnabled(true);
         mlButton.setEnabled(true);
-    }
-    
-    public void enableRL() {
-        geneScenButton.setEnabled(true);
-        deleteAllScenButton.setEnabled(true);
-        batchRunButton.setEnabled(true);
-        showRLSummaryButton.setEnabled(true);
-    }
-    
-    public void disableRL() {
-        geneScenButton.setEnabled(false);
-        deleteAllScenButton.setEnabled(false);
-        batchRunButton.setEnabled(false);
-        showRLSummaryButton.setEnabled(false);
-    }
-    
-    public void enableATDM() {
-        atdmAssignButton.setEnabled(true);
-        atdmDeleteButton.setEnabled(true);
-        atdmBatchRunButton.setEnabled(true);
-        atdmSummaryButton.setEnabled(true);
-//        atdmButton3.setEnabled(true);
-    }
-    
-    public void disableATDM() {
-        atdmAssignButton.setEnabled(false);
-        atdmDeleteButton.setEnabled(false);
-        atdmBatchRunButton.setEnabled(false);
-        atdmSummaryButton.setEnabled(false);
-//        atdmButton3.setEnabled(false);
     }
 
     public void enableML() {
         mlButton.setEnabled(true);
     }
-    
+
     public void disableML() {
         mlButton.setEnabled(false);
     }
-    
+
     public void turnOnML() {
         mlButton.setText("Turn Off");
     }
-    
+
     public void turnOffML() {
         mlButton.setText("Turn On");
     }
-    
-    // <editor-fold defaultstate="collapsed" desc="setter and getters">  
+
+    // <editor-fold defaultstate="collapsed" desc="setter and getters">
     /**
      * Setter for mainWindow connection
      *
@@ -627,20 +503,14 @@ public class Toolbox extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel APPanel;
-    private javax.swing.JButton atdmAssignButton;
     private javax.swing.JButton atdmBatchRunButton;
-    private javax.swing.JButton atdmDeleteButton;
-    private javax.swing.JPanel atdmPanel;
-    private javax.swing.JButton atdmSummaryButton;
     private javax.swing.JButton batchRunButton;
     private javax.swing.JPanel caPanel;
     private javax.swing.JPanel cfgPanel;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton copyButton;
-    private javax.swing.JButton deleteAllScenButton;
     private javax.swing.JButton fillButton;
     private javax.swing.JButton firstButton;
-    private javax.swing.JButton geneScenButton;
     private javax.swing.JButton globalButton;
     private javax.swing.JTextField jumpText;
     private javax.swing.JButton jumpToButton;
@@ -652,13 +522,11 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JButton openButton;
     private javax.swing.JLabel periodLabel;
     private javax.swing.JButton previousButton;
-    private javax.swing.JPanel raPanel;
     private javax.swing.JButton saveAsButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton settingButton;
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
-    private javax.swing.JButton showRLSummaryButton;
     private javax.swing.JButton singleRunButton;
     private javax.swing.JLabel timeLabel;
     // End of variables declaration//GEN-END:variables
