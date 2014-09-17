@@ -194,8 +194,8 @@
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Single Scenario I/O">
-                        <Property name="tabTitle" type="java.lang.String" value="Single Scenario I/O"/>
+                      <JTabbedPaneConstraints tabName="Seed/Scenario I/O">
+                        <Property name="tabTitle" type="java.lang.String" value="Seed/Scenario I/O"/>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
@@ -287,7 +287,7 @@
                             <Component class="javax.swing.JComboBox" name="inOutCB">
                               <Properties>
                                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                                  <Color blue="33" green="ff" red="ff" type="rgb"/>
+                                  <Color blue="99" green="ff" red="ff" type="rgb"/>
                                 </Property>
                                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                                   <StringArray count="1">
@@ -302,7 +302,7 @@
                             <Component class="javax.swing.JComboBox" name="GPMLCB">
                               <Properties>
                                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                                  <Color blue="33" green="ff" red="ff" type="rgb"/>
+                                  <Color blue="99" green="ff" red="ff" type="rgb"/>
                                 </Property>
                                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                                   <StringArray count="1">

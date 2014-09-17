@@ -1,7 +1,6 @@
 package GUI.major;
 
 import GUI.major.menuHelper.AboutDialog;
-import GUI.seedEditAndIOHelper.ASCIISeedFileAdapter;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
 import GUI.seedEditAndIOHelper.SeedFillDataDialog;
@@ -9,6 +8,7 @@ import GUI.seedEditAndIOHelper.SeedGlobalDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
+import coreEngine.ASCIISeedFileAdapter;
 import coreEngine.CEConst;
 import coreEngine.Seed;
 import java.awt.Desktop;
@@ -128,10 +128,10 @@ public class MainWindow extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
     //private static final String TOOLBOX = "Toolbox";
-    private static final String CONTOUR = "Result Contour";
+    private static final String CONTOUR = "Result Contours";
     //private static final String COMPARE = "Compare Scenarios";
     //private static final String SINGLE = "Single Scenario I/O";
-    private static final String PERIOD = "Period Summary";
+    private static final String PERIOD = "Analysis Period Summary";
     private static final String SEGMENT = "Segment & Facility Summary";
     //private static final String LOG = "Log";
     //private static final String NAVIGATOR = "Navigator";
@@ -224,7 +224,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void importASCII() {
         ASCIISeedFileAdapter textSeed = new ASCIISeedFileAdapter();
-        Seed _seed = textSeed.importFromFile();
+        Seed _seed = textSeed.importFromASCII();
         if (_seed != null) {
             printLog("Seed file added from ASCII file : " + _seed.getValueString(CEConst.IDS_SEED_FILE_NAME));
             _seed.setValue(CEConst.IDS_SEED_FILE_NAME, null);
@@ -239,10 +239,10 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void exportASCII() {
         if (activeSeed != null) {
-            //ASCIIExportDialog aSCIIExportDialog = new ASCIIExportDialog(activeSeed, this);
-            //aSCIIExportDialog.setVisible(true);
             ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
-            String fileName = exporter.exportToFile(activeSeed);
+            String fileName = exporter.exportToASCII(activeSeed);
+            //ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
+            //String fileName = exporter.exportToFile(activeSeed);
             if (fileName != null) {
                 printLog("Exported seed to ASCII file : " + fileName);
             } else {
@@ -850,23 +850,6 @@ public class MainWindow extends javax.swing.JFrame {
      * Update display, data and/or setting
      */
     private void update() {
-        if (activeSeed == null || activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
-            toolbox.turnOffML();
-            toolbox.disableML();
-            menuBar.turnOffML();
-            menuBar.disableML();
-        } else {
-            toolbox.enableML();
-            menuBar.enableML();
-            if (activeSeed.isManagedLaneUsed()) {
-                toolbox.turnOnML();
-                menuBar.turnOnML();
-            } else {
-                toolbox.turnOffML();
-                menuBar.turnOffML();
-            }
-        }
-
         if (activeSeed != null) {
             setNonNullSeed();
             toolbox.setNonNullSeed();
@@ -889,7 +872,7 @@ public class MainWindow extends javax.swing.JFrame {
                 disableManagedLane();
             }
 
-            if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
+            if (activeSeed.getValueInt(CEConst.IDS_ATDM_SET_NUM) > 0) {
                 toolbox.turnOffML();
                 toolbox.disableML();
                 menuBar.turnOffML();
@@ -920,9 +903,6 @@ public class MainWindow extends javax.swing.JFrame {
         updateTitle();
         //comparePanel.updateList();
 
-        //MARKEDFORDELETION
-        //periodSummaryPanel.update();
-        //segmentSummaryPanel.update();
         //TODO integrate and add more updates here
     }
 
@@ -1087,7 +1067,7 @@ public class MainWindow extends javax.swing.JFrame {
         tableDisplayOptionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Table Display Options"));
         tableDisplayOptionPanel.setLayout(new java.awt.GridLayout(1, 2));
 
-        inOutCB.setBackground(new java.awt.Color(255, 255, 51));
+        inOutCB.setBackground(new java.awt.Color(255, 255, 153));
         inOutCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Input" }));
         inOutCB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1096,7 +1076,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         tableDisplayOptionPanel.add(inOutCB);
 
-        GPMLCB.setBackground(new java.awt.Color(255, 255, 51));
+        GPMLCB.setBackground(new java.awt.Color(255, 255, 153));
         GPMLCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GP Only" }));
         GPMLCB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1192,7 +1172,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         singleScenSplitPanel.setLeftComponent(jPanel1);
 
-        tabPanel.addTab("Single Scenario I/O", singleScenSplitPanel);
+        tabPanel.addTab("Seed/Scenario I/O", singleScenSplitPanel);
 
         navigatorSplitPanel.setRightComponent(tabPanel);
 

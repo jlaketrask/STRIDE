@@ -196,7 +196,7 @@ public class Toolbox extends javax.swing.JPanel {
             }
         });
 
-        cfgPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Edit"));
+        cfgPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Edit Seed Facility"));
         cfgPanel.setLayout(new java.awt.GridLayout(1, 4));
 
         globalButton.setText("Global Input");
