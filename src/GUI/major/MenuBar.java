@@ -21,10 +21,10 @@ public class MenuBar extends JMenuBar {
         super();
 
         // <editor-fold defaultstate="collapsed" desc="create File menu">
-        fileMenu = new JMenu("File");
+        fileMenu = new JMenu("Project");
         add(fileMenu);
 
-        newMenuItem = new JMenuItem("New");
+        newMenuItem = new JMenuItem("New Project");
         newMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public final void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -33,7 +33,7 @@ public class MenuBar extends JMenuBar {
         });
         fileMenu.add(newMenuItem);
 
-        openMenuItem = new JMenuItem("Open");
+        openMenuItem = new JMenuItem("Open Project");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public final void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -42,7 +42,7 @@ public class MenuBar extends JMenuBar {
         });
         fileMenu.add(openMenuItem);
 
-        saveMenuItem = new JMenuItem("Save");
+        saveMenuItem = new JMenuItem("Save Project");
         saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public final void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -51,7 +51,7 @@ public class MenuBar extends JMenuBar {
         });
         fileMenu.add(saveMenuItem);
 
-        saveAsMenuItem = new JMenuItem("Save As");
+        saveAsMenuItem = new JMenuItem("Save Project As...");
         saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public final void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -60,7 +60,7 @@ public class MenuBar extends JMenuBar {
         });
         fileMenu.add(saveAsMenuItem);
 
-        closeMenuItem = new JMenuItem("Close");
+        closeMenuItem = new JMenuItem("Close Project");
         closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public final void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -70,6 +70,7 @@ public class MenuBar extends JMenuBar {
         fileMenu.add(closeMenuItem);
 
         fileMenu.add(new javax.swing.JSeparator());
+
         importASCIIMenuItem = new JMenuItem("Import from ASCII File");
         importASCIIMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
@@ -120,7 +121,9 @@ public class MenuBar extends JMenuBar {
                 geneScenMenuItemActionPerformed(evt);
             }
         });
+        geneScenMenuItem.setEnabled(false);
         analyzeMenu.add(geneScenMenuItem);
+        
 
         deleteScenMenuItem = new JMenuItem("Delete All Reliability Scenarios");
         deleteScenMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -129,7 +132,9 @@ public class MenuBar extends JMenuBar {
                 deleteScenMenuItemActionPerformed(evt);
             }
         });
+        deleteScenMenuItem.setEnabled(false);
         analyzeMenu.add(deleteScenMenuItem);
+        
 
 //        runBatchMenuItem = new JMenuItem("Run Reliability Scenarios");
 //        runBatchMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -146,6 +151,7 @@ public class MenuBar extends JMenuBar {
                 showRLSummaryMenuItemActionPerformed(evt);
             }
         });
+        showRLSummaryMenuItem.setEnabled(false);
         analyzeMenu.add(showRLSummaryMenuItem);
 
         analyzeMenu.add(new javax.swing.JSeparator());
