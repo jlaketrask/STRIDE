@@ -1,0 +1,9 @@
+Add exit (return to Admin/User selection) menu item to Project menu
+ - Show dialog when closing Admin window?
+
+Disable table settings for User side
+    - Remove all demand rows
+    - Make non-editable
+
+Changes in seed file reflected in User side
+     - Change in number of periods/segments in PeriodATM

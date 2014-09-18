@@ -5,17 +5,32 @@
  */
 package GUI.major;
 
+import DSS.DataStruct.PeriodATM;
+import GUI.major.tableHelper.FREEVAL_DSS_TableModel;
+import coreEngine.CEConst;
+import coreEngine.Seed;
+
 /**
  *
  * @author jltrask
  */
 public class UserIOTableDisplay extends javax.swing.JPanel {
 
+    private final Seed seed;
+    
     /**
      * Creates new form UserIOTableDisplay
+     * @param seed
      */
-    public UserIOTableDisplay() {
+    public UserIOTableDisplay(Seed seed) {
         initComponents();
+        this.seed = seed;
+        PeriodATM[] periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
+        for (int per = 0; per < periodATM.length; per++) {
+            periodATM[per] = new PeriodATM(seed,per);
+        }
+        FREEVAL_DSS_TableModel userInputModel = new FREEVAL_DSS_TableModel(seed, periodATM);
+        userInputTable.setModel(userInputModel);
     }
 
     /**
@@ -29,23 +44,21 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
 
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        userInputTable = new javax.swing.JTable();
         tableDisplay1 = new GUI.major.TableDisplay();
 
+        jSplitPane1.setDividerLocation(250);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        userInputTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(userInputTable);
 
         jSplitPane1.setRightComponent(jScrollPane2);
         jSplitPane1.setLeftComponent(tableDisplay1);
@@ -72,7 +85,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTable jTable1;
     private GUI.major.TableDisplay tableDisplay1;
+    private javax.swing.JTable userInputTable;
     // End of variables declaration//GEN-END:variables
 }
