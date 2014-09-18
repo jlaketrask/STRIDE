@@ -66,7 +66,7 @@ public class MainWindowUser extends MainWindow {
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
      * Constructor. Creates new form mainWindow
-     * 
+     *
      * @param mainWindowStart
      */
     public MainWindowUser(MainWindowStart mainWindowStart) {
@@ -960,6 +960,7 @@ public class MainWindowUser extends MainWindow {
 
         showInputButton = new javax.swing.JToggleButton();
         showOutputButton = new javax.swing.JToggleButton();
+        tableDisplay = new GUI.major.TableDisplay();
         toolboxSplitPanel = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         toolbox = new GUI.major.Toolbox();
@@ -970,7 +971,6 @@ public class MainWindowUser extends MainWindow {
         logText = new javax.swing.JTextArea();
         tabPanel = new javax.swing.JTabbedPane();
         singleScenSplitPanel = new javax.swing.JSplitPane();
-        tableDisplay = new GUI.major.TableDisplay();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         graphicDisplay = new GUI.major.GraphicDisplay();
@@ -1045,7 +1045,6 @@ public class MainWindowUser extends MainWindow {
         singleScenSplitPanel.setDividerLocation(200);
         singleScenSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         singleScenSplitPanel.setResizeWeight(0.35);
-        singleScenSplitPanel.setRightComponent(tableDisplay);
 
         javax.swing.GroupLayout graphicDisplayLayout = new javax.swing.GroupLayout(graphicDisplay);
         graphicDisplay.setLayout(graphicDisplayLayout);
@@ -1162,7 +1161,7 @@ public class MainWindowUser extends MainWindow {
                     .addComponent(APPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableDisplayOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
@@ -1205,7 +1204,7 @@ public class MainWindowUser extends MainWindow {
             }
         }
         ConfigIO.saveSeedListToConfig(seedList);
-        
+
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
