@@ -14,43 +14,44 @@ import java.util.Arrays;
  * @author jltrask
  */
 public class PeriodATM {
-    
+
     //Instance Specific variables
     private final int period;
 
     // Adjustment factors
     private final float[] caf;
     private final float[] saf;
-    
+
     // Other ATM
     private final int[] rampMetering;
-    
+    private final Boolean[] rampMeteringUsed;
+
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
     private static final String ID_AFTYPE_CAF = "ID_AFTYPE_CAF";
     private static final String ID_AFTYPE_SAF = "ID_AFTYPE_SAF";
+    private static final String ID_RAMP_METERING_USED = "ID_RAMP_METERING_USED";
     private static final String ID_RAMP_METERING = "ID_RAMP_METERING";
     // </editor-fold>
-    
-    
-    
+
     public PeriodATM(Seed seed, int period) {
         // Settting period
         this.period = period;
         int numSeg = seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
-        
+
         // Initializing adjustment factor arrays
-        caf  = new float[numSeg];
+        caf = new float[numSeg];
         Arrays.fill(caf, 1.0f);
-        saf  = new float[numSeg];
+        saf = new float[numSeg];
         Arrays.fill(saf, 1.0f);
-        
+
         //Initializing other arrays
+        rampMeteringUsed = new Boolean[numSeg];
+        Arrays.fill(rampMeteringUsed, false);
         rampMetering = new int[numSeg];
         Arrays.fill(rampMetering, -1);
-        
+
     }
-    
-    
+
 //<editor-fold defaultstate="collapsed" desc="Universal Getter">
     public float getValueFloat(String identifier, int period) {
         switch (identifier) {
@@ -62,7 +63,7 @@ public class PeriodATM {
                 throw new RuntimeException("Invalid Identifier");
         }
     }
-    
+
     public int getValueInt(String identifier, int period) {
         switch (identifier) {
             case ID_RAMP_METERING:
@@ -72,7 +73,7 @@ public class PeriodATM {
         }
     }
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="Universal Setter">
     public void setValueFloat(String identifier, float value, int period) {
         switch (identifier) {
@@ -86,7 +87,7 @@ public class PeriodATM {
                 throw new RuntimeException("Invalid Identifier");
         }
     }
-    
+
     public void setValueInt(String identifier, int value, int period) {
         switch (identifier) {
             case ID_RAMP_METERING:
@@ -97,38 +98,45 @@ public class PeriodATM {
         }
     }
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="Setters">
-    
-    public void setCAF(float value, int period) {
-        caf[period] = value;
+    public void setCAF(float value, int seg) {
+        caf[seg] = value;
     }
 
-    public void setSAF(float value, int period) {
-        saf[period] = value;
+    public void setSAF(float value, int seg) {
+        saf[seg] = value;
     }
 
-    public void setRMRate(int value, int period) {
-        rampMetering[period] = value;
+    public void setRMUsed(Boolean value, int seg) {
+        rampMeteringUsed[seg] = value;
     }
-//</editor-fold> 
-        
+
+    public void setRMRate(int value, int seg) {
+        rampMetering[seg] = value;
+    }
+//</editor-fold>
+
 //<editor-fold defaultstate="collapsed" desc="Getters">
     public int getPeriod() {
         return period;
     }
-    
-    public float getCAF(int period) {
-        return caf[period];
+
+    public float getCAF(int seg) {
+        return caf[seg];
     }
-    
-    public float getSAF(int period) {
-        return saf[period];
+
+    public float getSAF(int seg) {
+        return saf[seg];
     }
-    
+
+    public Boolean getRMUsed(int seg) {
+        return rampMeteringUsed[seg];
+    }
+
     public int getRMRate(int period) {
         return rampMetering[period];
     }
 //</editor-fold>
-    
+
 }

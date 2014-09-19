@@ -69,7 +69,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
 
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        userInputTable = new javax.swing.JTable();
+        userInputTable = new GUI.major.tableHelper.FREEVAL_DSS_JTable();
         tableDisplay1 = new GUI.major.TableDisplay();
 
         jSplitPane1.setDividerLocation(250);
@@ -110,6 +110,6 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private GUI.major.TableDisplay tableDisplay1;
-    private javax.swing.JTable userInputTable;
+    private GUI.major.tableHelper.FREEVAL_DSS_JTable userInputTable;
     // End of variables declaration//GEN-END:variables
 }
