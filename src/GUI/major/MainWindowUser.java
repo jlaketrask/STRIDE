@@ -18,16 +18,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
-import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -57,14 +51,13 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel GP_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"GP Only"});
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
-    
-    private TableDisplay tableDisplay;
+
+    private final TableDisplay tableDisplay;
 
     /**
      * Version of the FREEVAL
      */
-    public final String VERSION = "Alpha 09172014";
-
+    //public final String VERSION = "Alpha 09172014";
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
      * Constructor. Creates new form mainWindow
@@ -85,7 +78,7 @@ public class MainWindowUser extends MainWindow {
         initComponents();
         activeSeed = SeedIOHelper.openSeed();
         //seedList.add(activeSeed);
-        
+
         tableDisplay = userIOTableDisplay.getTableDisplay();
         setLocationRelativeTo(this.getRootPane()); //center starting position
         connect();
@@ -99,9 +92,12 @@ public class MainWindowUser extends MainWindow {
 
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
-        
+
         inOutCB.setSelectedIndex(1);
         inOutCB.setEnabled(false);
+
+        numPeriodChanged = true;
+        selectPeriod(0);
     }
 
     /**
@@ -134,12 +130,13 @@ public class MainWindowUser extends MainWindow {
     /**
      * Create a new seed
      */
+    @Override
     public void newSeed() {
         SeedGlobalDialog seedCreaterDialog = new SeedGlobalDialog(null, this);
         seedCreaterDialog.setVisible(true);
         Seed seed = seedCreaterDialog.getSeed();
         if (seed != null) {
-            //addSeed(seed);
+            addSeed(seed);
             printLog("New seed created");
         }
     }
@@ -147,6 +144,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Open a .seed file
      */
+    @Override
     public void openSeed() {
         Seed seed = SeedIOHelper.openSeed();
         if (seed != null) {
@@ -182,6 +180,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Save active seed to file
      */
+    @Override
     public void saveSeed() {
         saveSeed(activeSeed);
     }
@@ -191,6 +190,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param seed seed to be saved
      */
+    @Override
     public void saveSeed(Seed seed) {
         printLog(SeedIOHelper.saveSeed(seed));
         update();
@@ -199,6 +199,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Save active seed to another seed file
      */
+    @Override
     public void saveAsSeed() {
         printLog(SeedIOHelper.saveAsSeed(activeSeed));
         update();
@@ -206,8 +207,10 @@ public class MainWindowUser extends MainWindow {
 
     /**
      * Close active seed
-     * @deprecated 
+     *
+     *
      */
+    @Override
     public void closeSeed() {
         printLog(navigator.closeSeed());
     }
@@ -215,6 +218,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Import a seed from ASCII file
      */
+    @Override
     public void importASCII() {
         ASCIISeedFileAdapter textSeed = new ASCIISeedFileAdapter();
         Seed _seed = textSeed.importFromASCII();
@@ -230,6 +234,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Export active seed to ASCII file
      */
+    @Override
     public void exportASCII() {
         if (activeSeed != null) {
             ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
@@ -249,6 +254,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param seed seed to be added
      */
+    @Override
     public void addSeed(Seed seed) {
         seedList.add(seed);
         navigator.seedAdded(seed);
@@ -257,6 +263,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show global input for active seed
      */
+    @Override
     public void globalInput() {
         if (activeSeed != null) {
             SeedGlobalDialog seedCreaterDialog = new SeedGlobalDialog(activeSeed, this);
@@ -270,6 +277,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show fill data dialog
      */
+    @Override
     public void fillData() {
         if (activeSeed != null) {
             SeedFillDataDialog fillDataDialog = new SeedFillDataDialog(activeSeed, this);
@@ -284,18 +292,20 @@ public class MainWindowUser extends MainWindow {
      * @param firstColumnTable
      * @param restColumnTable
      */
+    @Override
     public void copyTable(JTable firstColumnTable, JTable restColumnTable) {
         printLog(ExcelAdapter.copySplitTable(firstColumnTable, restColumnTable));
     }
     // </editor-fold>
-
     // <editor-fold defaultstate="collapsed" desc="DISPLAY CONTROL FUNCTIONS">
+
     /**
      * Update display when seed and scenario selected
      *
      * @param seed seed selected
      * @param scen index of the selected RL scenario
      */
+    @Override
     public void selectSeedScen(Seed seed, int scen) {
         selectSeedScen(seed, scen, -1);
     }
@@ -307,6 +317,7 @@ public class MainWindowUser extends MainWindow {
      * @param scen index of the selected RL scenario
      * @param atdm index of the selected ATDM scenario
      */
+    @Override
     public void selectSeedScen(Seed seed, int scen, int atdm) {
         if (activeScen == scen && activeATDM == atdm
                 && activeSeed != null && seed != null && activeSeed.equals(seed)) {
@@ -362,7 +373,7 @@ public class MainWindowUser extends MainWindow {
         timeLabel.setEnabled(true);
         previousButton.setEnabled(true);
         tableDisplayOptionPanel.setEnabled(true);
-        inOutCB.setEnabled(true);
+        //inOutCB.setEnabled(true);
         GPMLCB.setEnabled(true);
         //showInputButton.setEnabled(true);
         //showOutputButton.setEnabled(true);
@@ -392,6 +403,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Configure toolbox and show input in graphic display and table display
      */
+    @Override
     public void showInput() {
         isShowingInput = true;
         tableDisplay.showInput();
@@ -405,6 +417,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Configure toolbox and show output in graphic display and table display
      */
+    @Override
     public void showOutput() {
         isShowingInput = false;
         //toolbox.showOutput();
@@ -540,6 +553,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show first analysis period data
      */
+    @Override
     public void showFirstPeriod() {
         selectPeriod(0);
     }
@@ -547,6 +561,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show last analysis period data
      */
+    @Override
     public void showLastPeriod() {
         if (activeSeed != null) {
             selectPeriod(activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD) - 1);
@@ -556,6 +571,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show previous analysis period data
      */
+    @Override
     public void showPrevPeriod() {
         selectPeriod(activePeriod - 1);
     }
@@ -563,6 +579,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show next analysis period data
      */
+    @Override
     public void showNextPeriod() {
         selectPeriod(activePeriod + 1);
     }
@@ -572,6 +589,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param period index of period selected
      */
+    @Override
     public void selectPeriod(int period) {
         if (activeSeed == null) {
             period = -1;
@@ -611,6 +629,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param seg segment index (start with 0)
      */
+    @Override
     public void segmentSelectedByGraph(int seg) {
         tableDisplay.setHighlight(seg);
     }
@@ -620,15 +639,17 @@ public class MainWindowUser extends MainWindow {
      *
      * @param seg segment index (start with 0)
      */
+    @Override
     public void segmentSelectedByTable(int seg) {
         graphicDisplay.setHighlight(seg);
     }
-    // </editor-fold>
 
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="ANALYSIS CONTROL FUNCTIONS">
     /**
      * Run single scenario
      */
+    @Override
     public void runSingle() {
         printLog(runSeedSingle());
         update();
@@ -656,189 +677,186 @@ public class MainWindowUser extends MainWindow {
                 : (timingEnd - timingStart) + " ms)"));
     }
 
-    /**
-     * Generate scenario
-     */
-    public void generateRL() {
-        if (activeSeed != null) {
-            activeSeed.singleRun(0, -1);
-
-//            final ScenarioGeneratorDialog dlg = new ScenarioGeneratorDialog(activeSeed, this, true);
-//            dlg.setLocationRelativeTo(this.getRootPane());
-//            dlg.setVisible(true);
-//            if (dlg.scenariosGenerated()) {
-//                Scenario scenarios = dlg.getScenarios();
-//                printLog(scenarios.size() + " scenarios fully generated");
-//                printLog(activeSeed.setRLScenarios(scenarios, dlg.getScenarioInfoList()));
+//    /**
+//     * Generate scenario
+//     */
+//    public void generateRL() {
+//        if (activeSeed != null) {
+//            activeSeed.singleRun(0, -1);
 //
-//                if (dlg.toggleRun) {
-//                    runBatchRL();
-//                }
-//
+////            final ScenarioGeneratorDialog dlg = new ScenarioGeneratorDialog(activeSeed, this, true);
+////            dlg.setLocationRelativeTo(this.getRootPane());
+////            dlg.setVisible(true);
+////            if (dlg.scenariosGenerated()) {
+////                Scenario scenarios = dlg.getScenarios();
+////                printLog(scenarios.size() + " scenarios fully generated");
+////                printLog(activeSeed.setRLScenarios(scenarios, dlg.getScenarioInfoList()));
+////
+////                if (dlg.toggleRun) {
+////                    runBatchRL();
+////                }
+////
+////                updateSeed();
+////                update();
+////            } else {
+////                printLog("Scenarios not generated");
+////            }
+////            dlg.dispose();
+//        }
+//    }
+//    /**
+//     * Delete all scenarios (including RL and ATDM)
+//     */
+//    public void deleteAllScen() {
+//        if (activeSeed != null && activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
+//            int n = JOptionPane.showConfirmDialog(this,
+//                    "Warning: Delete scenarios cannot be undone",
+//                    "Warning",
+//                    JOptionPane.OK_CANCEL_OPTION,
+//                    JOptionPane.WARNING_MESSAGE);
+//            if (n == JOptionPane.OK_OPTION) {
+//                activeSeed.cleanScenarios();
 //                updateSeed();
 //                update();
-//            } else {
-//                printLog("Scenarios not generated");
+//                printLog("All Scenarios Deleted");
 //            }
-//            dlg.dispose();
-        }
-    }
-
-    /**
-     * Delete all scenarios (including RL and ATDM)
-     */
-    public void deleteAllScen() {
-        if (activeSeed != null && activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) > 0) {
-            int n = JOptionPane.showConfirmDialog(this,
-                    "Warning: Delete scenarios cannot be undone",
-                    "Warning",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-            if (n == JOptionPane.OK_OPTION) {
-                activeSeed.cleanScenarios();
-                updateSeed();
-                update();
-                printLog("All Scenarios Deleted");
-            }
-        }
-    }
+//        }
+//    }
     // </editor-fold>
-
     // <editor-fold defaultstate="collapsed" desc="SEED MODIFICATION FUNCTIONS">
-    /**
-     * Add one or multiple segments
-     */
-    public void addSegment() {
-        if (activeSeed != null) {
-            JTextField indexText = new JTextField(3);
-            JTextField numText = new JTextField(3);
-
-            JPanel myPanel = new JPanel();
-            myPanel.add(new JLabel("Insert Before Segment"));
-            myPanel.add(indexText);
-            myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-            myPanel.add(new JLabel("Number of Segments"));
-            myPanel.add(numText);
-
-            int result = JOptionPane.showConfirmDialog(this, myPanel,
-                    "Add Segment", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    printLog(activeSeed.addSegment(Integer.parseInt(indexText.getText()) - 1, Integer.parseInt(numText.getText())));
-                    update();
-                } catch (Exception e) {
-                    printLog("Fail to add segment.");
-                }
-            }
-        }
-    }
-
-    /**
-     * Delete one or multiple segments
-     */
-    public void delSegment() {
-        if (activeSeed != null) {
-            JTextField firstIndexText = new JTextField(3);
-            JTextField lastIndexTest = new JTextField(3);
-
-            JPanel myPanel = new JPanel();
-            myPanel.add(new JLabel("Delete from segment"));
-            myPanel.add(firstIndexText);
-            myPanel.add(new JLabel("to segment"));
-            myPanel.add(lastIndexTest);
-
-            int result = JOptionPane.showConfirmDialog(this, myPanel,
-                    "Delete Segment", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    int n = JOptionPane.showConfirmDialog(this,
-                            "Warning: Delete segment cannot be undone",
-                            "Warning",
-                            JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE);
-                    if (n == JOptionPane.OK_OPTION) {
-                        printLog(activeSeed.delSegment(Integer.parseInt(firstIndexText.getText()) - 1, Integer.parseInt(lastIndexTest.getText()) - 1));
-                        update();
-                    }
-                } catch (Exception e) {
-                    printLog("Fail to delete segment.");
-                }
-            }
-        }
-    }
-
-    /**
-     * Add one or multiple periods
-     */
-    public void addPeriod() {
-        if (activeSeed != null) {
-            JTextField numText = new JTextField(3);
-            JComboBox positionCombo = new JComboBox();
-            positionCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"beginning", "end"}));
-
-            JPanel myPanel = new JPanel();
-            myPanel.add(new JLabel("Add"));
-            myPanel.add(numText);
-            myPanel.add(new JLabel("analysis periods at the"));
-            myPanel.add(positionCombo);
-
-            int result = JOptionPane.showConfirmDialog(this, myPanel,
-                    "Add Period", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-
-                    printLog(activeSeed.addPeriod(Integer.parseInt(numText.getText()), positionCombo.getSelectedIndex() == 0));
-                    numPeriodChanged = true;
-                    update();
-
-                } catch (Exception e) {
-                    printLog("Fail to add period.");
-                }
-            }
-        }
-    }
-
-    /**
-     * Delete one or multiple periods
-     */
-    public void delPeriod() {
-        if (activeSeed != null) {
-            JTextField numText = new JTextField(3);
-            JComboBox positionCombo = new JComboBox();
-            positionCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"beginning", "end"}));
-
-            JPanel myPanel = new JPanel();
-            myPanel.add(new JLabel("Delete"));
-            myPanel.add(numText);
-            myPanel.add(new JLabel("analysis periods from the"));
-            myPanel.add(positionCombo);
-
-            int result = JOptionPane.showConfirmDialog(this, myPanel,
-                    "Delete Period", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    int n = JOptionPane.showConfirmDialog(this,
-                            "Warning: Delete period cannot be undone",
-                            "Warning",
-                            JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE);
-                    if (n == JOptionPane.OK_OPTION) {
-                        printLog(activeSeed.delPeriod(Integer.parseInt(numText.getText()), positionCombo.getSelectedIndex() == 0));
-                        numPeriodChanged = true;
-                        update();
-                    }
-                } catch (Exception e) {
-                    printLog("Fail to Delete period.");
-                }
-            }
-        }
-    }
-
-    public void seedDataChanged() {
-        navigator.updateSeed(activeSeed);
-        update();
-    }
-
+//    /**
+//     * Add one or multiple segments
+//     */
+//    public void addSegment() {
+//        if (activeSeed != null) {
+//            JTextField indexText = new JTextField(3);
+//            JTextField numText = new JTextField(3);
+//
+//            JPanel myPanel = new JPanel();
+//            myPanel.add(new JLabel("Insert Before Segment"));
+//            myPanel.add(indexText);
+//            myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+//            myPanel.add(new JLabel("Number of Segments"));
+//            myPanel.add(numText);
+//
+//            int result = JOptionPane.showConfirmDialog(this, myPanel,
+//                    "Add Segment", JOptionPane.OK_CANCEL_OPTION);
+//            if (result == JOptionPane.OK_OPTION) {
+//                try {
+//                    printLog(activeSeed.addSegment(Integer.parseInt(indexText.getText()) - 1, Integer.parseInt(numText.getText())));
+//                    update();
+//                } catch (Exception e) {
+//                    printLog("Fail to add segment.");
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Delete one or multiple segments
+//     */
+//    public void delSegment() {
+//        if (activeSeed != null) {
+//            JTextField firstIndexText = new JTextField(3);
+//            JTextField lastIndexTest = new JTextField(3);
+//
+//            JPanel myPanel = new JPanel();
+//            myPanel.add(new JLabel("Delete from segment"));
+//            myPanel.add(firstIndexText);
+//            myPanel.add(new JLabel("to segment"));
+//            myPanel.add(lastIndexTest);
+//
+//            int result = JOptionPane.showConfirmDialog(this, myPanel,
+//                    "Delete Segment", JOptionPane.OK_CANCEL_OPTION);
+//            if (result == JOptionPane.OK_OPTION) {
+//                try {
+//                    int n = JOptionPane.showConfirmDialog(this,
+//                            "Warning: Delete segment cannot be undone",
+//                            "Warning",
+//                            JOptionPane.OK_CANCEL_OPTION,
+//                            JOptionPane.WARNING_MESSAGE);
+//                    if (n == JOptionPane.OK_OPTION) {
+//                        printLog(activeSeed.delSegment(Integer.parseInt(firstIndexText.getText()) - 1, Integer.parseInt(lastIndexTest.getText()) - 1));
+//                        update();
+//                    }
+//                } catch (Exception e) {
+//                    printLog("Fail to delete segment.");
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Add one or multiple periods
+//     */
+//    public void addPeriod() {
+//        if (activeSeed != null) {
+//            JTextField numText = new JTextField(3);
+//            JComboBox positionCombo = new JComboBox();
+//            positionCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"beginning", "end"}));
+//
+//            JPanel myPanel = new JPanel();
+//            myPanel.add(new JLabel("Add"));
+//            myPanel.add(numText);
+//            myPanel.add(new JLabel("analysis periods at the"));
+//            myPanel.add(positionCombo);
+//
+//            int result = JOptionPane.showConfirmDialog(this, myPanel,
+//                    "Add Period", JOptionPane.OK_CANCEL_OPTION);
+//            if (result == JOptionPane.OK_OPTION) {
+//                try {
+//
+//                    printLog(activeSeed.addPeriod(Integer.parseInt(numText.getText()), positionCombo.getSelectedIndex() == 0));
+//                    numPeriodChanged = true;
+//                    update();
+//
+//                } catch (Exception e) {
+//                    printLog("Fail to add period.");
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Delete one or multiple periods
+//     */
+//    public void delPeriod() {
+//        if (activeSeed != null) {
+//            JTextField numText = new JTextField(3);
+//            JComboBox positionCombo = new JComboBox();
+//            positionCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"beginning", "end"}));
+//
+//            JPanel myPanel = new JPanel();
+//            myPanel.add(new JLabel("Delete"));
+//            myPanel.add(numText);
+//            myPanel.add(new JLabel("analysis periods from the"));
+//            myPanel.add(positionCombo);
+//
+//            int result = JOptionPane.showConfirmDialog(this, myPanel,
+//                    "Delete Period", JOptionPane.OK_CANCEL_OPTION);
+//            if (result == JOptionPane.OK_OPTION) {
+//                try {
+//                    int n = JOptionPane.showConfirmDialog(this,
+//                            "Warning: Delete period cannot be undone",
+//                            "Warning",
+//                            JOptionPane.OK_CANCEL_OPTION,
+//                            JOptionPane.WARNING_MESSAGE);
+//                    if (n == JOptionPane.OK_OPTION) {
+//                        printLog(activeSeed.delPeriod(Integer.parseInt(numText.getText()), positionCombo.getSelectedIndex() == 0));
+//                        numPeriodChanged = true;
+//                        update();
+//                    }
+//                } catch (Exception e) {
+//                    printLog("Fail to Delete period.");
+//                }
+//            }
+//        }
+//    }
+//
+//    public void seedDataChanged() {
+//        navigator.updateSeed(activeSeed);
+//        update();
+//    }
     /**
      * Update display, data and/or setting
      */
@@ -900,7 +918,7 @@ public class MainWindowUser extends MainWindow {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     private void updateSeed() {
         navigator.updateSeed(activeSeed);
@@ -911,6 +929,7 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show local JavaDoc files in system default browser
      */
+    @Override
     public void showJavaDoc() {
         try {
             Desktop.getDesktop().browse(new File("javadoc/index.html").toURI());
@@ -922,26 +941,27 @@ public class MainWindowUser extends MainWindow {
     /**
      * Show FREEVAL version and contact information
      */
+    @Override
     public void showAbout() {
         AboutDialog aboutDialog = new AboutDialog(this);
         aboutDialog.setVisible(true);
     }
-
-    /**
-     * Add a scenario to compare
-     *
-     * @param seed seed
-     * @param scen scenario index
-     * @param atdm atdm index
-     * @param name scenario name
-     */
-    public void addScenarioToCompare(Seed seed, int scen, int atdm, String name) {
-        if (!seed.hasValidOutput(scen, atdm)) {
-            seed.singleRun(scen, atdm);
-        }
-        //MARKEDFORDELETION
-        // comparePanel.addScenarioToCompare(seed, scen, atdm, name);
-    }
+//
+//    /**
+//     * Add a scenario to compare
+//     *
+//     * @param seed seed
+//     * @param scen scenario index
+//     * @param atdm atdm index
+//     * @param name scenario name
+//     */
+//    public void addScenarioToCompare(Seed seed, int scen, int atdm, String name) {
+//        if (!seed.hasValidOutput(scen, atdm)) {
+//            seed.singleRun(scen, atdm);
+//        }
+//        //MARKEDFORDELETION
+//        // comparePanel.addScenarioToCompare(seed, scen, atdm, name);
+//    }
     // </editor-fold>
     // </editor-fold>
 
@@ -1267,42 +1287,46 @@ public class MainWindowUser extends MainWindow {
         }
     }
 
+    @Override
     public void showGPOnly() {
         tableDisplay.showGPOnly();
     }
 
+    @Override
     public void showMLOnly() {
         tableDisplay.showMLOnly();
     }
 
+    @Override
     public void showGPML() {
         tableDisplay.showGPML();
     }
-
-    public void toggleManagedLane() {
-        if (activeSeed != null) {
-            if (activeSeed.isManagedLaneUsed()) {
-                int result = JOptionPane.showConfirmDialog(this,
-                        "Warning: Disable managed lanes will delete all existing managed lanes data. This cannot be undone.",
-                        "Warning",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
-                if (result == JOptionPane.OK_OPTION) {
-                    activeSeed.setManagedLaneUsed(false);
-                }
-            } else {
-                activeSeed.setManagedLaneUsed(true);
-            }
-            update();
-        }
-    }
-
+//
+//    public void toggleManagedLane() {
+//        if (activeSeed != null) {
+//            if (activeSeed.isManagedLaneUsed()) {
+//                int result = JOptionPane.showConfirmDialog(this,
+//                        "Warning: Disable managed lanes will delete all existing managed lanes data. This cannot be undone.",
+//                        "Warning",
+//                        JOptionPane.OK_CANCEL_OPTION,
+//                        JOptionPane.WARNING_MESSAGE);
+//                if (result == JOptionPane.OK_OPTION) {
+//                    activeSeed.setManagedLaneUsed(false);
+//                }
+//            } else {
+//                activeSeed.setManagedLaneUsed(true);
+//            }
+//            update();
+//        }
+//    }
     // <editor-fold defaultstate="collapsed" desc="setter and getters">
+
     /**
      * Getter for active seed
      *
      * @return active seed instance
      */
+    @Override
     public Seed getActiveSeed() {
         return activeSeed;
     }
@@ -1312,6 +1336,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @return active scenario index
      */
+    @Override
     public int getActiveScen() {
         return activeScen;
     }
@@ -1321,6 +1346,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @return active period index (start with 0)
      */
+    @Override
     public int getActivePeriod() {
         return activePeriod;
     }
@@ -1330,6 +1356,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @return opened seed list
      */
+    @Override
     public ArrayList<Seed> getSeedList() {
         return seedList;
     }
@@ -1348,6 +1375,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param newTableFont new table font
      */
+    @Override
     public void setTableFont(Font newTableFont) {
         tableFont = newTableFont;
         tableDisplay.setTableFont(newTableFont);
@@ -1364,7 +1392,6 @@ public class MainWindowUser extends MainWindow {
         return isOutputEnabled;
     }
     // </editor-fold>
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel APPanel;
     private javax.swing.JComboBox GPMLCB;

@@ -61,17 +61,17 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * Version of the FREEVAL
      */
-    public final String VERSION = "Alpha 08132014";
+    public final String VERSION = "Alpha 09172014";
 
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
      * Constructor. Creates new form mainWindow
-     * 
+     *
      * @param mainWindowStart
      */
-    
-    public MainWindow() { }  // For MainWindowUser
-    
+    public MainWindow() {
+    }  // For MainWindowUser
+
     public MainWindow(MainWindowStart mainWindowStart) {
 
         mainWindow = this;
@@ -1212,7 +1212,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         ConfigIO.saveSeedListToConfig(seedList);
-        
+
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 

@@ -4,6 +4,7 @@ import GUI.major.MainWindow;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import javax.swing.BoundedRangeModel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -36,7 +37,7 @@ public class SplitTableJPanel extends javax.swing.JPanel {
                 MainWindow.printLog(ExcelAdapter.copySplitTable(firstColumnTable, restColumnTable));
             }
         };
-        
+
         final java.awt.event.ActionListener settingActionListener = new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -145,6 +146,10 @@ public class SplitTableJPanel extends javax.swing.JPanel {
      */
     public void setDividerLocation(int firstColumnSize) {
         jSplitPane1.setDividerLocation(firstColumnSize);
+    }
+
+    public BoundedRangeModel getScrollModel() {
+        return jScrollPane2.getHorizontalScrollBar().getModel();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

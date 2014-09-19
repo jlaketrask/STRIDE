@@ -1,11 +1,12 @@
 package GUI.major;
 
-import GUI.major.tableHelper.TableCellSetting;
-import GUI.major.tableHelper.SplitTableJPanel;
 import GUI.major.tableHelper.SegIOTableWithSetting;
+import GUI.major.tableHelper.SplitTableJPanel;
+import GUI.major.tableHelper.TableCellSetting;
 import coreEngine.Seed;
 import java.awt.Font;
 import java.util.ArrayList;
+import javax.swing.BoundedRangeModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -24,7 +25,7 @@ public class TableDisplay extends javax.swing.JPanel {
     public TableDisplay() {
         initComponents();
         segIOTable = new SegIOTableWithSetting();
-        segIOSplitTable 
+        segIOSplitTable
                 = new SplitTableJPanel(segIOTable.getFirstColumnTable(), segIOTable.getRestColumnTable());
         segIOSplitTable.setDividerLocation(270);
         add(segIOSplitTable);
@@ -39,7 +40,7 @@ public class TableDisplay extends javax.swing.JPanel {
                 }
             }
         };
-        
+
         //segIOTable.getRestColumnTable().getSelectionModel().addListSelectionListener(listener);
         segIOTable.getRestColumnTable().getColumnModel().getSelectionModel().addListSelectionListener(listener);
     }
@@ -92,15 +93,15 @@ public class TableDisplay extends javax.swing.JPanel {
     public void showGPOnly() {
         segIOTable.showGPOnly();
     }
-    
+
     public void showMLOnly() {
         segIOTable.showMLOnly();
     }
-    
+
     public void showGPML() {
         segIOTable.showGPML();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -113,7 +114,7 @@ public class TableDisplay extends javax.swing.JPanel {
         setLayout(new java.awt.GridLayout(1, 0));
     }// </editor-fold>//GEN-END:initComponents
 
-    // <editor-fold defaultstate="collapsed" desc="setter and getters">  
+    // <editor-fold defaultstate="collapsed" desc="setter and getters">
     /**
      * Setter for mainWindow connection
      *
@@ -126,12 +127,13 @@ public class TableDisplay extends javax.swing.JPanel {
 
     /**
      * Getter for segIOTable
+     *
      * @return segIOTable instance
      */
     public SegIOTableWithSetting getSegIOTable() {
         return segIOTable;
     }
-    
+
     /**
      * Setter for new cell settings to be used
      *
@@ -140,7 +142,7 @@ public class TableDisplay extends javax.swing.JPanel {
     public void setCellSettings(ArrayList<TableCellSetting> cellSettings) {
         segIOTable.setCellSettings(cellSettings);
     }
-    
+
     /**
      * Setter for table font
      *
@@ -153,8 +155,12 @@ public class TableDisplay extends javax.swing.JPanel {
         segIOTable.getRestColumnTable().setFont(newTableFont);
         segIOTable.getRestColumnTable().setRowHeight(newTableFont.getSize() + 2);
     }
-    // </editor-fold>
 
+    public BoundedRangeModel getScrollModel() {
+        return segIOSplitTable.getScrollModel();
+    }
+
+    // </editor-fold>
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     private SegIOTableWithSetting segIOTable;

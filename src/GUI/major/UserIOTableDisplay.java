@@ -9,6 +9,9 @@ import DSS.DataStruct.PeriodATM;
 import GUI.major.tableHelper.FREEVAL_DSS_TableModel;
 import coreEngine.CEConst;
 import coreEngine.Seed;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -17,29 +20,44 @@ import coreEngine.Seed;
 public class UserIOTableDisplay extends javax.swing.JPanel {
 
     private Seed seed;
-    
+
     /**
      * Creates new form UserIOTableDisplay
      */
     public UserIOTableDisplay() {
         initComponents();
-        
+
     }
-    
+
     public void activate(MainWindowUser mainWindow) {
         seed = mainWindow.getActiveSeed();
         PeriodATM[] periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(seed,per);
+            periodATM[per] = new PeriodATM(seed, per);
         }
-        FREEVAL_DSS_TableModel userInputModel = new FREEVAL_DSS_TableModel(seed, periodATM);
+        FREEVAL_DSS_TableModel userInputModel = new FREEVAL_DSS_TableModel(seed, periodATM, userInputTable);
         userInputTable.setModel(userInputModel);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        userInputTable.setDefaultRenderer(Object.class, centerRenderer);
+        userInputTable.setDefaultRenderer(String.class, centerRenderer);
+        userInputTable.setDefaultRenderer(Float.class, centerRenderer);
+        userInputTable.setDefaultRenderer(Integer.class, centerRenderer);
+        userInputTable.setFont(MainWindowUser.getTableFont());
+        userInputTable.setRowHeight(MainWindowUser.getTableFont().getSize() + 4);
+        userInputTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        userInputTable.getColumnModel().getColumn(0).setPreferredWidth(275);
+        for (int colIdx = 1; colIdx < userInputModel.getColumnCount(); colIdx++) {
+            userInputTable.getColumnModel().getColumn(colIdx).setPreferredWidth(75);
+        }
+        jScrollPane2.getHorizontalScrollBar().setModel(tableDisplay1.getScrollModel());
+
     }
-    
+
     public TableDisplay getTableDisplay() {
         return this.tableDisplay1;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -87,7 +105,6 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane2;
