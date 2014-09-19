@@ -537,10 +537,10 @@ public class Navigator extends javax.swing.JPanel {
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
 
-        for (Seed seed : mainWindow.getSeedList()) {
-            addSeedToTree((TreeNodeWithNameAndStyle) seedTreeModel.getRoot(), seed);
+            for (Seed seed : mainWindow.getSeedList()) {
+                addSeedToTree((TreeNodeWithNameAndStyle) seedTreeModel.getRoot(), seed);
+            }
         }
-    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Inner Helper Classes">

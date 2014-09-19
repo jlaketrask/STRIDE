@@ -69,6 +69,9 @@ public class MainWindow extends javax.swing.JFrame {
      * 
      * @param mainWindowStart
      */
+    
+    public MainWindow() { }  // For MainWindowUser
+    
     public MainWindow(MainWindowStart mainWindowStart) {
 
         mainWindow = this;

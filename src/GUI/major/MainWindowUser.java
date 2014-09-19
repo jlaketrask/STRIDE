@@ -57,11 +57,13 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel GP_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"GP Only"});
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
+    
+    private TableDisplay tableDisplay;
 
     /**
      * Version of the FREEVAL
      */
-    public final String VERSION = "Alpha 08132014";
+    public final String VERSION = "Alpha 09172014";
 
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
@@ -70,7 +72,7 @@ public class MainWindowUser extends MainWindow {
      * @param mainWindowStart
      */
     public MainWindowUser(MainWindowStart mainWindowStart) {
-        super(mainWindowStart);
+        super();
         mainWindow = this;
         this.mainWindowStart = mainWindowStart;
         try {
@@ -81,36 +83,25 @@ public class MainWindowUser extends MainWindow {
         }
 
         initComponents();
-
+        activeSeed = SeedIOHelper.openSeed();
+        //seedList.add(activeSeed);
+        
+        tableDisplay = userIOTableDisplay.getTableDisplay();
         setLocationRelativeTo(this.getRootPane()); //center starting position
-
         connect();
-
+        addSeed(activeSeed);
         update();
 
-        setNullSeed();
-        toolbox.setNullSeed();
-        menuBar.setNullSeed();
-        System.out.println("here");
+        //setNullSeed();
+        //toolbox.setNullSeed();
+        //menuBar.setNullSeed();
         setVisible(true);
 
-        //load last opened files
-        try {
-            String settingFileName = ConfigIO.class.getClassLoader().getResource("").getPath() + "cfg/seedlist.cfg";
-            Scanner fileScanner = new Scanner(new File(settingFileName));
-            if (fileScanner.hasNextLine()) {
-                int result = JOptionPane.showConfirmDialog(this, "Do you want to load last opened files?",
-                        "Load Last Opened Files", JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.OK_OPTION) {
-                    ConfigIO.loadSeedListFromConfig(this);
-                }
-            }
-            fileScanner.close();
-        } catch (Exception e) {
-            //skip load last opened file
-        }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
+        
+        inOutCB.setSelectedIndex(1);
+        inOutCB.setEnabled(false);
     }
 
     /**
@@ -121,6 +112,7 @@ public class MainWindowUser extends MainWindow {
         toolbox.setMainWindow(this);
         graphicDisplay.setMainWindow(this);
         navigator.setMainWindow(this);
+        userIOTableDisplay.activate(this);
         tableDisplay.setMainWindow(this);
         //comparePanel.setMainWindow(this);
     }
@@ -147,7 +139,7 @@ public class MainWindowUser extends MainWindow {
         seedCreaterDialog.setVisible(true);
         Seed seed = seedCreaterDialog.getSeed();
         if (seed != null) {
-            addSeed(seed);
+            //addSeed(seed);
             printLog("New seed created");
         }
     }
@@ -214,6 +206,7 @@ public class MainWindowUser extends MainWindow {
 
     /**
      * Close active seed
+     * @deprecated 
      */
     public void closeSeed() {
         printLog(navigator.closeSeed());
@@ -228,7 +221,7 @@ public class MainWindowUser extends MainWindow {
         if (_seed != null) {
             printLog("Seed file added from ASCII file : " + _seed.getValueString(CEConst.IDS_SEED_FILE_NAME));
             _seed.setValue(CEConst.IDS_SEED_FILE_NAME, null);
-            addSeed(_seed);
+            //addSeed(_seed);
         } else {
             printLog("Fail to import ASCII file");
         }
@@ -906,6 +899,9 @@ public class MainWindowUser extends MainWindow {
         //TODO integrate and add more updates here
     }
 
+    /**
+     * @deprecated 
+     */
     private void updateSeed() {
         navigator.updateSeed(activeSeed);
     }
@@ -960,15 +956,12 @@ public class MainWindowUser extends MainWindow {
 
         showInputButton = new javax.swing.JToggleButton();
         showOutputButton = new javax.swing.JToggleButton();
-        tableDisplay = new GUI.major.TableDisplay();
-        toolboxSplitPanel = new javax.swing.JSplitPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        navigator = new GUI.major.Navigator();
         toolbox = new GUI.major.Toolbox();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        toolboxSplitPanel = new javax.swing.JSplitPane();
         navigatorSplitPanel = new javax.swing.JSplitPane();
         logSplitPanel = new javax.swing.JSplitPane();
-        navigator = new GUI.major.Navigator();
-        logScrollPanel = new javax.swing.JScrollPane();
-        logText = new javax.swing.JTextArea();
         tabPanel = new javax.swing.JTabbedPane();
         singleScenSplitPanel = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
@@ -986,6 +979,9 @@ public class MainWindowUser extends MainWindow {
         lastButton = new javax.swing.JButton();
         jumpToButton = new javax.swing.JButton();
         jumpText = new javax.swing.JTextField();
+        userIOTableDisplay = new GUI.major.UserIOTableDisplay();
+        logScrollPanel = new javax.swing.JScrollPane();
+        logText = new javax.swing.JTextArea();
         menuBar = new GUI.major.MenuBar();
 
         showInputButton.setText("Input");
@@ -1002,6 +998,23 @@ public class MainWindowUser extends MainWindow {
             }
         });
 
+        jScrollPane2.setBorder(null);
+
+        toolboxSplitPanel.setBorder(null);
+        toolboxSplitPanel.setDividerLocation(48);
+        toolboxSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+
+        navigatorSplitPanel.setBorder(null);
+        navigatorSplitPanel.setDividerLocation(280);
+        navigatorSplitPanel.setResizeWeight(0.15);
+        navigatorSplitPanel.setToolTipText("");
+        toolboxSplitPanel.setRightComponent(navigatorSplitPanel);
+
+        logSplitPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        logSplitPanel.setDividerLocation(600);
+        logSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        logSplitPanel.setResizeWeight(0.85);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new java.awt.Dimension(1000, 600));
@@ -1010,36 +1023,6 @@ public class MainWindowUser extends MainWindow {
                 formWindowClosing(evt);
             }
         });
-
-        toolboxSplitPanel.setBorder(null);
-        toolboxSplitPanel.setDividerLocation(48);
-        toolboxSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        jScrollPane2.setBorder(null);
-        jScrollPane2.setViewportView(toolbox);
-
-        toolboxSplitPanel.setLeftComponent(jScrollPane2);
-
-        navigatorSplitPanel.setBorder(null);
-        navigatorSplitPanel.setDividerLocation(280);
-        navigatorSplitPanel.setResizeWeight(0.15);
-        navigatorSplitPanel.setToolTipText("");
-
-        logSplitPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        logSplitPanel.setDividerLocation(600);
-        logSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        logSplitPanel.setResizeWeight(0.85);
-        logSplitPanel.setLeftComponent(navigator);
-
-        logScrollPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Log"));
-
-        logText.setLineWrap(true);
-        logText.setWrapStyleWord(true);
-        logScrollPanel.setViewportView(logText);
-
-        logSplitPanel.setBottomComponent(logScrollPanel);
-
-        navigatorSplitPanel.setLeftComponent(logSplitPanel);
 
         singleScenSplitPanel.setBorder(null);
         singleScenSplitPanel.setDividerLocation(200);
@@ -1161,17 +1144,20 @@ public class MainWindowUser extends MainWindow {
                     .addComponent(APPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableDisplayOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
         singleScenSplitPanel.setLeftComponent(jPanel1);
+        singleScenSplitPanel.setRightComponent(userIOTableDisplay);
 
         tabPanel.addTab("Seed/Scenario I/O", singleScenSplitPanel);
 
-        navigatorSplitPanel.setRightComponent(tabPanel);
+        logScrollPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Log"));
 
-        toolboxSplitPanel.setRightComponent(navigatorSplitPanel);
+        logText.setLineWrap(true);
+        logText.setWrapStyleWord(true);
+        logScrollPanel.setViewportView(logText);
 
         setJMenuBar(menuBar);
 
@@ -1179,17 +1165,21 @@ public class MainWindowUser extends MainWindow {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1250, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(toolboxSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1250, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tabPanel)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(logScrollPanel)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 852, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGap(0, 0, 0)
-                    .addComponent(toolboxSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 852, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(tabPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 752, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(logScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -1400,10 +1390,10 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;
     private javax.swing.JTabbedPane tabPanel;
-    private GUI.major.TableDisplay tableDisplay;
     private javax.swing.JPanel tableDisplayOptionPanel;
     private javax.swing.JLabel timeLabel;
     private GUI.major.Toolbox toolbox;
     private javax.swing.JSplitPane toolboxSplitPanel;
+    private GUI.major.UserIOTableDisplay userIOTableDisplay;
     // End of variables declaration//GEN-END:variables
 }

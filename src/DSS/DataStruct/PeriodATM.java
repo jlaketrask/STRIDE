@@ -73,7 +73,46 @@ public class PeriodATM {
     }
 //</editor-fold>
     
+//<editor-fold defaultstate="collapsed" desc="Universal Setter">
+    public void setValueFloat(String identifier, float value, int period) {
+        switch (identifier) {
+            case ID_AFTYPE_CAF:
+                caf[period] = value;
+                break;
+            case ID_AFTYPE_SAF:
+                saf[period] = value;
+                break;
+            default:
+                throw new RuntimeException("Invalid Identifier");
+        }
+    }
     
+    public void setValueInt(String identifier, int value, int period) {
+        switch (identifier) {
+            case ID_RAMP_METERING:
+                rampMetering[period] = value;
+                break;
+            default:
+                throw new RuntimeException("Invalid Identifier");
+        }
+    }
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="Setters">
+    
+    public void setCAF(float value, int period) {
+        caf[period] = value;
+    }
+
+    public void setSAF(float value, int period) {
+        saf[period] = value;
+    }
+
+    public void setRMRate(int value, int period) {
+        rampMetering[period] = value;
+    }
+//</editor-fold> 
+        
 //<editor-fold defaultstate="collapsed" desc="Getters">
     public int getPeriod() {
         return period;

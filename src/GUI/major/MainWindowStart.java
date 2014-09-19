@@ -7,6 +7,8 @@ package GUI.major;
 
 import GUI.major.PasswordHelper.PassDialog;
 import GUI.major.PasswordHelper.PasswordHash;
+import GUI.seedEditAndIOHelper.SeedIOHelper;
+import coreEngine.Seed;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import javax.swing.UIManager;
@@ -141,7 +143,8 @@ public class MainWindowStart extends javax.swing.JDialog {
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void userButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userButtonActionPerformed
-        MainWindowUser mainWindow = new MainWindowUser(this);
+        this.setVisible(false);
+        MainWindowUser mainWindow = new MainWindowUser(this); 
     }//GEN-LAST:event_userButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

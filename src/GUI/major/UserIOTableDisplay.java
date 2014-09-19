@@ -16,15 +16,18 @@ import coreEngine.Seed;
  */
 public class UserIOTableDisplay extends javax.swing.JPanel {
 
-    private final Seed seed;
+    private Seed seed;
     
     /**
      * Creates new form UserIOTableDisplay
-     * @param seed
      */
-    public UserIOTableDisplay(Seed seed) {
+    public UserIOTableDisplay() {
         initComponents();
-        this.seed = seed;
+        
+    }
+    
+    public void activate(MainWindowUser mainWindow) {
+        seed = mainWindow.getActiveSeed();
         PeriodATM[] periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(seed,per);
@@ -32,7 +35,11 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
         FREEVAL_DSS_TableModel userInputModel = new FREEVAL_DSS_TableModel(seed, periodATM);
         userInputTable.setModel(userInputModel);
     }
-
+    
+    public TableDisplay getTableDisplay() {
+        return this.tableDisplay1;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
