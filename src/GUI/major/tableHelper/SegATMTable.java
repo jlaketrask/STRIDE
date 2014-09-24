@@ -57,7 +57,7 @@ public class SegATMTable {
         //</editor-fold>
         
         // <editor-fold defaultstate="collapsed" desc="Building First Column (Row Names)">
-        firstColumnTable = new JTable();
+        firstColumnTable = new FREEVAL_DSS_JTable();
         firstColumnModel = new FREEVAL_DSS_TableModel(FREEVAL_DSS_TableModel.TYPE_ROW_NAMES, firstColumnTable);
         firstColumnTable.setModel(firstColumnModel);
         //</editor-fold>

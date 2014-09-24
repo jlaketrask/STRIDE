@@ -29,6 +29,7 @@ public class FREEVAL_DSS_JTable extends JTable {
         JCheckBox editorCB = new JCheckBox();
         editorCB.setHorizontalAlignment(JLabel.CENTER);
         editorCB.setBackground(Color.WHITE);
+        editorCB.setForeground(Color.WHITE);
         checkBoxEditor = new DefaultCellEditor(editorCB);
 
         this.rowSelectionAllowed = false;
@@ -51,11 +52,17 @@ public class FREEVAL_DSS_JTable extends JTable {
     }
 
     @Override
-    public TableCellEditor getCellEditor(int row, int col) {
-        if (row == 0 || row == 2) {
-            return checkBoxEditor;
-        } else {
-            return defaultCellEditor;
+    public TableCellEditor getCellEditor(int row, int col) {        
+        switch (((FREEVAL_DSS_TableModel) this.getModel()).getTableType()) {
+            default:
+            case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
+                return defaultCellEditor;
+            case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
+                if (row == 0 || row == 2) {
+                    return checkBoxEditor;
+                } else {
+                    return defaultCellEditor;
+                }
         }
         //return tableModel.getCellEditor(row, column);
         //return defaultCellEditor;
