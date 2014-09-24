@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -52,7 +51,7 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
-    private final TableDisplay tableDisplay;
+    //private final TableDisplay tableDisplay;
     private final TableDisplaySegmentATM tableDisplaySegmentATM;
 
     /**
@@ -80,7 +79,7 @@ public class MainWindowUser extends MainWindow {
         activeSeed = SeedIOHelper.openSeed();
         //seedList.add(activeSeed);
 
-        tableDisplay = userIOTableDisplay.getTableDisplay();
+        //tableDisplay = userIOTableDisplay.getTableDisplay();
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
         connect();
@@ -113,6 +112,7 @@ public class MainWindowUser extends MainWindow {
         userIOTableDisplay.activate(this);
         tableDisplay.setMainWindow(this);
         tableDisplaySegmentATM.setMainWindow(this);
+        tableDisplaySegmentATM.setScrollModel(tableDisplay.getScrollModel());
         //comparePanel.setMainWindow(this);
     }
     // </editor-fold>
@@ -650,6 +650,8 @@ public class MainWindowUser extends MainWindow {
     @Override
     public void segmentSelectedByTable(int seg) {
         graphicDisplay.setHighlight(seg);
+        tableDisplaySegmentATM.setHighlight(seg);
+        tableDisplay.setHighlight(seg);
     }
 
     // </editor-fold>
@@ -991,7 +993,9 @@ public class MainWindowUser extends MainWindow {
         toolboxSplitPanel = new javax.swing.JSplitPane();
         navigatorSplitPanel = new javax.swing.JSplitPane();
         logSplitPanel = new javax.swing.JSplitPane();
-        tabPanel = new javax.swing.JTabbedPane();
+        logScrollPanel = new javax.swing.JScrollPane();
+        logText = new javax.swing.JTextArea();
+        userIOTableDisplay = new GUI.major.UserIOTableDisplay();
         singleScenSplitPanel = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -1008,9 +1012,7 @@ public class MainWindowUser extends MainWindow {
         lastButton = new javax.swing.JButton();
         jumpToButton = new javax.swing.JButton();
         jumpText = new javax.swing.JTextField();
-        userIOTableDisplay = new GUI.major.UserIOTableDisplay();
-        logScrollPanel = new javax.swing.JScrollPane();
-        logText = new javax.swing.JTextArea();
+        tableDisplay = new GUI.major.TableDisplay();
         menuBar = new GUI.major.MenuBar();
 
         showInputButton.setText("Input");
@@ -1044,6 +1046,12 @@ public class MainWindowUser extends MainWindow {
         logSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         logSplitPanel.setResizeWeight(0.85);
 
+        logScrollPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Log"));
+
+        logText.setLineWrap(true);
+        logText.setWrapStyleWord(true);
+        logScrollPanel.setViewportView(logText);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1051,6 +1059,8 @@ public class MainWindowUser extends MainWindow {
                 formWindowClosing(evt);
             }
         });
+
+        userIOTableDisplay.setPreferredSize(new java.awt.Dimension(750, 503));
 
         singleScenSplitPanel.setBorder(null);
         singleScenSplitPanel.setDividerLocation(200);
@@ -1172,20 +1182,12 @@ public class MainWindowUser extends MainWindow {
                     .addComponent(APPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableDisplayOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
         singleScenSplitPanel.setLeftComponent(jPanel1);
-        singleScenSplitPanel.setRightComponent(userIOTableDisplay);
-
-        tabPanel.addTab("Seed/Scenario I/O", singleScenSplitPanel);
-
-        logScrollPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Log"));
-
-        logText.setLineWrap(true);
-        logText.setWrapStyleWord(true);
-        logScrollPanel.setViewportView(logText);
+        singleScenSplitPanel.setRightComponent(tableDisplay);
 
         setJMenuBar(menuBar);
 
@@ -1194,19 +1196,18 @@ public class MainWindowUser extends MainWindow {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tabPanel)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(logScrollPanel)))
+                .addContainerGap()
+                .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1037, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(tabPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 752, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(logScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1418,7 +1419,7 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;
-    private javax.swing.JTabbedPane tabPanel;
+    private GUI.major.TableDisplay tableDisplay;
     private javax.swing.JPanel tableDisplayOptionPanel;
     private javax.swing.JLabel timeLabel;
     private GUI.major.Toolbox toolbox;

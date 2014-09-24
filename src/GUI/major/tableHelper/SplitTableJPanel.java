@@ -151,6 +151,10 @@ public class SplitTableJPanel extends javax.swing.JPanel {
     public BoundedRangeModel getScrollModel() {
         return jScrollPane2.getHorizontalScrollBar().getModel();
     }
+    
+    public void setScrollModel(BoundedRangeModel scrollModel) {
+        jScrollPane2.getHorizontalScrollBar().setModel(scrollModel);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;

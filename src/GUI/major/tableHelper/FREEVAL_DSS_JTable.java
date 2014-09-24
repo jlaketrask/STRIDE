@@ -10,6 +10,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
@@ -31,7 +32,22 @@ public class FREEVAL_DSS_JTable extends JTable {
         checkBoxEditor = new DefaultCellEditor(editorCB);
 
         this.rowSelectionAllowed = false;
+        
+        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+    }
+    
+    /**
+     * Highlight a column
+     *
+     * @param col column to be highlighted
+     */
+    public void setHighlightCol(int col) {
+        try {
+            setColumnSelectionInterval(col, col);
+        } catch (Exception e) {
+            //skip
+        }
     }
 
     @Override

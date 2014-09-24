@@ -70,7 +70,7 @@ public class TableDisplaySegmentATM extends javax.swing.JPanel {
     public void setHighlight(int seg) {
         //set which segment to be highlighted
         if (seg >= 0) {
-            segATMTable.getRestColumnTable().setColumnSelectionInterval(seg, seg);
+            segATMTable.getRestColumnTable().setHighlightCol(seg);
         }
     }
 
@@ -123,6 +123,11 @@ public class TableDisplaySegmentATM extends javax.swing.JPanel {
     public BoundedRangeModel getScrollModel() {
         return segIOSplitTable.getScrollModel();
     }
+    
+    public void setScrollModel(BoundedRangeModel scrollModel) {
+        segIOSplitTable.setScrollModel(scrollModel);
+    }
+    
     
     public void selectSeedScenPeriod(Seed seed, int period) {
         segATMTable.selectSeedScenPeriod(seed, period);

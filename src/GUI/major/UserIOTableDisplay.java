@@ -27,10 +27,6 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
         seed = mainWindow.getActiveSeed();
         
     }
-
-    public TableDisplay getTableDisplay() {
-        return this.tableDisplayOutput;
-    }
     
     public TableDisplaySegmentATM getTableDisplaySegmentATM() {
         return this.tableDisplaySegmentATM;
@@ -46,13 +42,13 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     private void initComponents() {
 
         jSplitPane1 = new javax.swing.JSplitPane();
-        tableDisplayOutput = new GUI.major.TableDisplay();
         tableDisplaySegmentATM = new GUI.major.TableDisplaySegmentATM();
+        facilityATMJPanel2 = new GUI.major.FacilityATMJPanel();
 
-        jSplitPane1.setDividerLocation(175);
+        jSplitPane1.setDividerLocation(115);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane1.setLeftComponent(tableDisplayOutput);
-        jSplitPane1.setRightComponent(tableDisplaySegmentATM);
+        jSplitPane1.setLeftComponent(tableDisplaySegmentATM);
+        jSplitPane1.setRightComponent(facilityATMJPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -60,7 +56,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 919, Short.MAX_VALUE)
+                .addComponent(jSplitPane1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -73,8 +69,8 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private GUI.major.FacilityATMJPanel facilityATMJPanel2;
     private javax.swing.JSplitPane jSplitPane1;
-    private GUI.major.TableDisplay tableDisplayOutput;
     private GUI.major.TableDisplaySegmentATM tableDisplaySegmentATM;
     // End of variables declaration//GEN-END:variables
 }

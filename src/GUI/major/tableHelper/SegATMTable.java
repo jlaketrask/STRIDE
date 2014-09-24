@@ -55,7 +55,6 @@ public class SegATMTable {
             restColumnTable.getColumnModel().getColumn(colIdx).setPreferredWidth(75);
         }
         //</editor-fold>
-        //jScrollPane2.getHorizontalScrollBar().setModel(tableDisplayOutput.getScrollModel());
         
         // <editor-fold defaultstate="collapsed" desc="Building First Column (Row Names)">
         firstColumnTable = new JTable();
