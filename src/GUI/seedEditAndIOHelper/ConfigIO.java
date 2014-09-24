@@ -98,6 +98,7 @@ public class ConfigIO {
      */
     public static String saveTableConfig(ArrayList<TableCellSetting> cellSettings, Font font) {
         try {
+            //File tableConfigFile = new File(getCfgFolderLocation() + "tableItem.cfg");
             File tableConfigFile = new File(getCfgFolderLocation() + "tableItem.cfg");
             FileOutputStream fos = new FileOutputStream(tableConfigFile);
             GZIPOutputStream gzos = new GZIPOutputStream(fos);

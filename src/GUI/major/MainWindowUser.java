@@ -995,11 +995,6 @@ public class MainWindowUser extends MainWindow {
         logSplitPanel = new javax.swing.JSplitPane();
         logScrollPanel = new javax.swing.JScrollPane();
         logText = new javax.swing.JTextArea();
-        userIOTableDisplay = new GUI.major.UserIOTableDisplay();
-        singleScenSplitPanel = new javax.swing.JSplitPane();
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        graphicDisplay = new GUI.major.GraphicDisplay();
         tableDisplayOptionPanel = new javax.swing.JPanel();
         inOutCB = new javax.swing.JComboBox();
         GPMLCB = new javax.swing.JComboBox();
@@ -1012,6 +1007,11 @@ public class MainWindowUser extends MainWindow {
         lastButton = new javax.swing.JButton();
         jumpToButton = new javax.swing.JButton();
         jumpText = new javax.swing.JTextField();
+        userIOTableDisplay = new GUI.major.UserIOTableDisplay();
+        singleScenSplitPanel = new javax.swing.JSplitPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        graphicDisplay = new GUI.major.GraphicDisplay();
         tableDisplay = new GUI.major.TableDisplay();
         menuBar = new GUI.major.MenuBar();
 
@@ -1051,34 +1051,6 @@ public class MainWindowUser extends MainWindow {
         logText.setLineWrap(true);
         logText.setWrapStyleWord(true);
         logScrollPanel.setViewportView(logText);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1000, 600));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
-
-        userIOTableDisplay.setPreferredSize(new java.awt.Dimension(750, 503));
-
-        singleScenSplitPanel.setBorder(null);
-        singleScenSplitPanel.setDividerLocation(200);
-        singleScenSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        singleScenSplitPanel.setResizeWeight(0.35);
-
-        javax.swing.GroupLayout graphicDisplayLayout = new javax.swing.GroupLayout(graphicDisplay);
-        graphicDisplay.setLayout(graphicDisplayLayout);
-        graphicDisplayLayout.setHorizontalGroup(
-            graphicDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        graphicDisplayLayout.setVerticalGroup(
-            graphicDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        jScrollPane3.setViewportView(graphicDisplay);
 
         tableDisplayOptionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Table Display Options"));
         tableDisplayOptionPanel.setLayout(new java.awt.GridLayout(1, 2));
@@ -1160,30 +1132,47 @@ public class MainWindowUser extends MainWindow {
         });
         APPanel.add(jumpText);
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1000, 600));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        userIOTableDisplay.setPreferredSize(new java.awt.Dimension(750, 503));
+
+        singleScenSplitPanel.setBorder(null);
+        singleScenSplitPanel.setDividerLocation(160);
+        singleScenSplitPanel.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        singleScenSplitPanel.setResizeWeight(0.35);
+
+        javax.swing.GroupLayout graphicDisplayLayout = new javax.swing.GroupLayout(graphicDisplay);
+        graphicDisplay.setLayout(graphicDisplayLayout);
+        graphicDisplayLayout.setHorizontalGroup(
+            graphicDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        graphicDisplayLayout.setVerticalGroup(
+            graphicDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jScrollPane3.setViewportView(graphicDisplay);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(tableDisplayOptionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(APPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(APPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tableDisplayOptionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         singleScenSplitPanel.setLeftComponent(jPanel1);
@@ -1419,7 +1408,7 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;
-    private GUI.major.TableDisplay tableDisplay;
+    public GUI.major.TableDisplay tableDisplay;
     private javax.swing.JPanel tableDisplayOptionPanel;
     private javax.swing.JLabel timeLabel;
     private GUI.major.Toolbox toolbox;
