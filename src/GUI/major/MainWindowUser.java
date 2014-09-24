@@ -1,5 +1,7 @@
 package GUI.major;
 
+import DSS.DataStruct.ATMUpdater;
+import DSS.DataStruct.PeriodATM;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -8,6 +10,7 @@ import GUI.seedEditAndIOHelper.SeedGlobalDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
+import atdm.DataStruct.ATDMScenario;
 import coreEngine.ASCIISeedFileAdapter;
 import coreEngine.CEConst;
 import coreEngine.Seed;
@@ -51,13 +54,17 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
+    private final ATDMScenario activeATM;
+    private final ATMUpdater atmUpdater;
+    private final PeriodATM[] periodATM;
+    
     //private final TableDisplay tableDisplay;
     private final TableDisplaySegmentATM tableDisplaySegmentATM;
 
     /**
      * Version of the FREEVAL
      */
-    //public final String VERSION = "Alpha 09172014";
+    //public final String VERSION = "Alpha 09242014";
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
      * Constructor. Creates new form mainWindow
@@ -78,7 +85,12 @@ public class MainWindowUser extends MainWindow {
         initComponents();
         activeSeed = SeedIOHelper.openSeed();
         //seedList.add(activeSeed);
-
+        this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
+        periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
+        for (int per = 0; per < periodATM.length; per++) {
+            periodATM[per] = new PeriodATM(activeSeed, per);
+        }
+        atmUpdater = new ATMUpdater(activeATM,periodATM);
         //tableDisplay = userIOTableDisplay.getTableDisplay();
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
@@ -100,7 +112,7 @@ public class MainWindowUser extends MainWindow {
         numPeriodChanged = true;
         selectPeriod(0);
     }
-
+    
     /**
      * Connect major components for central control
      */
@@ -116,6 +128,10 @@ public class MainWindowUser extends MainWindow {
         //comparePanel.setMainWindow(this);
     }
     // </editor-fold>
+    
+    public void applyATM() {
+        atmUpdater.update(activePeriod);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
     //private static final String TOOLBOX = "Toolbox";
@@ -975,7 +991,11 @@ public class MainWindowUser extends MainWindow {
 //    }
     // </editor-fold>
     // </editor-fold>
-
+    
+    public ATMUpdater getATMUpdater() {
+        return this.atmUpdater;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

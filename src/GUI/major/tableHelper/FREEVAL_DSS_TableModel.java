@@ -31,6 +31,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                                        "Hard Shoulder Running Used",
                                        "Hard Shoulder Capacity"};
 
+    private MainWindowUser mainWindow;
     private Seed seed;
 
     private PeriodATM[] periodATM;
@@ -241,15 +242,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         this.currPeriod = newPeriod;
     }
     
-    public void setSeed(Seed seed) {
-        this.seed = seed;
-        //TODO Allow Period ATM to be pulled from the seed.
-        if (true) {
-            periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
-            for (int per = 0; per < periodATM.length; per++) {
-                periodATM[per] = new PeriodATM(seed, per);
-            }
-        }
+    public void setMainWindow(MainWindowUser mainWindow) {
+        this.mainWindow = mainWindow;
+        this.seed = this.mainWindow.getActiveSeed();
+        this.periodATM = mainWindow.getATMUpdater().getAllPeriodATM();
         fireTableStructureChanged();
     }
 }

@@ -5,7 +5,7 @@
  */
 package GUI.major.tableHelper;
 
-import GUI.major.MainWindow;
+import GUI.major.MainWindowUser;
 import coreEngine.Seed;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -33,7 +33,7 @@ public class SegATMTable {
     private Seed seed;
     private int period = 0;
 
-    private MainWindow mainWindow;
+    private MainWindowUser mainWindow;
     
     public SegATMTable() {
         //this.seed = seed;
@@ -110,10 +110,11 @@ public class SegATMTable {
         updatePeriod();
     }
     
-    public void setMainWindow(MainWindow mainWindow) {
+    public void setMainWindow(MainWindowUser mainWindow) {
         this.mainWindow = mainWindow;
-        firstColumnModel.setSeed(mainWindow.getActiveSeed());
-        restColumnModel.setSeed(mainWindow.getActiveSeed());
+        firstColumnModel.setMainWindow(mainWindow);
+        restColumnModel.setMainWindow(mainWindow);
+        //restColumnModel.setATMScenario(mainWindow.getATMScenario());
         //s1electSeedScenPeriod(this.mainWindow.getActiveSeed(), 0);
         //System.out.println(seed);
     }

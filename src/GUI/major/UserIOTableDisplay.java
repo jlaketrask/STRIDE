@@ -14,6 +14,7 @@ import coreEngine.Seed;
 public class UserIOTableDisplay extends javax.swing.JPanel {
 
     private Seed seed;
+    private MainWindowUser mainWindow;
 
     /**
      * Creates new form UserIOTableDisplay
@@ -24,6 +25,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     }
 
     public void activate(MainWindowUser mainWindow) {        
+        this.mainWindow = mainWindow;
         seed = mainWindow.getActiveSeed();
         
     }
@@ -55,6 +57,11 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
         jSplitPane1.setRightComponent(facilityATMJPanel2);
 
         jButton1.setText("Proceed");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -91,6 +98,10 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        mainWindow.applyATM();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private GUI.major.FacilityATMJPanel facilityATMJPanel2;

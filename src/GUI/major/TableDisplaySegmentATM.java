@@ -15,7 +15,7 @@ import javax.swing.event.ListSelectionListener;
  */
 public class TableDisplaySegmentATM extends javax.swing.JPanel {
 
-    private MainWindow mainWindow;
+    private MainWindowUser mainWindow;
     private SegATMTable segATMTable;
     private final SplitTableJPanel segIOSplitTable;
 
@@ -92,7 +92,7 @@ public class TableDisplaySegmentATM extends javax.swing.JPanel {
      *
      * @param mainWindow main window instance
      */
-    public void setMainWindow(MainWindow mainWindow) {
+    public void setMainWindow(MainWindowUser mainWindow) {
         this.mainWindow = mainWindow;
         segATMTable.setMainWindow(mainWindow);
     }
