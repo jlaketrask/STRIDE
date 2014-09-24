@@ -5,13 +5,7 @@
  */
 package GUI.major;
 
-import DSS.DataStruct.PeriodATM;
-import GUI.major.tableHelper.FREEVAL_DSS_TableModel;
-import coreEngine.CEConst;
 import coreEngine.Seed;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -29,33 +23,17 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
 
     }
 
-    public void activate(MainWindowUser mainWindow) {
+    public void activate(MainWindowUser mainWindow) {        
         seed = mainWindow.getActiveSeed();
-        PeriodATM[] periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
-        for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(seed, per);
-        }
-        FREEVAL_DSS_TableModel userInputModel = new FREEVAL_DSS_TableModel(seed, periodATM, userInputTable);
-        userInputTable.setModel(userInputModel);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        userInputTable.setDefaultRenderer(Object.class, centerRenderer);
-        userInputTable.setDefaultRenderer(String.class, centerRenderer);
-        userInputTable.setDefaultRenderer(Float.class, centerRenderer);
-        userInputTable.setDefaultRenderer(Integer.class, centerRenderer);
-        userInputTable.setFont(MainWindowUser.getTableFont());
-        userInputTable.setRowHeight(MainWindowUser.getTableFont().getSize() + 4);
-        userInputTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        userInputTable.getColumnModel().getColumn(0).setPreferredWidth(275);
-        for (int colIdx = 1; colIdx < userInputModel.getColumnCount(); colIdx++) {
-            userInputTable.getColumnModel().getColumn(colIdx).setPreferredWidth(75);
-        }
-        jScrollPane2.getHorizontalScrollBar().setModel(tableDisplay1.getScrollModel());
-
+        
     }
 
     public TableDisplay getTableDisplay() {
-        return this.tableDisplay1;
+        return this.tableDisplayOutput;
+    }
+    
+    public TableDisplaySegmentATM getTableDisplaySegmentATM() {
+        return this.tableDisplaySegmentATM;
     }
 
     /**
@@ -68,25 +46,13 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     private void initComponents() {
 
         jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        userInputTable = new GUI.major.tableHelper.FREEVAL_DSS_JTable();
-        tableDisplay1 = new GUI.major.TableDisplay();
+        tableDisplayOutput = new GUI.major.TableDisplay();
+        tableDisplaySegmentATM = new GUI.major.TableDisplaySegmentATM();
 
-        jSplitPane1.setDividerLocation(250);
+        jSplitPane1.setDividerLocation(175);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        userInputTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        jScrollPane2.setViewportView(userInputTable);
-
-        jSplitPane1.setRightComponent(jScrollPane2);
-        jSplitPane1.setLeftComponent(tableDisplay1);
+        jSplitPane1.setLeftComponent(tableDisplayOutput);
+        jSplitPane1.setRightComponent(tableDisplaySegmentATM);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -101,15 +67,14 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
-    private GUI.major.TableDisplay tableDisplay1;
-    private GUI.major.tableHelper.FREEVAL_DSS_JTable userInputTable;
+    private GUI.major.TableDisplay tableDisplayOutput;
+    private GUI.major.TableDisplaySegmentATM tableDisplaySegmentATM;
     // End of variables declaration//GEN-END:variables
 }

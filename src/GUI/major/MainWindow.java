@@ -67,7 +67,6 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * Constructor. Creates new form mainWindow
      *
-     * @param mainWindowStart
      */
     public MainWindow() {
     }  // For MainWindowUser
@@ -540,9 +539,9 @@ public class MainWindow extends javax.swing.JFrame {
             this.setTitle("FREEVAL");
         } else {
             if (activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME) == null) {
-                this.setTitle("FREEVAL - Not Saved New File");
+                this.setTitle("FREEVAL-DSS (ADMINISTRATOR) - Not Saved New File");
             } else {
-                this.setTitle("FREEVAL - " + activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME));
+                this.setTitle("FREEVAL-DSS (ADMINISTRATOR) - " + activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME));
             }
         }
     }

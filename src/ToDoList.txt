@@ -7,3 +7,6 @@ Disable table settings for User side
 
 Changes in seed file reflected in User side
      - Change in number of periods/segments in PeriodATM
+
+Add Period ATM to seed
+    - Change FREEVAL_DSS_TableModel setSeed funciton 

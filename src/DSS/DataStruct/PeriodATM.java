@@ -25,12 +25,16 @@ public class PeriodATM {
     // Other ATM
     private final int[] rampMetering;
     private final Boolean[] rampMeteringUsed;
+    private final float[] hsrCapacity;
+    private final Boolean[] hsrUsed;
 
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
     private static final String ID_AFTYPE_CAF = "ID_AFTYPE_CAF";
     private static final String ID_AFTYPE_SAF = "ID_AFTYPE_SAF";
     private static final String ID_RAMP_METERING_USED = "ID_RAMP_METERING_USED";
     private static final String ID_RAMP_METERING = "ID_RAMP_METERING";
+    private static final String ID_HSR_USED = "ID_HSR_USED";
+    private static final String ID_HSR_CAPACITY = "ID_HSR_CAPACITY";
     // </editor-fold>
 
     public PeriodATM(Seed seed, int period) {
@@ -48,7 +52,12 @@ public class PeriodATM {
         rampMeteringUsed = new Boolean[numSeg];
         Arrays.fill(rampMeteringUsed, false);
         rampMetering = new int[numSeg];
-        Arrays.fill(rampMetering, -1);
+        Arrays.fill(rampMetering, 2100);
+        
+        hsrUsed = new Boolean[numSeg];
+        Arrays.fill(hsrUsed, false);
+        hsrCapacity = new float[numSeg];
+        Arrays.fill(hsrCapacity, 1.0f);
 
     }
 
@@ -59,6 +68,8 @@ public class PeriodATM {
                 return caf[period];
             case ID_AFTYPE_SAF:
                 return saf[period];
+            case ID_HSR_CAPACITY:
+                return hsrCapacity[period];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -68,6 +79,17 @@ public class PeriodATM {
         switch (identifier) {
             case ID_RAMP_METERING:
                 return rampMetering[period];
+            default:
+                throw new RuntimeException("Invalid Identifier");
+        }
+    }
+    
+    public boolean getValueBool(String identifier, int period) {
+        switch (identifier) {
+            case ID_RAMP_METERING_USED:
+                return rampMeteringUsed[period];
+            case ID_HSR_USED:
+                return hsrUsed[period];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -83,6 +105,9 @@ public class PeriodATM {
             case ID_AFTYPE_SAF:
                 saf[period] = value;
                 break;
+            case ID_HSR_CAPACITY:
+                hsrCapacity[period] = value;
+                break;
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -92,6 +117,19 @@ public class PeriodATM {
         switch (identifier) {
             case ID_RAMP_METERING:
                 rampMetering[period] = value;
+                break;
+            default:
+                throw new RuntimeException("Invalid Identifier");
+        }
+    }
+    
+    public void setValueBool(String identifier, boolean value, int period) {
+        switch (identifier) {
+            case ID_RAMP_METERING_USED:
+                rampMeteringUsed[period] = value;
+                break;
+            case ID_HSR_USED:
+                hsrUsed[period] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
@@ -115,6 +153,14 @@ public class PeriodATM {
     public void setRMRate(int value, int seg) {
         rampMetering[seg] = value;
     }
+    
+    public void setHSRUsed(Boolean value, int seg) {
+        hsrUsed[seg] = value;
+    }
+
+    public void setHSRCapacity(float value, int seg) {
+        hsrCapacity[seg] = value;
+    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -136,6 +182,14 @@ public class PeriodATM {
 
     public int getRMRate(int period) {
         return rampMetering[period];
+    }
+    
+    public Boolean getHSRUsed(int seg) {
+        return hsrUsed[seg];
+    }
+
+    public float getHSRCapacity(int period) {
+        return hsrCapacity[period];
     }
 //</editor-fold>
 

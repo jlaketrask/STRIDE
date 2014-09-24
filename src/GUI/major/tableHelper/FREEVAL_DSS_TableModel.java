@@ -6,6 +6,7 @@
 package GUI.major.tableHelper;
 
 import DSS.DataStruct.PeriodATM;
+import GUI.major.MainWindow;
 import GUI.major.MainWindowUser;
 import coreEngine.CEConst;
 import coreEngine.Seed;
@@ -25,12 +26,12 @@ import javax.swing.table.TableCellRenderer;
 public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     //private String[] columnNames;
-    private String[] rowNames = {"Capacity Adj. Factor",
-        "Speed Adj. Factor",
-        "Ramp Metering Used",
-        "Ramp Metering Rate",};
+    private final String[] rowNames = {"Ramp Metering Used",
+                                       "Ramp Metering Rate",
+                                       "Hard Shoulder Running Used",
+                                       "Hard Shoulder Capacity"};
 
-    private final Seed seed;
+    private Seed seed;
 
     private PeriodATM[] periodATM;
 
@@ -39,10 +40,18 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
     private final CheckBoxRenderer checkBoxRenderer;
     private final DefaultTableCellRenderer centerRenderer;
     private final DefaultTableCellRenderer blackOutRenderer;
+    private final JTable parentTable;
+    
+    private final int tableType;
+    
+    public static final int TYPE_ROW_NAMES = 0;
+    public static final int TYPE_ATM_INPUT = 1;
 
-    public FREEVAL_DSS_TableModel(Seed seed, PeriodATM[] periodATM, JTable parentTable) {
-        this.seed = seed;
-        this.periodATM = periodATM;
+    public FREEVAL_DSS_TableModel(int tableType, JTable parentTable) {
+        //this.seed = seed;
+        //this.periodATM = periodATM;
+        this.parentTable = parentTable;
+        this.tableType = tableType;
         currPeriod = 0;
 
         checkBoxRenderer = new CheckBoxRenderer();
@@ -56,7 +65,17 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return seed.getValueInt(CEConst.IDS_NUM_SEGMENT) + 1;
+        switch (tableType) {
+            default:
+            case TYPE_ROW_NAMES:
+                return 1;
+            case TYPE_ATM_INPUT:
+                if (seed == null) {
+                    return 0;
+                } else {
+                    return seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
+                }
+        }
     }
 
     @Override
@@ -66,95 +85,132 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        if (col == 0) {
-            return "Segment";
-        } else {
-            return "Seg. " + col;
+        switch (tableType) {
+            default: 
+            case TYPE_ROW_NAMES:
+                return "Segment ATM";
+            case TYPE_ATM_INPUT:
+                return "Seg. " + (col+1);
         }
     }
 
     @Override
     public Object getValueAt(int row, int col) {
-        if (col == 0) {
-            return rowNames[row];
-        } else {
-            switch (row) {
-                case 0:
-                    return periodATM[currPeriod].getCAF(col - 1);
-                case 1:
-                    return periodATM[currPeriod].getSAF(col - 1);
-                case 2:
-                    return periodATM[currPeriod].getRMUsed(col - 1);
-                case 3:
-                    return periodATM[currPeriod].getRMRate(col - 1);
-                default:
-                    throw new RuntimeException("Invalid Row Index");
+        switch (tableType) {
+            default:
+            case TYPE_ROW_NAMES:
+                return rowNames[row];
+            case TYPE_ATM_INPUT:
+                switch (row) {
+                    case 0:
+                        return periodATM[currPeriod].getRMUsed(col);
+                    case 1:
+                        return periodATM[currPeriod].getRMRate(col);
+                    case 2:
+                        return periodATM[currPeriod].getHSRUsed(col);
+                    case 3:
+                        return periodATM[currPeriod].getHSRCapacity(col);
+                    default:
+                        throw new RuntimeException("Invalid Row Index");
             }
         }
     }
 
     @Override
     public void setValueAt(Object value, int row, int col) {
-        try {
-            switch (row) {
-                case 0:
-                    periodATM[currPeriod].setCAF(Float.parseFloat((String) value), col - 1);
-                    break;
-                case 1:
-                    periodATM[currPeriod].setSAF(Float.parseFloat((String) value), col - 1);
-                    break;
-                case 2:
-                    periodATM[currPeriod].setRMUsed((boolean) value, col - 1);
-                    fireTableDataChanged();
-                    break;
-                case 3:
-                    periodATM[currPeriod].setRMRate(Integer.parseInt((String) value), col - 1);
-                    break;
-                default:
-                    throw new RuntimeException("Invalid Row Index");
-            }
-        } catch (NumberFormatException e) {
-            MainWindowUser.printLog("Invalid Value Entered");
+        switch (tableType) {
+            case TYPE_ATM_INPUT:
+                try {
+                    switch (row) {
+                        case 0:
+                            periodATM[currPeriod].setRMUsed((boolean) value, col);
+                            fireTableDataChanged();
+                            break;
+                        case 1:
+                            periodATM[currPeriod].setRMRate(Integer.parseInt((String) value), col);
+                            break;
+                        case 2:
+                            periodATM[currPeriod].setHSRUsed((boolean) value, col);
+                            fireTableDataChanged();
+                            break;
+                        case 3:
+                            periodATM[currPeriod].setHSRCapacity(Integer.parseInt((String) value), col);
+                            break;
+                        default:
+                            throw new RuntimeException("Invalid Row Index");
+                    }
+                } catch (NumberFormatException e) {
+                    MainWindowUser.printLog("Invalid Value Entered");
+                }
+            default:
+                // Do nothing, cells not editable
         }
     }
 
     @Override
-    public boolean isCellEditable(int row, int col) {
-        if (col == 0) {
-            return false;
-        } else {
-            if (row == 2) {
-                return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col - 1) == CEConst.SEG_TYPE_ONR);
-            } else if (row == 3) {
-                return (periodATM[currPeriod].getRMUsed(col - 1));
-            } else {
-                return true;
-            }
+    public boolean isCellEditable(int row, int col) { 
+        switch (tableType){
+            default:
+            case TYPE_ROW_NAMES:
+                return false;
+            case TYPE_ATM_INPUT:
+                switch(row) {
+                    case 0:
+                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR);
+                    case 1:
+                        return (periodATM[currPeriod].getRMUsed(col));
+                    case 2:
+                        return true;
+                    case 3:
+                        return (periodATM[currPeriod].getHSRUsed(col));
+                    default:
+                        return false;
+                }
         }
     }
 
     @Override
     public void fireTableDataChanged() {
         super.fireTableDataChanged();
+        //setupTable();
+    }
+    
+    @Override
+    public void fireTableStructureChanged() {
+        super.fireTableStructureChanged();
         setupTable();
     }
 
     public void setupTable() {
-
+        parentTable.setFont(MainWindow.getTableFont());
+        parentTable.setRowHeight(MainWindow.getTableFont().getSize() + 2);  
     }
 
     // <editor-fold defaultstate="collapsed" desc="Renderers">
     public TableCellRenderer getRenderer(int row, int col) {
-        if (row == 2 && col != 0) {
-            if (isCellEditable(row, col)) {
-                return checkBoxRenderer;
-            } else {
-                return blackOutRenderer;
-            }
-        } else if (row == 3 && col != 0 && !isCellEditable(row, col)) {
-            return blackOutRenderer;
-        } else {
-            return centerRenderer;
+        switch (tableType) {
+            default:
+            case TYPE_ROW_NAMES:
+                return centerRenderer;
+            case TYPE_ATM_INPUT:
+                switch (row) {
+                    case 0:
+                    case 2:
+                        if (isCellEditable(row, col)) {
+                            return checkBoxRenderer;
+                        } else {
+                            return blackOutRenderer;
+                        }
+                    case 1:
+                    case 3:
+                        if (isCellEditable(row-1, col)) {
+                            return centerRenderer;
+                        } else {
+                            return blackOutRenderer;
+                        }
+                    default:
+                        return centerRenderer;
+                }
         }
     }
 
@@ -171,4 +227,20 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         }
     }
     // </editor-fold>
+    
+    public void setPeriod(int newPeriod) {
+        this.currPeriod = newPeriod;
+    }
+    
+    public void setSeed(Seed seed) {
+        this.seed = seed;
+        //TODO Allow Period ATM to be pulled from the seed.
+        if (true) {
+            periodATM = new PeriodATM[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
+            for (int per = 0; per < periodATM.length; per++) {
+                periodATM[per] = new PeriodATM(seed, per);
+            }
+        }
+        fireTableStructureChanged();
+    }
 }

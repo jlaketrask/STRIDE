@@ -36,7 +36,7 @@ public class FREEVAL_DSS_JTable extends JTable {
 
     @Override
     public TableCellEditor getCellEditor(int row, int col) {
-        if (row == 2) {
+        if (row == 0 || row == 2) {
             return checkBoxEditor;
         } else {
             return defaultCellEditor;

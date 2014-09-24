@@ -53,6 +53,7 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
     private final TableDisplay tableDisplay;
+    private final TableDisplaySegmentATM tableDisplaySegmentATM;
 
     /**
      * Version of the FREEVAL
@@ -80,6 +81,7 @@ public class MainWindowUser extends MainWindow {
         //seedList.add(activeSeed);
 
         tableDisplay = userIOTableDisplay.getTableDisplay();
+        tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
         connect();
         addSeed(activeSeed);
@@ -110,6 +112,7 @@ public class MainWindowUser extends MainWindow {
         navigator.setMainWindow(this);
         userIOTableDisplay.activate(this);
         tableDisplay.setMainWindow(this);
+        tableDisplaySegmentATM.setMainWindow(this);
         //comparePanel.setMainWindow(this);
     }
     // </editor-fold>
@@ -344,12 +347,14 @@ public class MainWindowUser extends MainWindow {
                         + (activeATDM >= 0 ? " ATDM#" + (activeATDM + 1) : "") + " selected");
 
                 tableDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
+                tableDisplaySegmentATM.selectSeedScenPeriod(activeSeed, activePeriod);
                 graphicDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
                 //contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
                 //periodSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
                 //segmentSummaryPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
             } else {
                 tableDisplay.selectSeedScenATDMPeriod(null, 0, - 1, 0);
+                tableDisplaySegmentATM.selectSeedScenPeriod(null, 0);
                 graphicDisplay.selectSeedScenATDMPeriod(null, 0, -1, 0);
                 //contourPanel.selectSeedScenATDM(null, 0, -1);
                 //periodSummaryPanel.selectSeedScenATDM(null, 0, -1);
@@ -422,6 +427,7 @@ public class MainWindowUser extends MainWindow {
         isShowingInput = false;
         //toolbox.showOutput();
         tableDisplay.showOutput();
+        tableDisplaySegmentATM.update();
         graphicDisplay.showOutput();
         showInputButton.setSelected(false);
         showOutputButton.setSelected(true);
@@ -543,9 +549,9 @@ public class MainWindowUser extends MainWindow {
             this.setTitle("FREEVAL");
         } else {
             if (activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME) == null) {
-                this.setTitle("FREEVAL - Not Saved New File");
+                this.setTitle("FREEVAL-DSS (USER)  - Not Saved New File");
             } else {
-                this.setTitle("FREEVAL - " + activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME));
+                this.setTitle("FREEVAL-DSS (USER) - " + activeSeed.getValueString(CEConst.IDS_SEED_FILE_NAME));
             }
         }
     }
@@ -607,6 +613,7 @@ public class MainWindowUser extends MainWindow {
             activePeriod = period;
             numPeriodChanged = false;
             tableDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
+            tableDisplaySegmentATM.selectSeedScenPeriod(activeSeed, activePeriod);
             graphicDisplay.selectSeedScenATDMPeriod(activeSeed, activeScen, activeATDM, activePeriod);
 
             //toolbox.selectPeriod(period);
@@ -632,6 +639,7 @@ public class MainWindowUser extends MainWindow {
     @Override
     public void segmentSelectedByGraph(int seg) {
         tableDisplay.setHighlight(seg);
+        tableDisplaySegmentATM.setHighlight(seg);
     }
 
     /**
@@ -910,6 +918,7 @@ public class MainWindowUser extends MainWindow {
 
         selectPeriod(activePeriod);
         tableDisplay.update();
+        tableDisplaySegmentATM.update();
         graphicDisplay.update();
         updateTitle();
         //comparePanel.updateList();
@@ -1036,7 +1045,6 @@ public class MainWindowUser extends MainWindow {
         logSplitPanel.setResizeWeight(0.85);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -1379,13 +1387,7 @@ public class MainWindowUser extends MainWindow {
     public void setTableFont(Font newTableFont) {
         tableFont = newTableFont;
         tableDisplay.setTableFont(newTableFont);
-        //MARKEDFORDELETION
-        //comparePanel.setTableFont(newTableFont);
-        //contourPanel.setTableFont(newTableFont);
-        //periodSummaryPanel.setTableFont(newTableFont);
-        //segmentSummaryPanel.setTableFont(newTableFont);
-        //periodSummaryPanel_ML.setTableFont(newTableFont);
-        //segmentSummaryPanel_ML.setTableFont(newTableFont);
+        tableDisplaySegmentATM.setTableFont(newTableFont);
     }
 
     public boolean isOutputEnabled() {

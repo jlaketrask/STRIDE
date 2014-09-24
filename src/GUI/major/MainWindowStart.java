@@ -6,11 +6,6 @@
 package GUI.major;
 
 import GUI.major.PasswordHelper.PassDialog;
-import GUI.major.PasswordHelper.PasswordHash;
-import GUI.seedEditAndIOHelper.SeedIOHelper;
-import coreEngine.Seed;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
