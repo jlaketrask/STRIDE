@@ -58,7 +58,7 @@ public class FREEVAL_DSS_JTable extends JTable {
             case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
                 return defaultCellEditor;
             case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
-                if (row == 0 || row == 2) {
+                if (row == 1 || row == 4) {
                     return checkBoxEditor;
                 } else {
                     return defaultCellEditor;

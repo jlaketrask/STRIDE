@@ -26,9 +26,11 @@ import javax.swing.table.TableCellRenderer;
 public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     //private String[] columnNames;
-    private final String[] rowNames = {"Ramp Metering Used",
+    private final String[] rowNames = {"Number of Periods",
+                                       "Ramp Metering On",
                                        "Ramp Metering Rate",
-                                       "Hard Shoulder Running Used",
+                                       "Number of Periods",
+                                       "Hard Shoulder Running On",
                                        "Hard Shoulder Capacity"};
 
     private MainWindowUser mainWindow;
@@ -108,12 +110,16 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ATM_INPUT:
                 switch (row) {
                     case 0:
-                        return periodATM[currPeriod].getRMUsed(col);
+                        return periodATM[currPeriod].getRMDuration();
                     case 1:
-                        return periodATM[currPeriod].getRMRate(col);
+                        return periodATM[currPeriod].getRMUsed(col);
                     case 2:
-                        return periodATM[currPeriod].getHSRUsed(col);
+                        return periodATM[currPeriod].getRMRate(col);
                     case 3:
+                        return periodATM[currPeriod].getHSRDuration();
+                    case 4:
+                        return periodATM[currPeriod].getHSRUsed(col);
+                    case 5:
                         return periodATM[currPeriod].getHSRCapacity(col);
                     default:
                         throw new RuntimeException("Invalid Row Index");
@@ -128,17 +134,21 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 try {
                     switch (row) {
                         case 0:
-                            periodATM[currPeriod].setRMUsed((boolean) value, col);
-                            fireTableDataChanged();
+                            periodATM[currPeriod].setRMDuration(Integer.parseInt((String) value));
                             break;
                         case 1:
-                            periodATM[currPeriod].setRMRate(Integer.parseInt((String) value), col);
+                            periodATM[currPeriod].setRMUsed((boolean) value, col);
                             break;
                         case 2:
-                            periodATM[currPeriod].setHSRUsed((boolean) value, col);
-                            fireTableDataChanged();
+                            periodATM[currPeriod].setRMRate(Integer.parseInt((String) value), col);
                             break;
                         case 3:
+                            periodATM[currPeriod].setHSRDuration(Integer.parseInt((String) value));
+                            break;                        
+                        case 4:
+                            periodATM[currPeriod].setHSRUsed((boolean) value, col);
+                            break;
+                        case 5:
                             periodATM[currPeriod].setHSRCapacity(Integer.parseInt((String) value), col);
                             break;
                         default:
@@ -161,12 +171,15 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ATM_INPUT:
                 switch(row) {
                     case 0:
-                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR);
-                    case 1:
-                        return (periodATM[currPeriod].getRMUsed(col));
-                    case 2:
-                        return true;
                     case 3:
+                        return (col==0);
+                    case 1:
+                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR);
+                    case 2:
+                        return (periodATM[currPeriod].getRMUsed(col));
+                    case 4:
+                        return true;
+                    case 5:
                         return (periodATM[currPeriod].getHSRUsed(col));
                     default:
                         return false;
@@ -201,14 +214,21 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ATM_INPUT:
                 switch (row) {
                     case 0:
-                    case 2:
+                    case 3:
+                        if (col==0) {
+                            return centerRenderer;
+                        } else {
+                            return blackOutRenderer;
+                        }
+                    case 1:
+                    case 4:
                         if (isCellEditable(row, col)) {
                             return checkBoxRenderer;
                         } else {
                             return blackOutRenderer;
                         }
-                    case 1:
-                    case 3:
+                    case 2:
+                    case 5:
                         if (isCellEditable(row-1, col)) {
                             return centerRenderer;
                         } else {
