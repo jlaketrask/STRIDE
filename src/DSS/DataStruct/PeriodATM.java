@@ -14,6 +14,8 @@ import java.util.Arrays;
  * @author jltrask
  */
 public class PeriodATM {
+    
+    private final Seed seed;
 
     //Instance Specific variables
     private final int period;
@@ -42,6 +44,8 @@ public class PeriodATM {
     // </editor-fold>
 
     public PeriodATM(Seed seed, int period) {
+        this.seed = seed;
+
         // Settting period
         this.period = period;
         int numSeg = seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
@@ -227,10 +231,12 @@ public class PeriodATM {
 
 // <editor-fold defaultstate="collapsed" desc="Getters for ATM Updater">
     public int getPeriodJump() {
-        int periodJump = 0;
-        periodJump = getMaxATMDuration();
-        
-        return periodJump;
+        int maxRequestedATMDur = getMaxATMDuration();
+        if (period+maxRequestedATMDur >= seed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
+            return seed.getValueInt(CEConst.IDS_NUM_PERIOD)-1-period;
+        } else {
+            return maxRequestedATMDur;
+        }
     }
     
     private int getMaxATMDuration() {

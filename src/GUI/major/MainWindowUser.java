@@ -663,6 +663,10 @@ public class MainWindowUser extends MainWindow {
                 printLog("Analysis period " + (period + 1) + " selected");
             }
         }
+        if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+            takeActionButton.setEnabled(false);
+            proceedOnlyButton.setText("Generate Summary");
+        }
     }
 
     /**
@@ -1366,7 +1370,11 @@ public class MainWindowUser extends MainWindow {
     }//GEN-LAST:event_jumpTextKeyPressed
 
     private void proceedOnlyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedOnlyButtonActionPerformed
-        showNextPeriod();
+        if (activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+            showNextPeriod();
+        } else {
+            
+        }
     }//GEN-LAST:event_proceedOnlyButtonActionPerformed
 
     private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed

@@ -49,10 +49,11 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" pref="233" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jComboBox1" min="-2" pref="170" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="127" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="122" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -64,7 +65,7 @@
                           <Component id="jLabel1" alignment="3" min="-2" pref="44" max="-2" attributes="0"/>
                           <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="231" max="32767" attributes="0"/>
+                      <EmptySpace pref="233" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -104,8 +105,9 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="439" max="32767" attributes="0"/>
+                      <EmptySpace pref="353" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -122,7 +124,7 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="jButton2">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jButton2"/>
+                <Property name="text" type="java.lang.String" value="Configure Sign Locations"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -140,16 +142,18 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jButton3" pref="530" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton3" min="-2" pref="128" max="-2" attributes="0"/>
+                      <EmptySpace pref="409" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jButton3" pref="275" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="247" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

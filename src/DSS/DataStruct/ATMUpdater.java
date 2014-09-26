@@ -34,7 +34,7 @@ public class ATMUpdater {
         PeriodATM currPeriodATM = periodATM[startPeriod];
         int periodJump = currPeriodATM.getPeriodJump();
         
-        for (int period = startPeriod; period < startPeriod+periodJump; period++) {
+        for (int period = startPeriod+1; period <=startPeriod+periodJump; period++) {
             for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 
                 // Assigning Ramp Metering
@@ -53,7 +53,7 @@ public class ATMUpdater {
                     atm.CAF().set((newCAF / initCAF), seg, period);
                     }
                 }
-            currPeriodATM = periodATM[period];
+            currPeriodATM = periodATM[period-1];
         }
         
         return periodJump;
