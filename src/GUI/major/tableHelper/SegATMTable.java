@@ -62,6 +62,9 @@ public class SegATMTable {
         firstColumnTable.setModel(firstColumnModel);
         //</editor-fold>
         
+        firstColumnTable.getTableHeader().setReorderingAllowed(false);
+        restColumnTable.getTableHeader().setReorderingAllowed(false);
+        
     }
     
     public void activate() {

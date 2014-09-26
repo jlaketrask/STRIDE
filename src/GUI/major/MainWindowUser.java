@@ -21,11 +21,14 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import reliabilityAnalysis.DataStruct.Scenario;
+import reliabilityAnalysis.DataStruct.ScenarioInfo;
 
 /**
  * This class is the main window of FREEVAL. All seeds are contained in this
@@ -84,14 +87,24 @@ public class MainWindowUser extends MainWindow {
 
         initComponents();
         activeSeed = SeedIOHelper.openSeed();
-        //seedList.add(activeSeed);
+        
+        // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
-        atmUpdater = new ATMUpdater(activeATM,periodATM);
-        //tableDisplay = userIOTableDisplay.getTableDisplay();
+        atmUpdater = new ATMUpdater(activeSeed, activeATM,periodATM);
+        // Adding blank scenario
+        ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
+        scenarioInfos.add(new ScenarioInfo());
+        activeSeed.setRLScenarios(new Scenario(1,activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null,scenarioInfos);
+        HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
+        atmHolder.put(1, activeATM);
+        activeSeed.addATDMSet(atmHolder);
+        
+        
+        // Preparing Window Components
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
         connect();
@@ -111,6 +124,8 @@ public class MainWindowUser extends MainWindow {
 
         numPeriodChanged = true;
         selectPeriod(0);
+        activeScen = 1;
+        activeATDM = 0;
     }
     
     /**
@@ -130,7 +145,9 @@ public class MainWindowUser extends MainWindow {
     // </editor-fold>
     
     public void applyATM() {
-        atmUpdater.update(activePeriod);
+        int periodJump = atmUpdater.update(activePeriod);
+        
+        selectPeriod(activePeriod+periodJump);
     }
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
@@ -616,6 +633,7 @@ public class MainWindowUser extends MainWindow {
         if (activeSeed == null) {
             period = -1;
         } else {
+            activeSeed.singleRun(activeScen, activeATDM);
             if (period >= activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
                 period = 0;
             } else {
@@ -1005,8 +1023,6 @@ public class MainWindowUser extends MainWindow {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        showInputButton = new javax.swing.JToggleButton();
-        showOutputButton = new javax.swing.JToggleButton();
         navigator = new GUI.major.Navigator();
         toolbox = new GUI.major.Toolbox();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -1019,8 +1035,6 @@ public class MainWindowUser extends MainWindow {
         inOutCB = new javax.swing.JComboBox();
         GPMLCB = new javax.swing.JComboBox();
         APPanel = new javax.swing.JPanel();
-        periodLabel = new javax.swing.JLabel();
-        timeLabel = new javax.swing.JLabel();
         firstButton = new javax.swing.JButton();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
@@ -1033,21 +1047,14 @@ public class MainWindowUser extends MainWindow {
         jScrollPane3 = new javax.swing.JScrollPane();
         graphicDisplay = new GUI.major.GraphicDisplay();
         tableDisplay = new GUI.major.TableDisplay();
+        jPanel2 = new javax.swing.JPanel();
+        takeActionButton = new javax.swing.JButton();
+        proceedOnlyButton = new javax.swing.JButton();
+        periodLabel = new javax.swing.JLabel();
+        timeLabel = new javax.swing.JLabel();
+        showInputButton = new javax.swing.JToggleButton();
+        showOutputButton = new javax.swing.JToggleButton();
         menuBar = new GUI.major.MenuBar();
-
-        showInputButton.setText("Input");
-        showInputButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showInputButtonActionPerformed(evt);
-            }
-        });
-
-        showOutputButton.setText("Output");
-        showOutputButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showOutputButtonActionPerformed(evt);
-            }
-        });
 
         jScrollPane2.setBorder(null);
 
@@ -1095,14 +1102,6 @@ public class MainWindowUser extends MainWindow {
 
         APPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Analysis Period (A.P.) Control"));
         APPanel.setLayout(new java.awt.GridLayout(1, 7));
-
-        periodLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        periodLabel.setText("A.P.");
-        APPanel.add(periodLabel);
-
-        timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        timeLabel.setText("-");
-        APPanel.add(timeLabel);
 
         firstButton.setText("First");
         firstButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1198,6 +1197,78 @@ public class MainWindowUser extends MainWindow {
         singleScenSplitPanel.setLeftComponent(jPanel1);
         singleScenSplitPanel.setRightComponent(tableDisplay);
 
+        jPanel2.setMaximumSize(new java.awt.Dimension(791, 42));
+
+        takeActionButton.setText("Take Action and Proceed");
+        takeActionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                takeActionButtonActionPerformed(evt);
+            }
+        });
+
+        proceedOnlyButton.setText("Proceed Only");
+        proceedOnlyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proceedOnlyButtonActionPerformed(evt);
+            }
+        });
+
+        periodLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        periodLabel.setText("A.P.");
+
+        timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        timeLabel.setText("-");
+
+        showInputButton.setText("Input");
+        showInputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showInputButtonActionPerformed(evt);
+            }
+        });
+
+        showOutputButton.setText("Output");
+        showOutputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showOutputButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(showInputButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showOutputButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(proceedOnlyButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(takeActionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {proceedOnlyButton, takeActionButton});
+
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(takeActionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(proceedOnlyButton)
+                .addComponent(showOutputButton)
+                .addComponent(showInputButton))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(timeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {proceedOnlyButton, takeActionButton});
+
         setJMenuBar(menuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1209,14 +1280,17 @@ public class MainWindowUser extends MainWindow {
                 .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1037, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -1290,6 +1364,14 @@ public class MainWindowUser extends MainWindow {
             jumpToButtonActionPerformed(null);
         }
     }//GEN-LAST:event_jumpTextKeyPressed
+
+    private void proceedOnlyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedOnlyButtonActionPerformed
+        showNextPeriod();
+    }//GEN-LAST:event_proceedOnlyButtonActionPerformed
+
+    private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed
+        applyATM();
+    }//GEN-LAST:event_takeActionButtonActionPerformed
 
     private void configGPMLDisplay() {
         switch (GPMLCB.getSelectedIndex()) {
@@ -1411,6 +1493,7 @@ public class MainWindowUser extends MainWindow {
     private GUI.major.GraphicDisplay graphicDisplay;
     private javax.swing.JComboBox inOutCB;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField jumpText;
@@ -1425,11 +1508,13 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JButton nextButton;
     private javax.swing.JLabel periodLabel;
     private javax.swing.JButton previousButton;
+    private javax.swing.JButton proceedOnlyButton;
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;
     public GUI.major.TableDisplay tableDisplay;
     private javax.swing.JPanel tableDisplayOptionPanel;
+    private javax.swing.JButton takeActionButton;
     private javax.swing.JLabel timeLabel;
     private GUI.major.Toolbox toolbox;
     private javax.swing.JSplitPane toolboxSplitPanel;

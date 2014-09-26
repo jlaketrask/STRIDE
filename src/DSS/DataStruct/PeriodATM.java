@@ -68,23 +68,23 @@ public class PeriodATM {
     }
 
 //<editor-fold defaultstate="collapsed" desc="Universal Getter">
-    public float getValueFloat(String identifier, int period) {
+    public float getValueFloat(String identifier, int seg) {
         switch (identifier) {
             case ID_AFTYPE_CAF:
-                return caf[period];
+                return caf[seg];
             case ID_AFTYPE_SAF:
-                return saf[period];
+                return saf[seg];
             case ID_HSR_CAPACITY:
-                return hsrCapacity[period];
+                return hsrCapacity[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
     }
 
-    public int getValueInt(String identifier, int period) {
+    public int getValueInt(String identifier, int seg) {
         switch (identifier) {
             case ID_RAMP_METERING_RATE:
-                return rampMetering[period];
+                return rampMetering[seg];
             case ID_RAMP_METERING_DURATION:
                 return rmDuration;
             case ID_HSR_DURATION:
@@ -94,12 +94,12 @@ public class PeriodATM {
         }
     }
     
-    public boolean getValueBool(String identifier, int period) {
+    public boolean getValueBool(String identifier, int seg) {
         switch (identifier) {
             case ID_RAMP_METERING_USED:
-                return rampMeteringUsed[period];
+                return rampMeteringUsed[seg];
             case ID_HSR_USED:
-                return hsrUsed[period];
+                return hsrUsed[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -153,7 +153,7 @@ public class PeriodATM {
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Setters">
+//<editor-fold defaultstate="collapsed" desc="Setters for Fields">
     public void setCAF(float value, int seg) {
         caf[seg] = value;
     }
@@ -187,7 +187,7 @@ public class PeriodATM {
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Getters">
+//<editor-fold defaultstate="collapsed" desc="Getters for Fields">
     public int getPeriod() {
         return period;
     }
@@ -208,8 +208,8 @@ public class PeriodATM {
         return rampMeteringUsed[seg];
     }
 
-    public int getRMRate(int period) {
-        return rampMetering[period];
+    public int getRMRate(int seg) {
+        return rampMetering[seg];
     }
     
     public int getHSRDuration() {
@@ -220,9 +220,22 @@ public class PeriodATM {
         return hsrUsed[seg];
     }
 
-    public float getHSRCapacity(int period) {
-        return hsrCapacity[period];
+    public float getHSRCapacity(int seg) {
+        return hsrCapacity[seg];
     }
 //</editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="Getters for ATM Updater">
+    public int getPeriodJump() {
+        int periodJump = 0;
+        periodJump = getMaxATMDuration();
+        
+        return periodJump;
+    }
+    
+    private int getMaxATMDuration() {
+        return Math.max(rmDuration, hsrDuration);
+    }
+    
+// </editor-fold>
 }

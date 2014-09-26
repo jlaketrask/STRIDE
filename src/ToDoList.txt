@@ -11,3 +11,10 @@ Changes in seed file reflected in User side
 
 Add Period ATM to seed
     - Change FREEVAL_DSS_TableModel setSeed funciton 
+
+Don't allow time periods to loop
+    - Finish and Summary?
+
+Check num of periods to apply input to see if that many periods are available
+    - Show dialog
+    - Autocorrect to remaining number of periods if greater.
