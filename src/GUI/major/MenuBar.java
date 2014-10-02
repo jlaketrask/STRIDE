@@ -1,8 +1,10 @@
 package GUI.major;
 
+import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  * This class is the menu bar in main window. Most of the methods provide a link
@@ -320,6 +322,7 @@ public class MenuBar extends JMenuBar {
                 firstAPMenuItemActionPerformed(evt);
             }
         });
+        firstAPMenuItem.setAccelerator(KeyStroke.getKeyStroke('F', KeyEvent.CTRL_DOWN_MASK));
         viewMenu.add(firstAPMenuItem);
 
         previousAPMenuItem = new JMenuItem("Show Previous Analysis Period");
@@ -329,6 +332,7 @@ public class MenuBar extends JMenuBar {
                 previousAPMenuItemActionPerformed(evt);
             }
         });
+        previousAPMenuItem.setAccelerator(KeyStroke.getKeyStroke('B', KeyEvent.CTRL_DOWN_MASK));
         viewMenu.add(previousAPMenuItem);
 
         nextAPMenuItem = new JMenuItem("Show Next Analysis Period");
@@ -338,6 +342,7 @@ public class MenuBar extends JMenuBar {
                 nextAPMenuItemActionPerformed(evt);
             }
         });
+        nextAPMenuItem.setAccelerator(KeyStroke.getKeyStroke('N', KeyEvent.CTRL_DOWN_MASK));
         viewMenu.add(nextAPMenuItem);
 
         lastAPMenuItem = new JMenuItem("Show Last Analysis Period");
@@ -347,6 +352,7 @@ public class MenuBar extends JMenuBar {
                 lastAPMenuItemActionPerformed(evt);
             }
         });
+        lastAPMenuItem.setAccelerator(KeyStroke.getKeyStroke('L', KeyEvent.CTRL_DOWN_MASK));
         viewMenu.add(lastAPMenuItem);
         // </editor-fold>
 
