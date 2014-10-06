@@ -1,5 +1,7 @@
 package GUI.major;
 
+import GUI.major.eventHelper.WeatherEventDialog;
+
 /**
  * This class is the toolbox in main window. Most of the methods provide a link
  * to call methods in mainWindow instead of containing actual codes.
@@ -53,6 +55,9 @@ public class Toolbox extends javax.swing.JPanel {
         fillButton = new javax.swing.JButton();
         mlPanel = new javax.swing.JPanel();
         mlButton = new javax.swing.JButton();
+        egPanel = new javax.swing.JPanel();
+        weatherEventButton = new javax.swing.JButton();
+        incidentEventButton = new javax.swing.JButton();
 
         newButton.setText("New");
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -226,6 +231,20 @@ public class Toolbox extends javax.swing.JPanel {
         });
         mlPanel.add(mlButton);
 
+        egPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Scenario Events"));
+        egPanel.setLayout(new java.awt.GridLayout(1, 2));
+
+        weatherEventButton.setText("Add Weather Event");
+        weatherEventButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                weatherEventButtonActionPerformed(evt);
+            }
+        });
+        egPanel.add(weatherEventButton);
+
+        incidentEventButton.setText("Add Incident Event");
+        egPanel.add(incidentEventButton);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -234,15 +253,15 @@ public class Toolbox extends javax.swing.JPanel {
                 .addComponent(cfgPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(486, 486, 486))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(egPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cfgPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0))
+            .addComponent(cfgPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(mlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(egPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -330,6 +349,13 @@ public class Toolbox extends javax.swing.JPanel {
     private void atdmBatchRunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atdmBatchRunButtonActionPerformed
         //mainWindow.runBatchATDM();
     }//GEN-LAST:event_atdmBatchRunButtonActionPerformed
+
+    private void weatherEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weatherEventButtonActionPerformed
+        WeatherEventDialog weDialog = new WeatherEventDialog(null, true);
+
+        weDialog.setVisible(true);
+
+    }//GEN-LAST:event_weatherEventButtonActionPerformed
 
 //    /**
 //     * Show a particular analysis period data
@@ -424,6 +450,10 @@ public class Toolbox extends javax.swing.JPanel {
 
         mlPanel.setEnabled(false);
         mlButton.setEnabled(false);
+
+        egPanel.setEnabled(false);
+        weatherEventButton.setEnabled(false);
+        incidentEventButton.setEnabled(false);
     }
 
     /**
@@ -472,6 +502,10 @@ public class Toolbox extends javax.swing.JPanel {
 
         mlPanel.setEnabled(true);
         mlButton.setEnabled(true);
+
+        egPanel.setEnabled(true);
+        weatherEventButton.setEnabled(true);
+        incidentEventButton.setEnabled(true);
     }
 
     public void enableML() {
@@ -509,9 +543,11 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JPanel cfgPanel;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton copyButton;
+    private javax.swing.JPanel egPanel;
     private javax.swing.JButton fillButton;
     private javax.swing.JButton firstButton;
     private javax.swing.JButton globalButton;
+    private javax.swing.JButton incidentEventButton;
     private javax.swing.JTextField jumpText;
     private javax.swing.JButton jumpToButton;
     private javax.swing.JButton lastButton;
@@ -529,5 +565,6 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JButton singleRunButton;
     private javax.swing.JLabel timeLabel;
+    private javax.swing.JButton weatherEventButton;
     // End of variables declaration//GEN-END:variables
 }

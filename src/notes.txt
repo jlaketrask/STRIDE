@@ -1,3 +1,7 @@
 MainWindow:
     -  Added empty constructor.
     -   Change Title to FREEVAL-DSS (ADMINISTRATOR)
+
+Make sure Oversat engaged from beginning
+Output Management
+    Generate Comparison of multiple runs
