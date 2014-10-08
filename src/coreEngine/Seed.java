@@ -1723,7 +1723,7 @@ public class Seed implements Serializable {
 
         for (int period = 0; period < inNumPeriod; period++) {
 
-            if (isUnderSatGP(period)) {
+            if (false) { //isUnderSatGP(period)
                 //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
                     segment.runUndersaturated(scen, atdm, period);

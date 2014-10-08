@@ -17,7 +17,17 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
     public FacilityATMJPanel() {
         initComponents();
     }
+    
+    public void setEditLock(boolean lock) {
+        //jComboBox1.setEditable(!lock);
+        jComboBox1.setEnabled(!lock);
+        updatePanelOnLock(lock);
+    }
 
+    public void updatePanelOnLock(boolean lock) {
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

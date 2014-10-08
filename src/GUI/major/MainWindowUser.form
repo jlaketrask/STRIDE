@@ -226,7 +226,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="singleScenSplitPanel" pref="1037" max="32767" attributes="0"/>
+              <Component id="singleScenSplitPanel" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Component id="userIOTableDisplay" alignment="0" max="32767" attributes="0"/>
@@ -343,14 +343,12 @@
                   <Component id="periodLabel" min="-2" pref="124" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="timeLabel" min="-2" pref="100" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="showInputButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="showOutputButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="proceedOnlyButton" linkSize="1" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="takeActionButton" linkSize="1" min="-2" pref="302" max="-2" attributes="0"/>
+                  <Component id="jPanel3" pref="636" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -358,35 +356,16 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="takeActionButton" linkSize="2" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
-                  <Component id="proceedOnlyButton" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="periodLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
+                  <Component id="timeLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
                   <Component id="showOutputButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="showInputButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="periodLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
-                  <Component id="timeLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
-              </Group>
+              <Component id="jPanel3" alignment="1" min="-2" pref="42" max="-2" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="takeActionButton">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Take Action and Proceed"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="takeActionButtonActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="proceedOnlyButton">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Proceed Only"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proceedOnlyButtonActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JLabel" name="periodLabel">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
@@ -415,6 +394,40 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showOutputButtonActionPerformed"/>
           </Events>
         </Component>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="1"/>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JButton" name="reviewPreviousPeriodButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Review Previous Period"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reviewPreviousPeriodButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="proceedOnlyButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Proceed Only"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proceedOnlyButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="takeActionButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Take Action and Proceed"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="takeActionButtonActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>

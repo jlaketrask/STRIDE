@@ -121,4 +121,8 @@ public class SegATMTable {
         //s1electSeedScenPeriod(this.mainWindow.getActiveSeed(), 0);
         //System.out.println(seed);
     }
+    
+    public void setEditLock(boolean lock) {
+        restColumnTable.setEnabled(!lock);
+    }
 }

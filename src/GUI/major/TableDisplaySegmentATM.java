@@ -73,6 +73,11 @@ public class TableDisplaySegmentATM extends javax.swing.JPanel {
             segATMTable.getRestColumnTable().setHighlightCol(seg);
         }
     }
+    
+    public void setEditLock(boolean lock) {
+        segATMTable.setEditLock(lock);
+        segIOSplitTable.setEnabled(!lock);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

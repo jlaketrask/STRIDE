@@ -33,6 +33,11 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     public TableDisplaySegmentATM getTableDisplaySegmentATM() {
         return this.tableDisplaySegmentATM;
     }
+    
+    public void setEditLock(boolean lock) {
+        tableDisplaySegmentATM.setEditLock(lock);
+        facilityATMJPanel.setEditLock(lock);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -45,14 +50,14 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
 
         jSplitPane1 = new javax.swing.JSplitPane();
         tableDisplaySegmentATM = new GUI.major.TableDisplaySegmentATM();
-        facilityATMJPanel2 = new GUI.major.FacilityATMJPanel();
+        facilityATMJPanel = new GUI.major.FacilityATMJPanel();
 
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ATM Options", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
 
         jSplitPane1.setDividerLocation(153);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane1.setLeftComponent(tableDisplaySegmentATM);
-        jSplitPane1.setRightComponent(facilityATMJPanel2);
+        jSplitPane1.setRightComponent(facilityATMJPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -73,7 +78,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private GUI.major.FacilityATMJPanel facilityATMJPanel2;
+    private GUI.major.FacilityATMJPanel facilityATMJPanel;
     private javax.swing.JSplitPane jSplitPane1;
     private GUI.major.TableDisplaySegmentATM tableDisplaySegmentATM;
     // End of variables declaration//GEN-END:variables

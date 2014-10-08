@@ -2,6 +2,11 @@ MainWindow:
     -  Added empty constructor.
     -   Change Title to FREEVAL-DSS (ADMINISTRATOR)
 
-Make sure Oversat engaged from beginning
+Make sure Oversat engaged from beginning - done
+
+
+Engage oversat module:
+    Seed line 1726: if (isUnderSatGP(period)) --> if (false)
+
 Output Management
     Generate Comparison of multiple runs

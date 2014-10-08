@@ -45,6 +45,7 @@ public class MainWindowUser extends MainWindow {
     private Seed activeSeed;
     private int activeScen = 0;
     private int activePeriod = 0;
+    private int dssProgress = 0;
     private int activeATDM = -1;
     private boolean isShowingInput = true;
     private boolean numPeriodChanged = false;
@@ -148,6 +149,7 @@ public class MainWindowUser extends MainWindow {
         int periodJump = atmUpdater.update(activePeriod);
         
         selectPeriod(activePeriod+periodJump);
+        dssProgress += periodJump;
     }
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
@@ -663,10 +665,6 @@ public class MainWindowUser extends MainWindow {
                 printLog("Analysis period " + (period + 1) + " selected");
             }
         }
-        if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
-            takeActionButton.setEnabled(false);
-            proceedOnlyButton.setText("Generate Summary");
-        }
     }
 
     /**
@@ -1018,6 +1016,46 @@ public class MainWindowUser extends MainWindow {
         return this.atmUpdater;
     }
     
+    private void proceedOnly() {
+        showNextPeriod();
+        dssProgress+=1;
+    }
+    
+    public void updateButtons() {
+        if (activePeriod == 0) {
+            reviewPreviousPeriodButton.setEnabled(false);
+            if (activePeriod != dssProgress) {
+                proceedOnlyButton.setText("Review Next Period");
+                takeActionButton.setText("Return to Active Period");
+            }
+        } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+            reviewPreviousPeriodButton.setEnabled(true);
+            takeActionButton.setEnabled(false);
+            proceedOnlyButton.setText("Generate Summary");
+        } else {
+            reviewPreviousPeriodButton.setEnabled(true);
+            if (activePeriod != dssProgress) {
+                proceedOnlyButton.setText("Review Next Period");
+                takeActionButton.setText("Return to Active Period");
+            } else {
+                proceedOnlyButton.setText("Proceed Only");
+                takeActionButton.setText("Take Action and Proceed"); 
+            }
+        }
+    }
+    
+    private void updateEditLock() {
+        if (activePeriod != dssProgress) {
+            userIOTableDisplay.setEditLock(true);
+        } else {
+            userIOTableDisplay.setEditLock(false);
+        }
+    }
+    
+    private void generateSummary() {
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1052,12 +1090,14 @@ public class MainWindowUser extends MainWindow {
         graphicDisplay = new GUI.major.GraphicDisplay();
         tableDisplay = new GUI.major.TableDisplay();
         jPanel2 = new javax.swing.JPanel();
-        takeActionButton = new javax.swing.JButton();
-        proceedOnlyButton = new javax.swing.JButton();
         periodLabel = new javax.swing.JLabel();
         timeLabel = new javax.swing.JLabel();
         showInputButton = new javax.swing.JToggleButton();
         showOutputButton = new javax.swing.JToggleButton();
+        jPanel3 = new javax.swing.JPanel();
+        reviewPreviousPeriodButton = new javax.swing.JButton();
+        proceedOnlyButton = new javax.swing.JButton();
+        takeActionButton = new javax.swing.JButton();
         menuBar = new GUI.major.MenuBar();
 
         jScrollPane2.setBorder(null);
@@ -1203,20 +1243,6 @@ public class MainWindowUser extends MainWindow {
 
         jPanel2.setMaximumSize(new java.awt.Dimension(791, 42));
 
-        takeActionButton.setText("Take Action and Proceed");
-        takeActionButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                takeActionButtonActionPerformed(evt);
-            }
-        });
-
-        proceedOnlyButton.setText("Proceed Only");
-        proceedOnlyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedOnlyButtonActionPerformed(evt);
-            }
-        });
-
         periodLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         periodLabel.setText("A.P.");
 
@@ -1237,6 +1263,33 @@ public class MainWindowUser extends MainWindow {
             }
         });
 
+        jPanel3.setLayout(new java.awt.GridLayout());
+
+        reviewPreviousPeriodButton.setText("Review Previous Period");
+        reviewPreviousPeriodButton.setEnabled(false);
+        reviewPreviousPeriodButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reviewPreviousPeriodButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(reviewPreviousPeriodButton);
+
+        proceedOnlyButton.setText("Proceed Only");
+        proceedOnlyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proceedOnlyButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(proceedOnlyButton);
+
+        takeActionButton.setText("Take Action and Proceed");
+        takeActionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                takeActionButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(takeActionButton);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -1246,32 +1299,23 @@ public class MainWindowUser extends MainWindow {
                 .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showInputButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showOutputButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(proceedOnlyButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(takeActionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {proceedOnlyButton, takeActionButton});
-
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(takeActionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(proceedOnlyButton)
+                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(showOutputButton)
                 .addComponent(showInputButton))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
-
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {proceedOnlyButton, takeActionButton});
 
         setJMenuBar(menuBar);
 
@@ -1281,7 +1325,7 @@ public class MainWindowUser extends MainWindow {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1037, Short.MAX_VALUE)
+                .addComponent(singleScenSplitPanel)
                 .addContainerGap())
             .addComponent(userIOTableDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1370,16 +1414,34 @@ public class MainWindowUser extends MainWindow {
     }//GEN-LAST:event_jumpTextKeyPressed
 
     private void proceedOnlyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedOnlyButtonActionPerformed
-        if (activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+        if (activePeriod < dssProgress) {
             showNextPeriod();
+        } else if (activePeriod == dssProgress && activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+            proceedOnly();
         } else {
-            
+            generateSummary();
         }
+        updateButtons();
+        updateEditLock();
     }//GEN-LAST:event_proceedOnlyButtonActionPerformed
 
     private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed
-        applyATM();
+        if (activePeriod == dssProgress) {
+            applyATM();
+        } else {
+            selectPeriod(dssProgress);
+        }
+        updateButtons();
+        updateEditLock();
     }//GEN-LAST:event_takeActionButtonActionPerformed
+
+    private void reviewPreviousPeriodButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reviewPreviousPeriodButtonActionPerformed
+        if (activePeriod>0) {
+            showPrevPeriod();
+        }
+        updateButtons();
+        updateEditLock();
+    }//GEN-LAST:event_reviewPreviousPeriodButtonActionPerformed
 
     private void configGPMLDisplay() {
         switch (GPMLCB.getSelectedIndex()) {
@@ -1502,6 +1564,7 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JComboBox inOutCB;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField jumpText;
@@ -1517,6 +1580,7 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JLabel periodLabel;
     private javax.swing.JButton previousButton;
     private javax.swing.JButton proceedOnlyButton;
+    private javax.swing.JButton reviewPreviousPeriodButton;
     private javax.swing.JToggleButton showInputButton;
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JSplitPane singleScenSplitPanel;
