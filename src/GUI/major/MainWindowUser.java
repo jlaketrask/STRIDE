@@ -2,6 +2,8 @@ package GUI.major;
 
 import DSS.DataStruct.ATMUpdater;
 import DSS.DataStruct.PeriodATM;
+import GUI.ATDMHelper.summary.ATDMSetSummaryDialog;
+import GUI.ATDMHelper.summary.SummaryTypeSelectionDialog;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -1053,8 +1055,34 @@ public class MainWindowUser extends MainWindow {
     }
     
     private void generateSummary() {
-        
+        activeSeed.singleRun(activeScen, -1);
+        activeSeed.singleRun(activeScen, activeATDM);
+        ATDMSetSummaryDialog atdmSetSummaryDialog = new ATDMSetSummaryDialog(activeSeed, activeATDM, true, this);
+        atdmSetSummaryDialog.setVisible(true);
     }
+    
+//    public void showATDMSummary() {
+//        if (checkATDMHasFullResult()) {
+//            SummaryTypeSelectionDialog summaryTypeSelectionDialog = new SummaryTypeSelectionDialog(this, activeSeed);
+//            summaryTypeSelectionDialog.setVisible(true);
+//
+//            if (summaryTypeSelectionDialog.getReturnStatus() == SummaryTypeSelectionDialog.RET_OK) {
+//                int atdmIndex = summaryTypeSelectionDialog.getAtdmSetSelected();
+//                ATDMSetSummaryDialog atdmSetSummaryDialog;
+//                switch (summaryTypeSelectionDialog.getAtdmSummaryType()) {
+//                    case SummaryTypeSelectionDialog.ATDM_SINGLE_SET_SET_ONLY:
+//                        atdmSetSummaryDialog = new ATDMSetSummaryDialog(activeSeed, atdmIndex, true, this);
+//                        atdmSetSummaryDialog.setVisible(true);
+//                        break;
+//                    case SummaryTypeSelectionDialog.ATDM_SINGLE_SET_ALL:
+//                        runBatchRL();
+//                        atdmSetSummaryDialog = new ATDMSetSummaryDialog(activeSeed, atdmIndex, false, this);
+//                        atdmSetSummaryDialog.setVisible(true);
+//                        break;
+//                }
+//            }
+//        }
+//    }
     
     /**
      * This method is called from within the constructor to initialize the form.

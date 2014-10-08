@@ -19,7 +19,6 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
     }
     
     public void setEditLock(boolean lock) {
-        //jComboBox1.setEditable(!lock);
         jComboBox1.setEnabled(!lock);
         updatePanelOnLock(lock);
     }
