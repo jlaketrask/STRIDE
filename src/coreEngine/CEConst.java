@@ -1174,37 +1174,6 @@ public class CEConst {
      */
     public final static String IDS_ML_ATDMSLAF = "IDS_ML_ATDMSLAF";
 
-    //Cross Weave Parameters //TODO need to check
-    /**
-     * Seed/User CWAF
-     */
-    public final static String IDS_ML_UCWAF = "IDS_ML_UCWAF";
-
-    /**
-     * Reliability Analysis Scenario CWAF
-     */
-    public final static String IDS_ML_RLSCWAF = "IDS_ML_RLSCWAF";
-
-    /**
-     * ATDM Analysis Scenario CWAF
-     */
-    public final static String IDS_ML_ATDMSCWAF = "IDS_ML_ATDMSCWAF";
-
-    /**
-     * Analysis of Cross Weave Effect
-     */
-    public final static String IDS_ML_USE_CW = "IDS_ML_USE_CW";
-
-    /**
-     * Cross Weave LCMin
-     */
-    public final static String IDS_ML_CW_LC_MIN = "IDS_ML_CW_LC_MIN";
-
-    /**
-     * Cross Weave Volume
-     */
-    public final static String IDS_ML_CW_VOLUME = "IDS_ML_CW_VOLUME";
-
     /**
      * Acceleration/Deceleration Lane Length in Feet
      */
@@ -1318,6 +1287,7 @@ public class CEConst {
      */
     public final static String IDS_ML_MAX_LANE_CHANGE_ML = "IDS_ML_MAX_LANE_CHANGE_ML";
 
+    //Cross Weave Parameters //TODO need to check
     /**
      * Whether Managed Lane Has Cross Weave Effect
      */
@@ -1334,9 +1304,10 @@ public class CEConst {
     public final static String IDS_ML_CROSS_WEAVE_VOLUME = "IDS_ML_CROSS_WEAVE_VOLUME";
 
     /**
-     * Managed Lane Cross Weave Adjust Factor
+     * Cross Weave Capacity Adjustment Factor (Apply on GP when ML is used and
+     * has cross weave effect)
      */
-    public final static String IDS_ML_CROSS_WEAVE_FACTOR = "IDS_ML_CROSS_WEAVE_FACTOR";
+    public final static String IDS_ML_CROSS_WEAVE_CAF = "IDS_ML_CROSS_WEAVE_CAF";
 
     // Basic Segment Output Column Text
     /**
@@ -1914,26 +1885,6 @@ public class CEConst {
      * Maximum Lane Change between GP and ML
      */
     public final static String IDS_CB_MAX_LANE_CHANGE_ML = "IDS_CB_MAX_LANE_CHANGE_ML";
-
-    /**
-     * Whether Managed Lane Has Cross Weave Effect
-     */
-    public final static String IDS_CB_HAS_CROSS_WEAVE = "IDS_CB_HAS_CROSS_WEAVE";
-
-    /**
-     * Managed Lane Cross Weave Minium Lane Change
-     */
-    public final static String IDS_CB_CROSS_WEAVE_LC_MIN = "IDS_CB_CROSS_WEAVE_LC_MIN";
-
-    /**
-     * Managed Lane Cross Weave Volume
-     */
-    public final static String IDS_CB_CROSS_WEAVE_VOLUME = "IDS_CB_CROSS_WEAVE_VOLUME";
-
-    /**
-     * Managed Lane Cross Weave Adjust Factor
-     */
-    public final static String IDS_CB_CROSS_WEAVE_FACTOR = "IDS_CB_CROSS_WEAVE_FACTOR";
 
     // Basic Segment Output Column Text
     /**

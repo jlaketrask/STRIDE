@@ -38,7 +38,7 @@ public class ScenarioInfo implements Serializable {
     public float prob;
 
     /**
-     * Group number of a scenario
+     * Group number of a scenario. Also the scenario index
      */
     public int group;
 
@@ -777,11 +777,11 @@ public class ScenarioInfo implements Serializable {
                                 workZones.get(wzIdx).getStartPeriod() - 1,
                                 seg,
                                 workZones.get(wzIdx).getEndPeriod() - 1);
-                        tempATDMScenario.DAF().multiply(afArray[3][0],
-                                seg,
-                                workZones.get(wzIdx).getStartPeriod() - 1,
-                                seg,
-                                workZones.get(wzIdx).getEndPeriod() - 1);
+//                        tempATDMScenario.DAF().multiply(afArray[3][0],
+//                                seg,
+//                                workZones.get(wzIdx).getStartPeriod() - 1,
+//                                seg,
+//                                workZones.get(wzIdx).getEndPeriod() - 1);
                     }
                 }
                 
@@ -891,8 +891,9 @@ public class ScenarioInfo implements Serializable {
                 // Get list of upstream mainline and onramp segments
                 ArrayList<Integer> divSegments = new ArrayList<>();
                 divSegments.add(0);
+                System.out.println(seg);
                 for (int segIdx = 1; segIdx < seg; segIdx++) {
-                    if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_ONR) {
+                    if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_ONR) {
                         divSegments.add(segIdx);
                     }
                 }
@@ -921,8 +922,8 @@ public class ScenarioInfo implements Serializable {
                                 startTime,
                                 seg,
                                 endTime - 1);
-                        // Setting the new LAF to be that of just the workzone (equivalant to removing incident LAF)
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
+                        
+                        int newLAF = -1 * seed.getRLLAFI(group+1, seg, startTime, CEConst.SEG_TYPE_GP);
                         tempATDMScenario.LAF().add(newLAF,
                                 seg,
                                 startTime,
@@ -972,7 +973,7 @@ public class ScenarioInfo implements Serializable {
                                 seg,
                                 endTime - 1);
                         
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
+                        int newLAF = -1 * seed.getRLLAFI(group+1, seg, startTime, CEConst.SEG_TYPE_GP);
                         tempATDMScenario.LAF().add(newLAF,
                                 seg,
                                 startTime,
@@ -1009,7 +1010,7 @@ public class ScenarioInfo implements Serializable {
                                 endTime - durReduction,
                                 seg,
                                 endTime - 1);
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
+                        int newLAF = -1 * seed.getRLLAFI(group+1, seg, startTime, CEConst.SEG_TYPE_GP);
                         tempATDMScenario.LAF().add(newLAF,
                                 seg,
                                 endTime - durReduction,
@@ -1041,11 +1042,11 @@ public class ScenarioInfo implements Serializable {
                                     startTime,
                                     divSeg,
                                     endTime - durReduction - 1);
-                            tempATDMScenario.DAF().multiply(afArray[2][0],
-                                    divSeg,
-                                    startTime,
-                                    divSeg,
-                                    endTime - durReduction - 1);
+//                            tempATDMScenario.DAF().multiply(afArray[2][0],
+//                                    divSeg,
+//                                    startTime,
+//                                    divSeg,
+//                                    endTime - durReduction - 1);
                         }
                     } else {                                                    // Case 2b: incident wraps
                         if ((endTime - durReduction) <= numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
@@ -1092,7 +1093,7 @@ public class ScenarioInfo implements Serializable {
                                     seg,
                                     wrappedEndTime - 1);
                             
-                            int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
+                            int newLAF = -1 * seed.getRLLAFI(group+1, seg, startTime, CEConst.SEG_TYPE_GP);
                             tempATDMScenario.LAF().add(newLAF,
                                     seg,
                                     endTime - durReduction,
@@ -1128,11 +1129,11 @@ public class ScenarioInfo implements Serializable {
                                         startTime,
                                         divSeg,
                                         endTime - durReduction - 1);
-                                tempATDMScenario.DAF().multiply(afArray[2][0],
-                                        divSeg,
-                                        startTime,
-                                        divSeg,
-                                        endTime - durReduction - 1);
+//                                tempATDMScenario.DAF().multiply(afArray[2][0],
+//                                        divSeg,
+//                                        startTime,
+//                                        divSeg,
+//                                        endTime - durReduction - 1);
                             }
                             
                         } else {                                                // Case 2b2: wrap occurs before duration reduction
@@ -1158,7 +1159,7 @@ public class ScenarioInfo implements Serializable {
                                     endTime - durReduction,
                                     seg,
                                     endTime - 1);
-                            int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
+                            int newLAF = -1 * seed.getRLLAFI(group+1, seg, startTime, CEConst.SEG_TYPE_GP);
                             tempATDMScenario.LAF().add(newLAF,
                                     seg,
                                     endTime - durReduction,
@@ -1209,16 +1210,16 @@ public class ScenarioInfo implements Serializable {
                                         0,
                                         divSeg,
                                         endTime - durReduction - 1);
-                                tempATDMScenario.DAF().multiply(afArray[2][0],
-                                        divSeg,
-                                        startTime,
-                                        divSeg,
-                                        numAnalysisPeriods - 1);
-                                tempATDMScenario.DAF().multiply(afArray[2][0],
-                                        divSeg,
-                                        0,
-                                        divSeg,
-                                        endTime - durReduction - 1);
+//                                tempATDMScenario.DAF().multiply(afArray[2][0],
+//                                        divSeg,
+//                                        startTime,
+//                                        divSeg,
+//                                        numAnalysisPeriods - 1);
+//                                tempATDMScenario.DAF().multiply(afArray[2][0],
+//                                        divSeg,
+//                                        0,
+//                                        divSeg,
+//                                        endTime - durReduction - 1);
                             }
                             
                         }
@@ -1248,6 +1249,7 @@ public class ScenarioInfo implements Serializable {
         }
         
         if (atdmPlan.hasRampMetering()) {
+            tempATDMScenario.setRampMetering(true);
             tempATDMScenario.RM().deepCopyFrom(atdmPlan.getRMRate());
         }
         return tempATDMScenario;

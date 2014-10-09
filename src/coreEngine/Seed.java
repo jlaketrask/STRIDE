@@ -1723,7 +1723,7 @@ public class Seed implements Serializable {
 
         for (int period = 0; period < inNumPeriod; period++) {
 
-            if (false) { //isUnderSatGP(period)
+            if (isUnderSatGP(period)) {
                 //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
                     segment.runUndersaturated(scen, atdm, period);
@@ -1768,7 +1768,7 @@ public class Seed implements Serializable {
         }
 
         //TODO: for debug only
-//        DebugOutput.finish();
+        //DebugOutput.finish();
     }
 
     /**
@@ -1781,11 +1781,7 @@ public class Seed implements Serializable {
      */
     private boolean isUnderSatGP(int period) {
         for (GPMLSegment segment : GPSegments) {
-            if (segment.scenMainlineCapacity_veh[period] < segment.scenMainlineDemand_veh[period]) {
-                return false;
-            }
-            if (period > 0
-                    && (segment.Q[period - 1] > CEConst.ZERO || segment.ONRQ_End_veh[period - 1] > CEConst.ZERO)) {
+            if (!isSegmentUnderSat(segment, period)) {
                 return false;
             }
         }
@@ -1802,13 +1798,22 @@ public class Seed implements Serializable {
      */
     private boolean isUnderSatML(int period) {
         for (GPMLSegment segment : MLSegments) {
-            if (segment.scenMainlineCapacity_veh[period] < segment.scenMainlineDemand_veh[period]) {
+            if (!isSegmentUnderSat(segment, period)) {
                 return false;
             }
-            if (period > 0
-                    && (segment.Q[period - 1] > CEConst.ZERO || segment.ONRQ_End_veh[period - 1] > CEConst.ZERO)) {
-                return false;
-            }
+        }
+        return true;
+    }
+
+    private boolean isSegmentUnderSat(GPMLSegment segment, int period) {
+        if (segment.scenMainlineCapacity_veh[period] < segment.scenMainlineDemand_veh[period]
+                || segment.scenOnCapacity_veh[period] < segment.scenOnDemand_veh[period]
+                || segment.scenRM_veh[period] < segment.scenOnDemand_veh[period]) { //(isRampMeteringUsed() &&
+            return false;
+        }
+        if (period > 0
+                && (segment.Q[period - 1] > CEConst.ZERO || segment.ONRQ_End_veh[period - 1] > CEConst.ZERO)) {
+            return false;
         }
         return true;
     }
@@ -3327,6 +3332,8 @@ public class Seed implements Serializable {
                     return getATDMDAF(scen, atdm, seg, period);
                 case CEConst.IDS_ATDM_SAF:
                     return getATDMSAF(scen, atdm, seg, period);
+                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                    return GPSegments.get(seg).inCrossCAF[period];
                 case CEConst.IDS_SPEED:
                 case CEConst.IDS_SPACE_MEAN_SPEED:
                     checkInBuffer(scen, atdm);
@@ -4145,6 +4152,7 @@ public class Seed implements Serializable {
 
                 case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
                 case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
                     if (!MLSegments.get(seg).inMLHasCrossWeave) {
                         return CEConst.IDS_NA;
                     }
@@ -4294,6 +4302,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ATDM_OAF:
                 case CEConst.IDS_ATDM_DAF:
                 case CEConst.IDS_ATDM_SAF:
+                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
                 case CEConst.IDS_ON_RAMP_TRUCK_PERCENTAGE:
                 case CEConst.IDS_ON_RAMP_RV_PERCENTAGE:
                 case CEConst.IDS_OFF_RAMP_TRUCK_PERCENTAGE:

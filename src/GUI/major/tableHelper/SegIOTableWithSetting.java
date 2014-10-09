@@ -454,7 +454,18 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         setting.showInInput = atdm >= 0;
                         setting.showInOutput = setting.showInOutput && atdm >= 0;
                         break;
-
+                    case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                    case CEConst.IDS_ML_HAS_CROSS_WEAVE:
+                    case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
+                        //auto hide rows depending on whether managed lanes are used
+                        setting.showInInput = seed.isManagedLaneUsed();
+                        setting.showInOutput = false;
+                        break;
+                    case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                        //auto hide rows depending on whether managed lanes are used
+                        setting.showInInput = false;
+                        setting.showInOutput = seed.isManagedLaneUsed();
+                        break;
                 }
             }
         }
@@ -567,13 +578,14 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ADJUSTED_OFF_RAMP_DEMAND = "Adjusted OFR Dem. (vph)";
         STR_OFF_RAMP_VOLUME_SERVED = "OFR Volume Served (vph)";
         STR_ON_RAMP_DELAY = "ONR Delay (min)";
+        STR_ACCESS_DELAY = "Access Segment Delay (min)";
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="default ML header strings">
         // Basic Segment Variable Column Text
         STR_ML_HEADER = "Managed Lanes Segment Data";
         STR_ML_SEGMENT_TYPE = "ML Segment Type";
-        STR_ML_METHOD_TYPE = "ML Type of ML (HOV, HOT)";
+        //STR_ML_METHOD_TYPE = "ML Type of ML (HOV, HOT)";
         STR_ML_SEPARATION_TYPE = "ML Type of Separation";
         //STR_ML_SEGMENT_LENGTH = "ML Segment Length (ft)";
 
@@ -620,6 +632,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ML_HAS_CROSS_WEAVE = "Analysis of Cross Weave Effect";
         STR_ML_CROSS_WEAVE_LC_MIN = "Cross Weave LC-Min";
         STR_ML_CROSS_WEAVE_VOLUME = "Cross Weave Volume";
+        STR_ML_CROSS_WEAVE_CAF = "Cross Weave CAF";
 
         // Basic Segment Output Column Text
         STR_ML_TYPE_USED = "ML Processed Segment Type";
@@ -634,9 +647,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ML_VC = "ML V/C";
         STR_ML_DENSITY_BASED_LOS = "ML Density Based LOS";
         STR_ML_DEMAND_BASED_LOS = "ML Dem. Based LOS";
-        //STR_ML_QUEUE_LENGTH = "ML Mainline Queue Length (ft)";
-        //STR_ML_QUEUE_PERCENTAGE = "ML Mainline Queue Length (%)";
-        //STR_ML_ON_QUEUE_VEH = "ML ONR Queue (veh)";
+        STR_ML_QUEUE_LENGTH = "ML Mainline Queue Length (ft)";
+        STR_ML_QUEUE_PERCENTAGE = "ML Mainline Queue Length (%)";
+        STR_ML_ON_QUEUE_VEH = "ML ONR Queue (veh)";
 
         STR_ML_ACTUAL_TIME = "ML Actual Travel Time (min)";
         STR_ML_FFS_TIME = "ML FFS Travel Time (min)";
@@ -658,7 +671,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ML_OFF_RAMP_CAPACITY = "ML OFR Capacity (vph)";
         STR_ML_ADJUSTED_OFF_RAMP_DEMAND = "ML Adjusted OFR Dem. (vph)";
         STR_ML_OFF_RAMP_VOLUME_SERVED = "ML OFR Volume Served (vph)";
-        //STR_ML_ON_RAMP_DELAY = "ML ONR Delay (min)";
+        STR_ML_ON_RAMP_DELAY = "ML ONR Delay (min)";
+        STR_ML_ACCESS_DELAY = "ML Access Segment Delay (min)";
         // </editor-fold>
 
         //reset order and visibility
@@ -719,6 +733,10 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_NUM_LANES_WEAVING, CEConst.IDS_NUM_LANES_WEAVING, true, false, COLOR_GP_FIX_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_RAMP_TO_RAMP_DEMAND_VEH, CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH, true, false, COLOR_GP_TIME_INPUT, true, false, true));
 
+        settings.add(new TableCellSetting(STR_ML_HAS_CROSS_WEAVE, CEConst.IDS_ML_HAS_CROSS_WEAVE, true, false, COLOR_GP_FIX_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_ML_CROSS_WEAVE_LC_MIN, true, false, COLOR_GP_FIX_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_ML_CROSS_WEAVE_VOLUME, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+
         //basic and special output data
         settings.add(new TableCellSetting(STR_TYPE_USED, CEConst.IDS_TYPE_USED, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_SPEED, CEConst.IDS_SPEED, false, true, COLOR_GP_OUTPUT, true, false, false));
@@ -726,6 +744,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_TOTAL_DENSITY_PC, CEConst.IDS_TOTAL_DENSITY_PC, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_INFLUENCED_DENSITY_PC, CEConst.IDS_INFLUENCED_DENSITY_PC, false, true, COLOR_GP_OUTPUT, true, false, false));
 
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_CAF, CEConst.IDS_ML_CROSS_WEAVE_CAF, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_CAPACITY, CEConst.IDS_MAIN_CAPACITY, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_ADJUSTED_DEMAND, CEConst.IDS_ADJUSTED_MAIN_DEMAND, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_DC, CEConst.IDS_DC, false, true, COLOR_GP_OUTPUT, true, false, false));
@@ -749,6 +768,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_FFS_TIME, CEConst.IDS_FFS_TIME, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_MAINLINE_DELAY, CEConst.IDS_MAINLINE_DELAY, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_ON_RAMP_DELAY, CEConst.IDS_ON_RAMP_DELAY, false, true, COLOR_GP_OUTPUT, true, false, false));
+        settings.add(new TableCellSetting(STR_ACCESS_DELAY, CEConst.IDS_ACCESS_DELAY, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_SYSTEM_DELAY, CEConst.IDS_SYSTEM_DELAY, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_VMTD, CEConst.IDS_VMTD, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_VMTV, CEConst.IDS_VMTV, false, true, COLOR_GP_OUTPUT, true, false, false));
@@ -804,9 +824,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         settings.add(new TableCellSetting(STR_ML_LC_MIN, CEConst.IDS_ML_MIN_LANE_CHANGE_ML, true, false, COLOR_ML_FIX_INPUT, false, true, true));
         settings.add(new TableCellSetting(STR_ML_LC_MAX, CEConst.IDS_ML_MAX_LANE_CHANGE_ML, true, false, COLOR_ML_FIX_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_HAS_CROSS_WEAVE, CEConst.IDS_ML_HAS_CROSS_WEAVE, true, false, COLOR_ML_FIX_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_ML_CROSS_WEAVE_LC_MIN, true, false, COLOR_ML_FIX_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_ML_CROSS_WEAVE_VOLUME, true, false, COLOR_ML_TIME_INPUT, false, true, true));
 
         //ML output
         settings.add(new TableCellSetting(STR_ML_TYPE_USED, CEConst.IDS_ML_TYPE_USED, false, true, COLOR_ML_OUTPUT, false, true, false));
@@ -829,10 +846,15 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         settings.add(new TableCellSetting(STR_ML_DENSITY_BASED_LOS, CEConst.IDS_ML_DENSITY_BASED_LOS, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_DEMAND_BASED_LOS, CEConst.IDS_ML_DEMAND_BASED_LOS, false, true, COLOR_ML_OUTPUT, false, true, false));
+        settings.add(new TableCellSetting(STR_ML_QUEUE_LENGTH, CEConst.IDS_ML_QUEUE_LENGTH, false, true, COLOR_ML_OUTPUT, false, true, false));
+        settings.add(new TableCellSetting(STR_ML_QUEUE_PERCENTAGE, CEConst.IDS_ML_QUEUE_PERCENTAGE, false, true, COLOR_ML_OUTPUT, false, true, false));
+        settings.add(new TableCellSetting(STR_ML_ON_QUEUE_VEH, CEConst.IDS_ML_ON_QUEUE_VEH, false, true, COLOR_ML_OUTPUT, false, true, false));
 
         settings.add(new TableCellSetting(STR_ML_ACTUAL_TIME, CEConst.IDS_ML_ACTUAL_TIME, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_FFS_TIME, CEConst.IDS_ML_FFS_TIME, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_MAINLINE_DELAY, CEConst.IDS_ML_MAINLINE_DELAY, false, true, COLOR_ML_OUTPUT, false, true, false));
+        settings.add(new TableCellSetting(STR_ML_ON_RAMP_DELAY, CEConst.IDS_ML_ON_RAMP_DELAY, false, true, COLOR_ML_OUTPUT, false, true, false));
+        settings.add(new TableCellSetting(STR_ML_ACCESS_DELAY, CEConst.IDS_ML_ACCESS_DELAY, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_SYSTEM_DELAY, CEConst.IDS_ML_SYSTEM_DELAY, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_VMTD, CEConst.IDS_ML_VMTD, false, true, COLOR_ML_OUTPUT, false, true, false));
         settings.add(new TableCellSetting(STR_ML_VMTV, CEConst.IDS_ML_VMTV, false, true, COLOR_ML_OUTPUT, false, true, false));
@@ -948,13 +970,20 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     transient private String STR_OFF_RAMP_VOLUME_SERVED;
 
     transient private String STR_ON_RAMP_DELAY;
+    transient private String STR_ACCESS_DELAY;
+
+    //Used on GP but only when ML is on
+    transient private String STR_ML_HAS_CROSS_WEAVE;
+    transient private String STR_ML_CROSS_WEAVE_LC_MIN;
+    transient private String STR_ML_CROSS_WEAVE_VOLUME;
+    transient private String STR_ML_CROSS_WEAVE_CAF;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ML header strings">
     // Basic Segment Variable Column Text
     transient private String STR_ML_HEADER;
     transient private String STR_ML_SEGMENT_TYPE;
-    transient private String STR_ML_METHOD_TYPE;
+    //transient private String STR_ML_METHOD_TYPE;
     transient private String STR_ML_SEPARATION_TYPE;
     //transient private String STR_ML_SEGMENT_LENGTH;
 
@@ -1000,10 +1029,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     transient private String STR_ML_RAMP_TO_RAMP_DEMAND_VEH;
 
-    transient private String STR_ML_HAS_CROSS_WEAVE;
-    transient private String STR_ML_CROSS_WEAVE_LC_MIN;
-    transient private String STR_ML_CROSS_WEAVE_VOLUME;
-
     // Basic Segment Output Column Text
     transient private String STR_ML_TYPE_USED;
     transient private String STR_ML_SPEED;
@@ -1017,6 +1042,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     transient private String STR_ML_VC;
     transient private String STR_ML_DENSITY_BASED_LOS;
     transient private String STR_ML_DEMAND_BASED_LOS;
+    transient private String STR_ML_QUEUE_LENGTH;
+    transient private String STR_ML_QUEUE_PERCENTAGE;
+    transient private String STR_ML_ON_QUEUE_VEH;
 
     transient private String STR_ML_ACTUAL_TIME;
     transient private String STR_ML_FFS_TIME;
@@ -1038,6 +1066,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     transient private String STR_ML_OFF_RAMP_CAPACITY;
     transient private String STR_ML_ADJUSTED_OFF_RAMP_DEMAND;
     transient private String STR_ML_OFF_RAMP_VOLUME_SERVED;
+    transient private String STR_ML_ON_RAMP_DELAY;
+    transient private String STR_ML_ACCESS_DELAY;
     // </editor-fold>
 
     private ArrayList<TableCellSetting> settings;
@@ -1247,9 +1277,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                                 break;
                             case CEConst.IDS_QUEUE_LENGTH:
                             case CEConst.IDS_ON_QUEUE_VEH:
+                            case CEConst.IDS_ML_QUEUE_LENGTH:
+                            case CEConst.IDS_ML_ON_QUEUE_VEH:
                                 tryFloat_0f_pos(value.toString());
                                 break;
                             case CEConst.IDS_QUEUE_PERCENTAGE:
+                            case CEConst.IDS_ML_QUEUE_PERCENTAGE:
                                 tryPercentage(value.toString());
                                 break;
                             default:

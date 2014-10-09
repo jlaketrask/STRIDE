@@ -1,11 +1,20 @@
 package GUI.seedEditAndIOHelper;
 
 import GUI.major.MainWindow;
-import coreEngine.*;
+import coreEngine.CEConst;
+import coreEngine.CETime;
+import coreEngine.Seed;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 /**
  * This is a dialog for seed global input Called either when create a new seed
@@ -183,24 +192,22 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         fillMLJPanel = new javax.swing.JPanel();
         separationCheck = new javax.swing.JCheckBox();
         separationCB = new javax.swing.JComboBox();
-        MLTypeCheck = new javax.swing.JCheckBox();
-        MLTypeCB = new javax.swing.JComboBox();
-        numOfMLLanesCheck = new javax.swing.JCheckBox();
-        numOfMLLanesText = new javax.swing.JTextField();
-        MLFFSCheck = new javax.swing.JCheckBox();
-        MLFFSText = new javax.swing.JTextField();
-        numOfMLRampLanesCheck = new javax.swing.JCheckBox();
-        numOfMLRampLanesText = new javax.swing.JTextField();
-        rampMLFFSCheck = new javax.swing.JCheckBox();
-        rampMLFFSText = new javax.swing.JTextField();
         accDecLengthMLCheck = new javax.swing.JCheckBox();
         accDecLengthMLText = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        numOfMLLanesCheck = new javax.swing.JCheckBox();
+        numOfMLLanesText = new javax.swing.JTextField();
+        numOfMLRampLanesCheck = new javax.swing.JCheckBox();
+        numOfMLRampLanesText = new javax.swing.JTextField();
+        MLFFSCheck = new javax.swing.JCheckBox();
+        MLFFSText = new javax.swing.JTextField();
+        rampMLFFSCheck = new javax.swing.JCheckBox();
+        rampMLFFSText = new javax.swing.JTextField();
         truckMLCheck = new javax.swing.JCheckBox();
         truckMLText = new javax.swing.JTextField();
         RVMLCheck = new javax.swing.JCheckBox();
         RVMLText = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -209,7 +216,11 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
         checkButton = new javax.swing.JButton();
+        MLTypeCheck = new javax.swing.JCheckBox();
+        MLTypeCB = new javax.swing.JComboBox();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         generalJPanel = new javax.swing.JPanel();
@@ -286,17 +297,24 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         separationCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Marking", "Buffer", "Barrier" }));
         fillMLJPanel.add(separationCB);
 
-        MLTypeCheck.setSelected(true);
-        MLTypeCheck.setText("Managed Lane Type");
-        MLTypeCheck.addItemListener(new java.awt.event.ItemListener() {
+        accDecLengthMLCheck.setSelected(true);
+        accDecLengthMLCheck.setText("Ramp Acc/Dec Length (ft)");
+        accDecLengthMLCheck.setPreferredSize(new java.awt.Dimension(200, 28));
+        accDecLengthMLCheck.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                MLTypeCheckItemStateChanged(evt);
+                accDecLengthMLCheckItemStateChanged(evt);
             }
         });
-        fillMLJPanel.add(MLTypeCheck);
+        fillMLJPanel.add(accDecLengthMLCheck);
 
-        MLTypeCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HOV", "HOT" }));
-        fillMLJPanel.add(MLTypeCB);
+        accDecLengthMLText.setText("500");
+        accDecLengthMLText.setPreferredSize(new java.awt.Dimension(50, 28));
+        accDecLengthMLText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                accDecLengthMLTextFocusGained(evt);
+            }
+        });
+        fillMLJPanel.add(accDecLengthMLText);
 
         numOfMLLanesCheck.setSelected(true);
         numOfMLLanesCheck.setText("Num Of ML Lanes");
@@ -317,25 +335,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         });
         fillMLJPanel.add(numOfMLLanesText);
 
-        MLFFSCheck.setSelected(true);
-        MLFFSCheck.setText("ML FFS (mph)");
-        MLFFSCheck.setPreferredSize(new java.awt.Dimension(200, 28));
-        MLFFSCheck.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                MLFFSCheckItemStateChanged(evt);
-            }
-        });
-        fillMLJPanel.add(MLFFSCheck);
-
-        MLFFSText.setText("70");
-        MLFFSText.setPreferredSize(new java.awt.Dimension(50, 28));
-        MLFFSText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                MLFFSTextFocusGained(evt);
-            }
-        });
-        fillMLJPanel.add(MLFFSText);
-
         numOfMLRampLanesCheck.setSelected(true);
         numOfMLRampLanesCheck.setText("Num Of ML Ramp Lanes");
         numOfMLRampLanesCheck.setPreferredSize(new java.awt.Dimension(200, 28));
@@ -355,6 +354,25 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         });
         fillMLJPanel.add(numOfMLRampLanesText);
 
+        MLFFSCheck.setSelected(true);
+        MLFFSCheck.setText("ML FFS (mph)");
+        MLFFSCheck.setPreferredSize(new java.awt.Dimension(200, 28));
+        MLFFSCheck.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                MLFFSCheckItemStateChanged(evt);
+            }
+        });
+        fillMLJPanel.add(MLFFSCheck);
+
+        MLFFSText.setText("70");
+        MLFFSText.setPreferredSize(new java.awt.Dimension(50, 28));
+        MLFFSText.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                MLFFSTextFocusGained(evt);
+            }
+        });
+        fillMLJPanel.add(MLFFSText);
+
         rampMLFFSCheck.setSelected(true);
         rampMLFFSCheck.setText("ML Ramp FFS (mph)");
         rampMLFFSCheck.setPreferredSize(new java.awt.Dimension(200, 28));
@@ -373,27 +391,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             }
         });
         fillMLJPanel.add(rampMLFFSText);
-
-        accDecLengthMLCheck.setSelected(true);
-        accDecLengthMLCheck.setText("Ramp Acc/Dec Length (ft)");
-        accDecLengthMLCheck.setPreferredSize(new java.awt.Dimension(200, 28));
-        accDecLengthMLCheck.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                accDecLengthMLCheckItemStateChanged(evt);
-            }
-        });
-        fillMLJPanel.add(accDecLengthMLCheck);
-
-        accDecLengthMLText.setText("500");
-        accDecLengthMLText.setPreferredSize(new java.awt.Dimension(50, 28));
-        accDecLengthMLText.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                accDecLengthMLTextFocusGained(evt);
-            }
-        });
-        fillMLJPanel.add(accDecLengthMLText);
-        fillMLJPanel.add(jLabel13);
-        fillMLJPanel.add(jLabel14);
 
         truckMLCheck.setSelected(true);
         truckMLCheck.setText("ML Truck (%)");
@@ -432,6 +429,8 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             }
         });
         fillMLJPanel.add(RVMLText);
+        fillMLJPanel.add(jLabel13);
+        fillMLJPanel.add(jLabel14);
         fillMLJPanel.add(jLabel15);
         fillMLJPanel.add(jLabel16);
         fillMLJPanel.add(jLabel17);
@@ -440,6 +439,8 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         fillMLJPanel.add(jLabel20);
         fillMLJPanel.add(jLabel21);
         fillMLJPanel.add(jLabel22);
+        fillMLJPanel.add(jLabel23);
+        fillMLJPanel.add(jLabel24);
 
         checkButton.setText("Verify Data");
         checkButton.addActionListener(new java.awt.event.ActionListener() {
@@ -448,7 +449,17 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             }
         });
 
-        setTitle("Project Global Input");
+        MLTypeCheck.setSelected(true);
+        MLTypeCheck.setText("Managed Lane Type");
+        MLTypeCheck.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                MLTypeCheckItemStateChanged(evt);
+            }
+        });
+
+        MLTypeCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HOV", "HOT" }));
+
+        setTitle("Project Properties");
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -533,7 +544,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         });
         generalJPanel.add(jamDensityText);
 
-        jLabel10.setText(" Capacity Drop (%)");
+        jLabel10.setText(" Capacity Drop due to Congestion (%)");
         generalJPanel.add(jLabel10);
 
         capacityDropText.setText("5");
@@ -642,6 +653,11 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         fillGPJPanel.add(terrainCheck);
 
         terrainComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        terrainComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                terrainComboBoxActionPerformed(evt);
+            }
+        });
         fillGPJPanel.add(terrainComboBox);
         fillGPJPanel.add(jLabel11);
         fillGPJPanel.add(jLabel6);
@@ -882,7 +898,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jTabbedPane1)
             .addComponent(optionsJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(generalJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 857, Short.MAX_VALUE)
+            .addComponent(generalJPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(okButton)
@@ -894,7 +910,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(generalJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(optionsJPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1)
@@ -1159,6 +1175,25 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         ERText.setForeground(Color.black);
     }//GEN-LAST:event_ERTextFocusGained
 
+    private void terrainComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_terrainComboBoxActionPerformed
+        ETCheck.setSelected(true);
+        ERCheck.setSelected(true);
+        switch ((String) terrainComboBox.getSelectedItem()) {
+            case CEConst.STR_TERRAIN_MOUNTAINOUS:
+                ETText.setText("4.5");
+                ERText.setText("4.0");
+                break;
+            case CEConst.STR_TERRAIN_ROLLING:
+                ETText.setText("2.5");
+                ERText.setText("2.0");
+                break;
+            case CEConst.STR_TERRAIN_LEVEL:
+                ETText.setText("1.5");
+                ERText.setText("1.2");
+                break;
+        }
+    }//GEN-LAST:event_terrainComboBoxActionPerformed
+
     private void doClose(int retStatus) {
         if (retStatus == RET_CANCEL) {
             seed = null;
@@ -1178,7 +1213,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         seed.setValue(CEConst.IDS_CAPACITY_ALPHA, Integer.parseInt(capacityDropText.getText()));
 
         seed.setValue(CEConst.IDS_OCCU_GP, Float.parseFloat(gpOccText.getText()));
-        
+
         if (manageLaneCheck.isSelected()) {
             seed.setValue(CEConst.IDS_OCCU_ML, Float.parseFloat(mlOccText.getText()));
         }
@@ -1649,6 +1684,8 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;

@@ -237,7 +237,7 @@ class GPMLSegment implements Serializable {
     /**
      *
      */
-    int inMLCrossWeaveLCMin = 0;
+    int inMLCrossWeaveLCMin = 1;
 
     /**
      *
@@ -256,6 +256,10 @@ class GPMLSegment implements Serializable {
      * Heavy vehicle adjustment factor
      */
     transient float[] inMainlineFHV;
+    /**
+     * Cross weaving capacity adjustment factor
+     */
+    transient float[] inCrossCAF;
     /**
      * Mainline number of lanes
      */
@@ -472,7 +476,7 @@ class GPMLSegment implements Serializable {
 
         inRM_veh = CEHelper.int_1D(inNumPeriod, 2100); //ramp metering rate vph
 
-        inMLCrossWeaveVolume = CEHelper.int_1D(inNumPeriod, 0);
+        inMLCrossWeaveVolume = CEHelper.int_1D(inNumPeriod, 1);
     }
 
     /**
@@ -483,6 +487,7 @@ class GPMLSegment implements Serializable {
         //create memory space for preprocess and output
         totalRampDensity = 0;
         inMainlineFHV = CEHelper.float_1D_normal(inNumPeriod, 1); //heavy vehicle adjustment factor
+        inCrossCAF = CEHelper.float_1D_normal(inNumPeriod, 1); //heavy vehicle adjustment factor
 
         scenMainlineNumLanes = CEHelper.int_1D_normal(inNumPeriod, 0); //mainline number of lanes
         scenType = CEHelper.int_1D_normal(inNumPeriod, CEConst.SEG_TYPE_B); //process segment type
@@ -618,6 +623,7 @@ class GPMLSegment implements Serializable {
      */
     void scenPreprocess(int scen, int atdm) {
         resetMemory();
+        calCrossCAF();
         calRM(scen, atdm);
         calLane(scen, atdm);
         calHeavyVehAdj();
@@ -645,18 +651,19 @@ class GPMLSegment implements Serializable {
      * @param atdm
      */
     private void calRM(int scen, int atdm) {
-        if (inType == CEConst.SEG_TYPE_GP) {
+        if (inGPMLType == CEConst.SEG_TYPE_GP) {
             if (atdm < 0) {
-                for (int period = 1; period < inNumPeriod; period++) {
+                for (int period = 0; period < inNumPeriod; period++) {
                     scenRM_veh[period] = inRM_veh.get(period);
                 }
             } else {
-                for (int period = 1; period < inNumPeriod; period++) {
+                for (int period = 0; period < inNumPeriod; period++) {
+                    //ATDM RM override seed RM
                     scenRM_veh[period] = seed.getATDMRM(scen, atdm, inIndex, period);
                 }
             }
         } else {
-            for (int period = 1; period < inNumPeriod; period++) {
+            for (int period = 0; period < inNumPeriod; period++) {
                 scenRM_veh[period] = Float.MAX_VALUE;
             }
         }
@@ -1000,6 +1007,19 @@ class GPMLSegment implements Serializable {
         }
     }
 
+    private void calCrossCAF() {
+        //calculate for CrossCAF
+        for (int period = 0; period < inNumPeriod; period++) {
+            if (seed.isManagedLaneUsed() && inGPMLType == CEConst.SEG_TYPE_GP && inParallelSeg.inMLHasCrossWeave) {
+                //Equation 13-24
+                inCrossCAF[period] = 1 - (float) Math.max(-0.0897 + 0.0252 * Math.log(inParallelSeg.inMLCrossWeaveVolume.get(period))
+                        - 0.00001453 * inSegLength_ft + 0.002967 * inParallelSeg.inMLCrossWeaveLCMin, 0);
+            } else {
+                inCrossCAF[period] = 1;
+            }
+        }
+    }
+
     /**
      * Calculate adjusted mainline capacity (vph) for basic segment
      *
@@ -1010,7 +1030,7 @@ class GPMLSegment implements Serializable {
      * @return adjusted mainline capacity (vph) for basic segment
      */
     private float funcBasicMainlineCapacity(int scen, int atdm, int period) {
-        float CAF = inUCAF.get(period) * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
+        float CAF = inUCAF.get(period) * inCrossCAF[period] * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
         float result = 0;
         //TODO need discussion about what capacity for ML segments
         if (inGPMLType == CEConst.SEG_TYPE_GP) {
@@ -1098,7 +1118,7 @@ class GPMLSegment implements Serializable {
         cIW = (inNWL <= 2 ? 2400 : 3500) / VR/*scenVR[period]*/ / inNWL;
         //Equation 12-6, 12-8
         cW = CEHelper.pc_to_veh(Math.min(cIWL, cIW) * scenMainlineNumLanes[period], inMainlineFHV[period]);
-        return cW * inUCAF.get(period) * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType); //vph
+        return cW * inUCAF.get(period) * inCrossCAF[period] * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType); //vph
     }
 
     /**
@@ -1317,7 +1337,7 @@ class GPMLSegment implements Serializable {
         if (inGPMLType == CEConst.SEG_TYPE_GP) {
             //new 25-1 equation for GP segment
             //TODO use original FFS for now, may need to use adjusted FFS
-            float CAF = inUCAF.get(period) * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
+            float CAF = inUCAF.get(period) * inCrossCAF[period] * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
             float BP_adj = (1000 + 40 * (75 - scenMainlineFFS[period])) * CAF * CAF;
 
             if (vp <= BP_adj) {
@@ -1330,7 +1350,7 @@ class GPMLSegment implements Serializable {
                         * (vp - BP_adj) * (vp - BP_adj);
             }
         } else {
-            float CAF = inUCAF.get(period) * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
+            float CAF = inUCAF.get(period) * inCrossCAF[period] * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType);
             final float BP_75, lamda_BP, C_75, C_55_2, lamda_C2, C_1, K_nf_C, K_f_C;
             final float lamda_C = 10;
             switch (inMLSeparation) {
@@ -1442,7 +1462,7 @@ class GPMLSegment implements Serializable {
      */
     private float funcOnSpeed(int status, int period) {
         //TODO need to check condition
-        //if (!(inUCAF.get(period) * scenarios.get(scen).sCAF[period] != 1 && status == CEConst.STATUS_BG)) {
+        //if (!(inUCAF.get(period) * inCrossCAF[period] * scenarios.get(scen).sCAF[period] != 1 && status == CEConst.STATUS_BG)) {
         //Exhibit 13-11 : HCM Page 13-20
         float v_12 = funcOnFlowRateInLanes1and2(status, period);
         float v_F = funcOnOff_vF(status, period);
@@ -1704,7 +1724,7 @@ class GPMLSegment implements Serializable {
      */
     private float funcOffSpeed(int status, int period) {
         //TODO need to check condition
-        //if (!(inUCAF.get(period) * scenarios.get(scen).sCAF[period] != 1 && status == CEConst.STATUS_BG)) {
+        //if (!(inUCAF.get(period) * inCrossCAF[period] * scenarios.get(scen).sCAF[period] != 1 && status == CEConst.STATUS_BG)) {
         //Exhibit 13-11 : HCM Page 13-20
         float v_F = funcOnOff_vF(status, period);
         float P_FD = funcOffRemainFactor(status, period);
@@ -1930,7 +1950,7 @@ class GPMLSegment implements Serializable {
      * @return speed (mph)
      */
     private float funcWeaveSpeed(int status, int scen, int atdm, int period) {
-        if (!(inUCAF.get(period) * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType) != 1 && status == CEConst.STATUS_BG)) {
+        if (!(inUCAF.get(period) * inCrossCAF[period] * seed.getRLAndATDMCAF(scen, atdm, inIndex, period, inGPMLType) != 1 && status == CEConst.STATUS_BG)) {
             float minRateOfLaneChange;
             float vRR_pc = CEHelper.veh_to_pc(scenRRDemand_veh[period], inMainlineFHV[period]);//scenRRDemand_pc[period]; //ramp to ramp demand pc/h
             float vRF_pc = CEHelper.veh_to_pc(scenOnDemand_veh[period], inMainlineFHV[period])/*scenOnDemand_pc[period]*/ - vRR_pc; //ramp to freeway demand pc/h
@@ -2830,7 +2850,7 @@ class GPMLSegment implements Serializable {
      */
     private float funcONRO(int period, int step) {
         //Equation 25-15 HCM Page 25-26
-        float result = Math.min(scenRM_veh[period], scenOnCapacity_veh[period] / T); //1 and 2
+        float result = Math.min(scenRM_veh[period], scenOnCapacity_veh[period]) / T;//1 and 2
 
         float onr2 = scenMainlineCapacity_veh[period] * capacityDropFactor / T; //3
         //assume left segment exists since ONRF is only called by left segment

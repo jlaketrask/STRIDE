@@ -47,6 +47,8 @@ public class ATDMScenario implements Serializable {
      *
      */
     private final CM2DInt LAF;
+    
+    private boolean hasRampMetering;
 
     private String name;
 
@@ -66,6 +68,7 @@ public class ATDMScenario implements Serializable {
         OAF = new CM2DFloat(numSeg, numPeriod, 1);
         RM = new CM2DInt(numSeg, numPeriod, 2100);
         LAF = new CM2DInt(numSeg, numPeriod, 0);
+        hasRampMetering = false;
     }
 
     /**
@@ -138,5 +141,13 @@ public class ATDMScenario implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    
+    public void setRampMetering(boolean val) {
+        this.hasRampMetering = val;
+    }
+    
+    public boolean hasRampMetering() {
+        return this.hasRampMetering;
     }
 }
