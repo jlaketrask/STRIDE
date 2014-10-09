@@ -1,4 +1,5 @@
 Summary:
+    First chart is Time v TTI
     Multiple ATM Runs
 
 Add exit (return to Admin/User selection) menu item to Project menu
