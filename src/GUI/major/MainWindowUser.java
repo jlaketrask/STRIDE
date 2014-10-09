@@ -3,7 +3,6 @@ package GUI.major;
 import DSS.DataStruct.ATMUpdater;
 import DSS.DataStruct.PeriodATM;
 import GUI.ATDMHelper.summary.ATDMSetSummaryDialog;
-import GUI.ATDMHelper.summary.SummaryTypeSelectionDialog;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -77,7 +76,7 @@ public class MainWindowUser extends MainWindow {
      *
      * @param mainWindowStart
      */
-    public MainWindowUser(MainWindowStart mainWindowStart) {
+    public MainWindowUser(MainWindowStart mainWindowStart, Seed seed) {
         super();
         mainWindow = this;
         this.mainWindowStart = mainWindowStart;
@@ -89,8 +88,7 @@ public class MainWindowUser extends MainWindow {
         }
 
         initComponents();
-        activeSeed = SeedIOHelper.openSeed();
-        
+        activeSeed = seed;
         // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
@@ -105,8 +103,8 @@ public class MainWindowUser extends MainWindow {
         HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
-        
-        
+
+
         // Preparing Window Components
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
@@ -129,6 +127,7 @@ public class MainWindowUser extends MainWindow {
         selectPeriod(0);
         activeScen = 1;
         activeATDM = 0;
+
     }
     
     /**
@@ -1374,15 +1373,15 @@ public class MainWindowUser extends MainWindow {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        for (Seed seed : seedList) {
-            int result = JOptionPane.showConfirmDialog(this, "Do you want to save the changes you made to seed \"" + seed.getValueString(CEConst.IDS_PROJECT_NAME) + "\"?",
-                    "Save Files", JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.YES_OPTION) {
-                saveSeed(seed);
-            }
-        }
-        ConfigIO.saveSeedListToConfig(seedList);
-
+//        for (Seed seed : seedList) {
+//            int result = JOptionPane.showConfirmDialog(this, "Do you want to save the changes you made to seed \"" + seed.getValueString(CEConst.IDS_PROJECT_NAME) + "\"?",
+//                    "Save Files", JOptionPane.YES_NO_OPTION);
+//            if (result == JOptionPane.YES_OPTION) {
+//                saveSeed(seed);
+//            }
+//        }
+//        ConfigIO.saveSeedListToConfig(seedList);
+        
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 

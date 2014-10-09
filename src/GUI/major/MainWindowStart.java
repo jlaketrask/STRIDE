@@ -6,6 +6,8 @@
 package GUI.major;
 
 import GUI.major.PasswordHelper.PassDialog;
+import GUI.seedEditAndIOHelper.SeedIOHelper;
+import coreEngine.Seed;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -138,8 +140,11 @@ public class MainWindowStart extends javax.swing.JDialog {
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void userButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userButtonActionPerformed
-        this.setVisible(false);
-        MainWindowUser mainWindow = new MainWindowUser(this); 
+        Seed seed = SeedIOHelper.openSeed();
+        if (seed != null) {
+            this.setVisible(false);
+            MainWindowUser mainWindow = new MainWindowUser(this,seed); 
+        }
     }//GEN-LAST:event_userButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

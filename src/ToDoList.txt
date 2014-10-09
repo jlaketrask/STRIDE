@@ -1,3 +1,6 @@
+Summary:
+    Multiple ATM Runs
+
 Add exit (return to Admin/User selection) menu item to Project menu
  - Show dialog when closing Admin window?
 
@@ -11,9 +14,6 @@ Changes in seed file reflected in User side
 
 Save PeriodATM to seed
     - Change FREEVAL_DSS_TableModel setSeed funciton 
-
-Don't allow time periods to loop
-    - Finish and Summary?
 
 Check num of periods to apply input to see if that many periods are available
     - Show dialog
