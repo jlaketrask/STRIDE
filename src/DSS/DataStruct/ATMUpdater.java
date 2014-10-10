@@ -34,6 +34,40 @@ public class ATMUpdater {
         PeriodATM currPeriodATM = periodATM[startPeriod];
         int periodJump = currPeriodATM.getPeriodJump();
         
+        // Updating necessary PeriodATM instances
+        for (int period = startPeriod+1; period <=startPeriod+periodJump-1; period++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+                PeriodATM tempATM = periodATM[period];
+                // Assigning Ramp Metering
+                if (currPeriodATM.getRMUsed(seg)) {
+                    tempATM.setRMUsed(Boolean.TRUE, seg);
+                    tempATM.setRMRate(currPeriodATM.getRMRate(seg), seg);
+                }
+                
+                if (currPeriodATM.getHSRUsed(seg)) {
+                    tempATM.setHSRUsed(Boolean.TRUE, seg);
+                    tempATM.setHSRCapacity(currPeriodATM.getHSRCapacity(seg), seg);
+                }
+            }
+        }
+        
+        if (startPeriod+periodJump == seed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+                PeriodATM tempATM = periodATM[periodATM.length-1];
+                // Assigning Ramp Metering
+                if (currPeriodATM.getRMUsed(seg)) {
+                    tempATM.setRMUsed(Boolean.TRUE, seg);
+                    tempATM.setRMRate(currPeriodATM.getRMRate(seg), seg);
+                }
+                
+                if (currPeriodATM.getHSRUsed(seg)) {
+                    tempATM.setHSRUsed(Boolean.TRUE, seg);
+                    tempATM.setHSRCapacity(currPeriodATM.getHSRCapacity(seg), seg);
+                }
+            }
+        }
+        
+        // Applying ATM strategies
         for (int period = startPeriod+1; period <=startPeriod+periodJump; period++) {
             for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 

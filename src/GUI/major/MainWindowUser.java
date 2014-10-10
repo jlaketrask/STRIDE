@@ -65,6 +65,8 @@ public class MainWindowUser extends MainWindow {
     
     //private final TableDisplay tableDisplay;
     private final TableDisplaySegmentATM tableDisplaySegmentATM;
+    
+    private boolean resetReady = false;
 
     /**
      * Version of the FREEVAL
@@ -75,6 +77,7 @@ public class MainWindowUser extends MainWindow {
      * Constructor. Creates new form mainWindow
      *
      * @param mainWindowStart
+     * @param seed
      */
     public MainWindowUser(MainWindowStart mainWindowStart, Seed seed) {
         super();
@@ -1029,11 +1032,18 @@ public class MainWindowUser extends MainWindow {
                 proceedOnlyButton.setText("Review Next Period");
                 takeActionButton.setText("Return to Active Period");
             }
-        } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+        } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1 && activePeriod == dssProgress) {
             reviewPreviousPeriodButton.setEnabled(true);
-            takeActionButton.setEnabled(false);
             proceedOnlyButton.setText("Generate Summary");
+            if (this.resetReady) {
+                takeActionButton.setText("Run Again");
+                takeActionButton.setEnabled(true);
+            } else {
+                takeActionButton.setEnabled(false);
+            }
+            
         } else {
+            takeActionButton.setEnabled(true);
             reviewPreviousPeriodButton.setEnabled(true);
             if (activePeriod != dssProgress) {
                 proceedOnlyButton.setText("Review Next Period");
@@ -1058,6 +1068,17 @@ public class MainWindowUser extends MainWindow {
         activeSeed.singleRun(activeScen, activeATDM);
         ATDMSetSummaryDialog atdmSetSummaryDialog = new ATDMSetSummaryDialog(activeSeed, activeATDM, true, this);
         atdmSetSummaryDialog.setVisible(true);
+        
+        resetReady = true;
+        updateButtons();
+    }
+    
+    private void resetATM() {
+        activePeriod = 0;
+        dssProgress = 0;
+        // Save activeScen, periodATM, and activeATDM to seed
+        // Create new of each
+        // Reset window
     }
     
 //    public void showATDMSummary() {
@@ -1454,7 +1475,12 @@ public class MainWindowUser extends MainWindow {
 
     private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed
         if (activePeriod == dssProgress) {
-            applyATM();
+            if (this.resetReady) {
+                resetReady = false;
+                resetATM();
+            } else {
+                applyATM();
+            }
         } else {
             selectPeriod(dssProgress);
         }
