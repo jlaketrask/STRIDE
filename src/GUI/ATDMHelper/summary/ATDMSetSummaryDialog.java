@@ -27,12 +27,11 @@ import javax.swing.KeyStroke;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.SeriesRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -69,9 +68,17 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     public static final int RET_OK = 1;
     
     /**
-     * Placeholder for maximum TTI Value
+     * Placeholder for adjusted maximum TTI range Value
      */
-    public float maxTTI = 0;
+    public float ttiMax;
+    
+    /**
+     * Placeholder for adjusted min TTI range Value
+     */
+    public float ttiMin;
+    
+    private JFreeChart lineChartObjectTTIvTime;
+    private JFreeChart lineChartObject;
 
     /**
      * Creates new form ATDMSummaryDialog
@@ -163,9 +170,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                         if (TTI > 2) {
                             VMT2CountRL += prob;
                         }
-                        if (TTI > maxTTI) {
-                            maxTTI = TTI;
-                        }
                     }
                 //}
             } else {
@@ -185,6 +189,18 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                     }
                 }
             }
+            
+            // Extracting RL Results for TTI vs Time graph
+            final XYSeries seriesTTIvTime_RL = new XYSeries("TTI - Before");
+            //float[] groupCountRL = new float[NUM_GROUP];
+
+            int periodIdx = 1;
+            for (Result result : RLResults) {
+                seriesTTIvTime_RL.add(periodIdx, result.TTI);
+                periodIdx++;
+            }
+            
+            // Sorting collection for CDF
             Collections.sort(RLResults);
 
             //--------------------------------------------------------------------------
@@ -255,9 +271,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                         if (TTI > 2) {
                             VMT2CountATDM += prob;
                         }
-                        if (TTI > maxTTI) {
-                            maxTTI = TTI;
-                        }
                     }
                 //}
             } else {
@@ -306,12 +319,24 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
 //                    }
 //                }
             }
+                     
+            // Extracting ATM results for TTI vs Time plot
+            final XYSeries seriesTTIv_Time_ATM = new XYSeries("TTI - After");
+
+            periodIdx = 1;
+            for (Result result : ATDMResults) {
+                seriesTTIv_Time_ATM.add(periodIdx,result.TTI);
+                periodIdx++;
+            }
+            
+            
+            // Sorting for CDF line plot
             Collections.sort(ATDMResults);
 
             //--------------------------------------------------------------------------
             minTTIATDM = ATDMResults.get(0).TTI;
             maxTTIATDM = ATDMResults.get(ATDMResults.size() - 1).TTI;
-
+            
             meanTextAfter.setText(formatter2d.format(meanATDM));
 
             semiSTDATDM = (float) Math.sqrt(semiSTDATDM);
@@ -356,7 +381,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             // <editor-fold defaultstate="collapsed" desc="ADD TWO CHARTS">
             // Define the data for the both charts
             final XYSeries seriesTTIRL = new XYSeries("TTI - Before");
-            float[] groupCountRL = new float[NUM_GROUP];
+            //float[] groupCountRL = new float[NUM_GROUP];
 
             float count = 0;
             for (Result result : RLResults) {
@@ -364,11 +389,11 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 seriesTTIRL.add(result.TTI, count);
                 int groupIndex = (int) Math.min(Math.max(result.TTI - LOWER_BOUND, 0) / GROUP_INCREMENT,
                         NUM_GROUP - 1);
-                groupCountRL[groupIndex] += result.prob;
+                //groupCountRL[groupIndex] += result.prob;
             }
 
             final XYSeries seriesTTIATDM = new XYSeries("TTI - After");
-            float[] groupCountATDM = new float[NUM_GROUP];
+            //float[] groupCountATDM = new float[NUM_GROUP];
 
             count = 0;
             for (Result result : ATDMResults) {
@@ -376,42 +401,86 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 seriesTTIATDM.add(result.TTI, count);
                 int groupIndex = (int) Math.min(Math.max(result.TTI - LOWER_BOUND, 0) / GROUP_INCREMENT,
                         NUM_GROUP - 1);
-                groupCountATDM[groupIndex] += result.prob;
+                //groupCountATDM[groupIndex] += result.prob;
             }
 
+//<editor-fold defaultstate="collapsed" desc="Deprecated Bar Chart">
             //create bar chart
-            DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
-            for (int i = 0; i < groupCountRL.length - 1; i++) {
-                barChartDataset.addValue(groupCountRL[i], "TTI - Before",
-                        "[" + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * i) + ","
-                        + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (i + 1)) + ")");
-                barChartDataset.addValue(groupCountATDM[i], "TTI - After",
-                        "[" + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * i) + ","
-                        + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (i + 1)) + ")");
+//            DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
+//            for (int i = 0; i < groupCountRL.length - 1; i++) {
+//                barChartDataset.addValue(groupCountRL[i], "TTI - Before",
+//                        "[" + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * i) + ","
+//                        + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (i + 1)) + ")");
+//                barChartDataset.addValue(groupCountATDM[i], "TTI - After",
+//                        "[" + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * i) + ","
+//                        + formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (i + 1)) + ")");
+//            }
+//
+//            barChartDataset.addValue(groupCountRL[groupCountRL.length - 1], "TTI - Before",
+//                    formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (groupCountRL.length - 1)) + "+");
+//            barChartDataset.addValue(groupCountATDM[groupCountATDM.length - 1], "TTI - After",
+//                    formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (groupCountRL.length - 1)) + "+");
+//
+//            JFreeChart barChartObject = ChartFactory.createBarChart(
+//                    "Probability  Distribution Function", "TTI", "Percentage",
+//                    barChartDataset, PlotOrientation.VERTICAL, true, true, false);
+//            ((NumberAxis) ((CategoryPlot) barChartObject.getPlot()).getRangeAxis()).setNumberFormatOverride(NumberFormat.getPercentInstance());
+//            ((CategoryPlot) barChartObject.getPlot()).getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+//            chartPanel.add(new ChartPanel(barChartObject));
+//</editor-fold>
+            
+            // Create TTI Axis Range Values;
+            float ttiRangeBuffer = Math.max((maxTTIATDM - minTTIATDM),(maxTTIRL-minTTIRL))*.05f;
+            ttiMin = Math.min(minTTIATDM, minTTIRL) - ttiRangeBuffer;
+            ttiMax = Math.max(maxTTIATDM,maxTTIRL) + ttiRangeBuffer;
+            
+            // Creating TTI v Time line chart  
+            final XYSeriesCollection lineChartDatasetTime = new XYSeriesCollection();
+            lineChartDatasetTime.addSeries(seriesTTIvTime_RL);
+            lineChartDatasetTime.addSeries(seriesTTIv_Time_ATM);
+            lineChartObjectTTIvTime = ChartFactory.createXYLineChart(
+                    "TTI vs Time Period", "TTI", "Percentage",
+                    lineChartDatasetTime, PlotOrientation.VERTICAL, true, true, false);
+            ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setRange(ttiMin, ttiMax);
+            ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,seed.getValueInt(CEConst.IDS_NUM_PERIOD)+1);
+            
+            ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setAutoRangeMinimumSize((ttiMax-ttiMin));
+            
+            int UNITS;
+            if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 24) {
+                UNITS = 1;
+            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 48) {
+                UNITS = 2;
+            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 72) {
+                UNITS = 3;
+            } else {
+                UNITS = 4;
             }
-
-            barChartDataset.addValue(groupCountRL[groupCountRL.length - 1], "TTI - Before",
-                    formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (groupCountRL.length - 1)) + "+");
-            barChartDataset.addValue(groupCountATDM[groupCountATDM.length - 1], "TTI - After",
-                    formatter1d.format(LOWER_BOUND + GROUP_INCREMENT * (groupCountRL.length - 1)) + "+");
-
-            JFreeChart barChartObject = ChartFactory.createBarChart(
-                    "Probability  Distribution Function", "TTI", "Percentage",
-                    barChartDataset, PlotOrientation.VERTICAL, true, true, false);
-            ((NumberAxis) ((CategoryPlot) barChartObject.getPlot()).getRangeAxis()).setNumberFormatOverride(NumberFormat.getPercentInstance());
-            ((CategoryPlot) barChartObject.getPlot()).getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
-            chartPanel.add(new ChartPanel(barChartObject));
-
+            ((NumberAxis) ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis()).setTickUnit(new NumberTickUnit(UNITS));
+            //((NumberAxis) ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis()).setNumberFormatOverride(NumberFormat.getPercentInstance());
+            lineChartObjectTTIvTime.getXYPlot().getRenderer().setSeriesStroke(0, new BasicStroke(3.0f, 
+                                                                                BasicStroke.CAP_SQUARE, 
+                                                                                BasicStroke.JOIN_MITER, 
+                                                                                10.0f,
+                                                                                new float[] {5.0f, 10.0f}, 0.0f));
+            //lineChartObjectTTIvTime.getXYPlot().setSeriesRenderingOrder(SeriesRenderingOrder.FORWARD);
+            chartPanel.add(new ChartPanel(lineChartObjectTTIvTime));
+            chartPanel.validate();
+            
             // create line chart
             final XYSeriesCollection lineChartDataset = new XYSeriesCollection();
             lineChartDataset.addSeries(seriesTTIRL);
             lineChartDataset.addSeries(seriesTTIATDM);
-            JFreeChart lineChartObject = ChartFactory.createXYLineChart(
+            lineChartObject = ChartFactory.createXYLineChart(
                     "Cumulative  Distribution Function", "TTI", "Percentage",
                     lineChartDataset, PlotOrientation.VERTICAL, true, true, false);
-            ((XYPlot) lineChartObject.getPlot()).getDomainAxis().setRange(1, maxTTI);
+            ((XYPlot) lineChartObject.getPlot()).getDomainAxis().setRange(ttiMin, ttiMax);
             ((NumberAxis) ((XYPlot) lineChartObject.getPlot()).getRangeAxis()).setNumberFormatOverride(NumberFormat.getPercentInstance());
-            lineChartObject.getXYPlot().getRenderer().setSeriesStroke(0, new BasicStroke(3.0f));
+            lineChartObject.getXYPlot().getRenderer().setSeriesStroke(0, new BasicStroke(3.0f, 
+                                                                                BasicStroke.CAP_SQUARE, 
+                                                                                BasicStroke.JOIN_MITER, 
+                                                                                10.0f,
+                                                                                new float[] {5.0f, 10.0f}, 0.0f));
             chartPanel.add(new ChartPanel(lineChartObject));
 
             chartPanel.validate();
@@ -496,6 +565,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         ratingTextAfter = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         VMT2TextAfter = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -760,6 +830,13 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         VMT2TextAfter.setText("1.00");
         facilityPanelAfter.add(VMT2TextAfter);
 
+        jButton1.setText("Reset Graphs");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -768,6 +845,8 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(detailTTIButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(okButton)
                 .addContainerGap())
@@ -788,7 +867,8 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
-                    .addComponent(detailTTIButton))
+                    .addComponent(detailTTIButton)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
@@ -884,6 +964,14 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         showPercentileDetail();
     }//GEN-LAST:event_detailTTIButtonActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setRange(ttiMin, ttiMax);
+        ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,seed.getValueInt(CEConst.IDS_NUM_PERIOD)+1);
+        
+        ((XYPlot) lineChartObject.getPlot()).getDomainAxis().setRange(ttiMin, ttiMax);
+        ((XYPlot) lineChartObject.getPlot()).getRangeAxis().setRange(0.0f, 1.05);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void showPercentileDetail() {
         JPanel detailPanel = new JPanel();
         detailPanel.setLayout(new java.awt.GridLayout(3 + PERCENT_GROUP.length, 3));
@@ -956,6 +1044,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     private javax.swing.JPanel facilityPanelAfter;
     private javax.swing.JPanel facilityPanelBefore;
     private javax.swing.JPanel generalInfoPanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

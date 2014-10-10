@@ -64,6 +64,7 @@ public class SegATMTable {
         
         firstColumnTable.getTableHeader().setReorderingAllowed(false);
         restColumnTable.getTableHeader().setReorderingAllowed(false);
+        restColumnTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         
     }
     

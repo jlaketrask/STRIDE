@@ -1722,26 +1722,14 @@ public class Seed implements Serializable {
         //DebugOutput.startOutput();
 
         for (int period = 0; period < inNumPeriod; period++) {
-
-            if (isUnderSatGP(period)) {
-                //run under sat for this period
+            //run over sat for this period
+            for (int step = 0; step < NUM_STEPS; step++) {
+                //run over sat for each 15-sec step
                 for (GPMLSegment segment : GPSegments) {
-                    segment.runUndersaturated(scen, atdm, period);
+                    segment.runOversaturated(scen, atdm, period, step);
                 }
-            } else {
-                //run over sat for this period
-                for (int step = 0; step < NUM_STEPS; step++) {
-                    //run over sat for each 15-sec step
-                    for (GPMLSegment segment : GPSegments) {
-                        segment.runOversaturated(scen, atdm, period, step);
-                    }
-                }
-//                try {
-//                    DebugOutput.write(period, GPSegments);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
+            
 
             if (inManagedLaneUsed) {
                 if (isUnderSatML(period)) {
