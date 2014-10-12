@@ -190,7 +190,7 @@ public class IncidentEventDialog extends javax.swing.JDialog {
         segmentCB = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Create Weather Event");
+        setTitle("Create Incident Event");
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 2));
 

@@ -210,7 +210,7 @@ public class WorkZoneDialog extends javax.swing.JDialog {
         endSegmentCB = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Create Weather Event");
+        setTitle("Create Work Zone");
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 2));
 
@@ -339,7 +339,7 @@ public class WorkZoneDialog extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         if (severityCB.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(this, "Please select an incident severity.", "Error: No Incident Severity Selected", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a work zone type.", "Error: No Incident Severity Selected", JOptionPane.ERROR_MESSAGE);
         } else {
             status = true;
             this.setVisible(false);
