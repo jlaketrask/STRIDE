@@ -1,5 +1,6 @@
 package GUI.major;
 
+import DSS.DataStruct.ScenarioEvent;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -661,8 +662,8 @@ public class MainWindow extends javax.swing.JFrame {
         //contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
         return ("Run seed finished ("
                 + ((timingEnd - timingStart) > 1000
-                ? (timingEnd - timingStart) / 1000 + " s)"
-                : (timingEnd - timingStart) + " ms)"));
+                        ? (timingEnd - timingStart) / 1000 + " s)"
+                        : (timingEnd - timingStart) + " ms)"));
     }
 
     /**
@@ -950,6 +951,10 @@ public class MainWindow extends javax.swing.JFrame {
     }
     // </editor-fold>
     // </editor-fold>
+
+    public void addWeatherEvent(ScenarioEvent weatherEvent) {
+
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

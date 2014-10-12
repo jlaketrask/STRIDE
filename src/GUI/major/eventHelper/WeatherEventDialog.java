@@ -5,6 +5,8 @@
  */
 package GUI.major.eventHelper;
 
+import DSS.DataStruct.ScenarioEvent;
+
 /**
  *
  * @author jltrask
@@ -17,6 +19,13 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     public WeatherEventDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+
+    public ScenarioEvent getWeatherEvent() {
+        ScenarioEvent wEvent = new ScenarioEvent(ScenarioEvent.WEATHER_EVENT);
+        //wEvent.caf = Float.parseFloat(cafTextField.getText());
+        return wEvent;
+
     }
 
     /**
@@ -34,11 +43,11 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        cafTextField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        safTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        dafTextField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
@@ -59,20 +68,20 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         jLabel3.setText("Enter CAF:");
         jPanel1.add(jLabel3);
 
-        jTextField4.setText("1.0");
-        jPanel1.add(jTextField4);
+        cafTextField.setText("1.0");
+        jPanel1.add(cafTextField);
 
         jLabel5.setText("Enter SAF:");
         jPanel1.add(jLabel5);
 
-        jTextField3.setText("1.0");
-        jPanel1.add(jTextField3);
+        safTextField.setText("1.0");
+        jPanel1.add(safTextField);
 
         jLabel4.setText("Enter DAF:");
         jPanel1.add(jLabel4);
 
-        jTextField2.setText("1.0");
-        jPanel1.add(jTextField2);
+        dafTextField.setText("1.0");
+        jPanel1.add(dafTextField);
 
         jLabel6.setText("Selected Starting Period:");
 
@@ -155,6 +164,8 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField cafTextField;
+    private javax.swing.JTextField dafTextField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;
@@ -167,8 +178,6 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField safTextField;
     // End of variables declaration//GEN-END:variables
 }

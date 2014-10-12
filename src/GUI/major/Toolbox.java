@@ -354,6 +354,7 @@ public class Toolbox extends javax.swing.JPanel {
         WeatherEventDialog weDialog = new WeatherEventDialog(null, true);
 
         weDialog.setVisible(true);
+        mainWindow.addWeatherEvent(weDialog.getWeatherEvent());
 
     }//GEN-LAST:event_weatherEventButtonActionPerformed
 

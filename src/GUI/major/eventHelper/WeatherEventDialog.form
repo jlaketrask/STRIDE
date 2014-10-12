@@ -131,7 +131,7 @@
             <Property name="text" type="java.lang.String" value="Enter CAF:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField4">
+        <Component class="javax.swing.JTextField" name="cafTextField">
           <Properties>
             <Property name="text" type="java.lang.String" value="1.0"/>
           </Properties>
@@ -141,7 +141,7 @@
             <Property name="text" type="java.lang.String" value="Enter SAF:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField3">
+        <Component class="javax.swing.JTextField" name="safTextField">
           <Properties>
             <Property name="text" type="java.lang.String" value="1.0"/>
           </Properties>
@@ -151,7 +151,7 @@
             <Property name="text" type="java.lang.String" value="Enter DAF:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField2">
+        <Component class="javax.swing.JTextField" name="dafTextField">
           <Properties>
             <Property name="text" type="java.lang.String" value="1.0"/>
           </Properties>
