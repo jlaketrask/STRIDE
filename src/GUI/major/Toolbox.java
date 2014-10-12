@@ -2,6 +2,7 @@ package GUI.major;
 
 import GUI.major.eventHelper.IncidentEventDialog;
 import GUI.major.eventHelper.WeatherEventDialog;
+import GUI.major.eventHelper.WorkZoneDialog;
 
 /**
  * This class is the toolbox in main window. Most of the methods provide a link
@@ -59,6 +60,7 @@ public class Toolbox extends javax.swing.JPanel {
         egPanel = new javax.swing.JPanel();
         weatherEventButton = new javax.swing.JButton();
         incidentEventButton = new javax.swing.JButton();
+        workZoneEventButton = new javax.swing.JButton();
 
         newButton.setText("New");
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -233,7 +235,7 @@ public class Toolbox extends javax.swing.JPanel {
         mlPanel.add(mlButton);
 
         egPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Scenario Events"));
-        egPanel.setLayout(new java.awt.GridLayout(1, 2));
+        egPanel.setLayout(new java.awt.GridLayout(1, 3));
 
         weatherEventButton.setText("Add Weather Event");
         weatherEventButton.addActionListener(new java.awt.event.ActionListener() {
@@ -251,6 +253,14 @@ public class Toolbox extends javax.swing.JPanel {
         });
         egPanel.add(incidentEventButton);
 
+        workZoneEventButton.setText("Add Work Zone");
+        workZoneEventButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                workZoneEventButtonActionPerformed(evt);
+            }
+        });
+        egPanel.add(workZoneEventButton);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -260,8 +270,8 @@ public class Toolbox extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(egPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(egPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(112, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -379,6 +389,17 @@ public class Toolbox extends javax.swing.JPanel {
         incDialog.dispose();
     }//GEN-LAST:event_incidentEventButtonActionPerformed
 
+    private void workZoneEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_workZoneEventButtonActionPerformed
+        WorkZoneDialog wzDialog = new WorkZoneDialog(null, true);
+        wzDialog.setSeed(mainWindow.getActiveSeed());
+        wzDialog.setLocationRelativeTo(null);
+        wzDialog.setVisible(true);
+        if (wzDialog.getReturnStatus()) {
+            mainWindow.addWorkZone(wzDialog.getWorkZoneEvent());
+        }
+        wzDialog.dispose();
+    }//GEN-LAST:event_workZoneEventButtonActionPerformed
+
 //    /**
 //     * Show a particular analysis period data
 //     *
@@ -476,6 +497,7 @@ public class Toolbox extends javax.swing.JPanel {
         egPanel.setEnabled(false);
         weatherEventButton.setEnabled(false);
         incidentEventButton.setEnabled(false);
+        workZoneEventButton.setEnabled(false);
     }
 
     /**
@@ -528,6 +550,7 @@ public class Toolbox extends javax.swing.JPanel {
         egPanel.setEnabled(true);
         weatherEventButton.setEnabled(true);
         incidentEventButton.setEnabled(true);
+        workZoneEventButton.setEnabled(true);
     }
 
     public void enableML() {
@@ -588,5 +611,6 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JButton singleRunButton;
     private javax.swing.JLabel timeLabel;
     private javax.swing.JButton weatherEventButton;
+    private javax.swing.JButton workZoneEventButton;
     // End of variables declaration//GEN-END:variables
 }
