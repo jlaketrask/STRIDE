@@ -308,6 +308,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Add Incident Event"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="incidentEventButtonActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

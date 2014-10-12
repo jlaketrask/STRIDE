@@ -44,10 +44,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel2" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-              <Component id="jPanel1" min="-2" pref="89" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="jPanel2" min="-2" pref="154" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jPanel1" min="-2" pref="119" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="okButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -135,7 +135,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="2"/>
-        <Property name="rows" type="int" value="3"/>
+        <Property name="rows" type="int" value="4"/>
       </Layout>
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel1">
@@ -143,24 +143,19 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="14" style="1"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Weather Severity Type:"/>
+            <Property name="text" type="java.lang.String" value="Incident Severity Type:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="severityCB">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="11">
+              <StringArray count="6">
                 <StringItem index="0" value="&lt;Select Type&gt;"/>
-                <StringItem index="1" value="Medium Rain"/>
-                <StringItem index="2" value="Heavy Rain"/>
-                <StringItem index="3" value="Light Snow"/>
-                <StringItem index="4" value="Light Medium Snow"/>
-                <StringItem index="5" value="Medium Heavy Snow"/>
-                <StringItem index="6" value="Heavy Snow"/>
-                <StringItem index="7" value="Severe Cold"/>
-                <StringItem index="8" value="Low Visibility"/>
-                <StringItem index="9" value="Very Low Visibility"/>
-                <StringItem index="10" value="Minimum Visibility"/>
+                <StringItem index="1" value="Shoulder Closure"/>
+                <StringItem index="2" value="1 Lane Closure"/>
+                <StringItem index="3" value="2 Lane Closure"/>
+                <StringItem index="4" value="3 Lane Closure"/>
+                <StringItem index="5" value="4 Lane Closure"/>
               </StringArray>
             </Property>
           </Properties>
@@ -216,6 +211,23 @@
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="1">
                 <StringItem index="0" value="&lt;Select Period&gt;"/>
+              </StringArray>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel7">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="14" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Occuring in Segment"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="segmentCB">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="1">
+                <StringItem index="0" value="&lt;Select Segment&gt;"/>
               </StringArray>
             </Property>
           </Properties>

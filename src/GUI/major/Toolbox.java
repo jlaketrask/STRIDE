@@ -1,5 +1,6 @@
 package GUI.major;
 
+import GUI.major.eventHelper.IncidentEventDialog;
 import GUI.major.eventHelper.WeatherEventDialog;
 
 /**
@@ -243,6 +244,11 @@ public class Toolbox extends javax.swing.JPanel {
         egPanel.add(weatherEventButton);
 
         incidentEventButton.setText("Add Incident Event");
+        incidentEventButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                incidentEventButtonActionPerformed(evt);
+            }
+        });
         egPanel.add(incidentEventButton);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -352,11 +358,26 @@ public class Toolbox extends javax.swing.JPanel {
 
     private void weatherEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weatherEventButtonActionPerformed
         WeatherEventDialog weDialog = new WeatherEventDialog(null, true);
-
+        weDialog.setSeed(mainWindow.getActiveSeed());
+        weDialog.setLocationRelativeTo(null);
         weDialog.setVisible(true);
-        mainWindow.addWeatherEvent(weDialog.getWeatherEvent());
+        if (weDialog.getReturnStatus()) {
+            mainWindow.addWeatherEvent(weDialog.getWeatherEvent());
+        }
+        weDialog.dispose();
 
     }//GEN-LAST:event_weatherEventButtonActionPerformed
+
+    private void incidentEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incidentEventButtonActionPerformed
+        IncidentEventDialog incDialog = new IncidentEventDialog(null, true);
+        incDialog.setSeed(mainWindow.getActiveSeed());
+        incDialog.setLocationRelativeTo(null);
+        incDialog.setVisible(true);
+        if (incDialog.getReturnStatus()) {
+            mainWindow.addIncidentEvent(incDialog.getIncidentEvent());
+        }
+        incDialog.dispose();
+    }//GEN-LAST:event_incidentEventButtonActionPerformed
 
 //    /**
 //     * Show a particular analysis period data

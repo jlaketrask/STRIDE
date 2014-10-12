@@ -31,6 +31,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import reliabilityAnalysis.DataStruct.Scenario;
+import reliabilityAnalysis.DataStruct.ScenarioInfo;
 
 /**
  * This class is the main window of FREEVAL. All seeds are contained in this
@@ -59,10 +61,12 @@ public class MainWindow extends javax.swing.JFrame {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
+    private Scenario scenario;
+
     /**
      * Version of the FREEVAL
      */
-    public final String VERSION = "Alpha 09172014";
+    public final String VERSION = "Alpha 10122014";
 
     // <editor-fold defaultstate="collapsed" desc="CONSTRUCTOR">
     /**
@@ -114,6 +118,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
+
     }
 
     /**
@@ -952,8 +957,61 @@ public class MainWindow extends javax.swing.JFrame {
     // </editor-fold>
     // </editor-fold>
 
-    public void addWeatherEvent(ScenarioEvent weatherEvent) {
+    private void initScenario() {
+        if (activeSeed != null) {
+            scenario = new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
+            ArrayList<ScenarioInfo> ScenarioInfos = new ArrayList<>();
+            ScenarioInfos.add(new ScenarioInfo());
+            activeSeed.setRLScenarios(scenario, null, ScenarioInfos);
+        }
+    }
 
+    public void addWeatherEvent(ScenarioEvent weatherEvent) {
+        if (scenario == null) {
+            initScenario();
+        }
+        addScenarioEvent(weatherEvent, ScenarioEvent.WEATHER_EVENT);
+    }
+
+    public void addIncidentEvent(ScenarioEvent incidentEvent) {
+        if (scenario == null) {
+            initScenario();
+        }
+        addScenarioEvent(incidentEvent, ScenarioEvent.INCIDENT_EVENT);
+    }
+
+    public void addWorkZone(ScenarioEvent workZone) {
+        if (scenario == null) {
+            initScenario();
+        }
+        addScenarioEvent(workZone, ScenarioEvent.WORK_ZONE_EVENT);
+    }
+
+    private void addScenarioEvent(ScenarioEvent scenEvent, String type) {
+
+        scenario.CAF().multiply(scenEvent.caf,
+                0, scenEvent.startSegment, scenEvent.startPeriod,
+                0, scenEvent.endSegment, scenEvent.endPeriod);
+        scenario.DAF().multiply(scenEvent.daf,
+                0, scenEvent.startSegment, scenEvent.startPeriod,
+                0, scenEvent.endSegment, scenEvent.endPeriod);
+        scenario.OAF().multiply(scenEvent.daf,
+                0, scenEvent.startSegment, scenEvent.startPeriod,
+                0, scenEvent.endSegment, scenEvent.endPeriod);
+        scenario.SAF().multiply(scenEvent.saf,
+                0, scenEvent.startSegment, scenEvent.startPeriod,
+                0, scenEvent.endSegment, scenEvent.endPeriod);
+        if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
+            scenario.LAFI().add(scenEvent.laf,
+                    0, scenEvent.startSegment, scenEvent.startPeriod,
+                    0, scenEvent.endSegment, scenEvent.endPeriod);
+        } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
+            scenario.LAFWZ().add(scenEvent.laf,
+                    0, scenEvent.startSegment, scenEvent.startPeriod,
+                    0, scenEvent.endSegment, scenEvent.endPeriod);
+        }
+
+        selectSeedScen(activeSeed, 1);
     }
 
     /**

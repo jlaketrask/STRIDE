@@ -10,12 +10,13 @@ import coreEngine.CEConst;
 import static coreEngine.CEConst.IDS_NUM_PERIOD;
 import coreEngine.Seed;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author jltrask
  */
-public class WeatherEventDialog extends javax.swing.JDialog {
+public class IncidentEventDialog extends javax.swing.JDialog {
 
     private Seed seed;
 
@@ -24,7 +25,7 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     /**
      * Creates new form weatherEventDialog
      */
-    public WeatherEventDialog(java.awt.Frame parent, boolean modal) {
+    public IncidentEventDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -37,19 +38,30 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private void resetPanel() {
         startPeriodCB.setModel(periodCBModelCreator(0));
         endPeriodCB.setModel(periodCBModelCreator(1));
+
+        segmentCB.setModel(segmentCBModelCreator());
     }
 
-    public ScenarioEvent getWeatherEvent() {
-        ScenarioEvent wEvent = new ScenarioEvent(ScenarioEvent.WEATHER_EVENT);
-        wEvent.startSegment = 0;
-        wEvent.endSegment = seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1;
-        wEvent.startPeriod = startPeriodCB.getSelectedIndex();
-        wEvent.endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
-        wEvent.caf = Float.parseFloat(cafTextField.getText());
-        wEvent.daf = Float.parseFloat(dafTextField.getText());
-        wEvent.saf = Float.parseFloat(safTextField.getText());
-        wEvent.laf = 0;
-        return wEvent;
+    public ScenarioEvent getIncidentEvent() {
+        ScenarioEvent incEvent = new ScenarioEvent(ScenarioEvent.INCIDENT_EVENT);
+        incEvent.startSegment = segmentCB.getSelectedIndex();
+        incEvent.endSegment = segmentCB.getSelectedIndex();
+        incEvent.startPeriod = startPeriodCB.getSelectedIndex();
+        incEvent.endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+        incEvent.caf = Float.parseFloat(cafTextField.getText());
+        incEvent.daf = Float.parseFloat(dafTextField.getText());
+        incEvent.saf = Float.parseFloat(safTextField.getText());
+        switch (severityCB.getSelectedIndex()) {
+            case 0:
+            case 1:
+                incEvent.laf = 0;
+                break;
+            default:
+                incEvent.laf = -1 * (severityCB.getSelectedIndex() - 1);
+                break;
+        }
+        //System.out.println(incEvent.laf);
+        return incEvent;
 
     }
 
@@ -83,6 +95,22 @@ public class WeatherEventDialog extends javax.swing.JDialog {
                 tempArr[perIdx - 1] = String.valueOf(perIdx) + "  (" + currHour + ":" + currMin + ")";
             }
             currMin += 15;
+        }
+
+        DefaultComboBoxModel model = new DefaultComboBoxModel(tempArr);
+        return model;
+    }
+
+    /**
+     * Creates the model for the segment selection combo box.
+     *
+     * @return
+     */
+    private DefaultComboBoxModel segmentCBModelCreator() {
+        String[] tempArr = new String[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
+
+        for (int seg = 1; seg <= tempArr.length; seg++) {
+            tempArr[seg - 1] = String.valueOf(seg);
         }
 
         return new DefaultComboBoxModel(tempArr);
@@ -158,6 +186,8 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         startPeriodCB = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         endPeriodCB = new javax.swing.JComboBox();
+        jLabel7 = new javax.swing.JLabel();
+        segmentCB = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Create Weather Event");
@@ -202,13 +232,13 @@ public class WeatherEventDialog extends javax.swing.JDialog {
             }
         });
 
-        jPanel2.setLayout(new java.awt.GridLayout(3, 2));
+        jPanel2.setLayout(new java.awt.GridLayout(4, 2));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Weather Severity Type:");
+        jLabel1.setText("Incident Severity Type:");
         jPanel2.add(jLabel1);
 
-        severityCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Type>", "Medium Rain", "Heavy Rain", "Light Snow", "Light Medium Snow", "Medium Heavy Snow", "Heavy Snow", "Severe Cold", "Low Visibility", "Very Low Visibility", "Minimum Visibility" }));
+        severityCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Type>", "Shoulder Closure", "1 Lane Closure", "2 Lane Closure", "3 Lane Closure", "4 Lane Closure" }));
         jPanel2.add(severityCB);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -230,6 +260,13 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         endPeriodCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Period>" }));
         jPanel2.add(endPeriodCB);
 
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel7.setText("Occuring in Segment");
+        jPanel2.add(jLabel7);
+
+        segmentCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Segment>" }));
+        jPanel2.add(segmentCB);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,9 +287,9 @@ public class WeatherEventDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(29, 29, 29)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
@@ -269,8 +306,12 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        status = true;
-        this.setVisible(false);
+        if (severityCB.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Please select an incident severity.", "Error: No Incident Severity Selected", JOptionPane.ERROR_MESSAGE);
+        } else {
+            status = true;
+            this.setVisible(false);
+        }
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void startPeriodCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_startPeriodCBItemStateChanged
@@ -296,10 +337,12 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField safTextField;
+    private javax.swing.JComboBox segmentCB;
     private javax.swing.JComboBox severityCB;
     private javax.swing.JComboBox startPeriodCB;
     // End of variables declaration//GEN-END:variables

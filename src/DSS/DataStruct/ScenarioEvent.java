@@ -24,6 +24,7 @@ public class ScenarioEvent {
 
     public final static String WEATHER_EVENT = "WEATHER_EVENT";
     public final static String INCIDENT_EVENT = "INCIDENT_EVENT";
+    public final static String WORK_ZONE_EVENT = "WORK_ZONE_EVENT";
 
     public ScenarioEvent(String type) {
         this.type = type;
