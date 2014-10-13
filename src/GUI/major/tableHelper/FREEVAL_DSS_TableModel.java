@@ -27,11 +27,11 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     //private String[] columnNames;
     private final String[] rowNames = {"Number of Periods",
-                                       "Ramp Metering On",
-                                       "Ramp Metering Rate",
-                                       "Number of Periods",
-                                       "Hard Shoulder Running On",
-                                       "Hard Shoulder Capacity"};
+        "Ramp Metering On",
+        "Ramp Metering Rate",
+        "Number of Periods",
+        "Hard Shoulder Running On",
+        "Hard Shoulder Capacity"};
 
     private MainWindowUser mainWindow;
     private Seed seed;
@@ -45,9 +45,9 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
     private final DefaultTableCellRenderer blackOutRenderer;
     private final DefaultTableCellRenderer rightRenderer;
     private final JTable parentTable;
-    
+
     private final int tableType;
-    
+
     public static final int TYPE_ROW_NAMES = 0;
     public static final int TYPE_ATM_INPUT = 1;
 
@@ -84,12 +84,12 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 }
         }
     }
-    
+
     @Override
     public int getRowCount() {
         return rowNames.length;
     }
-    
+
     @Override
     public String getColumnName(int col) {
         switch (tableType) {
@@ -97,10 +97,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ROW_NAMES:
                 return "Segment ATM";
             case TYPE_ATM_INPUT:
-                return "Seg. " + (col+1);
+                return "Seg. " + (col + 1);
         }
     }
-    
+
     @Override
     public Object getValueAt(int row, int col) {
         switch (tableType) {
@@ -110,13 +110,13 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ATM_INPUT:
                 switch (row) {
                     case 0:
-                        return periodATM[currPeriod].getRMDuration();
+                        return periodATM[currPeriod].getRMDuration(col);
                     case 1:
                         return periodATM[currPeriod].getRMUsed(col);
                     case 2:
                         return periodATM[currPeriod].getRMRate(col);
                     case 3:
-                        return periodATM[currPeriod].getHSRDuration();
+                        return periodATM[currPeriod].getHSRDuration(col);
                     case 4:
                         return periodATM[currPeriod].getHSRUsed(col);
                     case 5:
@@ -126,7 +126,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 }
         }
     }
-    
+
     @Override
     public void setValueAt(Object value, int row, int col) {
         switch (tableType) {
@@ -134,7 +134,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 try {
                     switch (row) {
                         case 0:
-                            periodATM[currPeriod].setRMDuration(Integer.parseInt((String) value));
+                            periodATM[currPeriod].setRMDuration(Integer.parseInt((String) value), col);
                             break;
                         case 1:
                             periodATM[currPeriod].setRMUsed((boolean) value, col);
@@ -143,8 +143,8 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             periodATM[currPeriod].setRMRate(Integer.parseInt((String) value), col);
                             break;
                         case 3:
-                            periodATM[currPeriod].setHSRDuration(Integer.parseInt((String) value));
-                            break;                        
+                            periodATM[currPeriod].setHSRDuration(Integer.parseInt((String) value), col);
+                            break;
                         case 4:
                             periodATM[currPeriod].setHSRUsed((boolean) value, col);
                             break;
@@ -158,23 +158,24 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                     MainWindowUser.printLog("Invalid Value Entered");
                 }
             default:
-                // Do nothing, cells not editable
+            // Do nothing, cells not editable
         }
     }
-    
+
     @Override
     public boolean isCellEditable(int row, int col) {
-        switch (tableType){
+        switch (tableType) {
             default:
             case TYPE_ROW_NAMES:
                 return false;
             case TYPE_ATM_INPUT:
-                switch(row) {
+                switch (row) {
                     case 0:
+                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W);
                     case 3:
-                        return (col==0);
+                        return true;
                     case 1:
-                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR);
+                        return (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W);
                     case 2:
                         return (periodATM[currPeriod].getRMUsed(col));
                     case 4:
@@ -186,13 +187,13 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 }
         }
     }
-    
+
     @Override
     public void fireTableDataChanged() {
         super.fireTableDataChanged();
         //setupTable();
     }
-    
+
     @Override
     public void fireTableStructureChanged() {
         super.fireTableStructureChanged();
@@ -202,7 +203,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     public void setupTable() {
         parentTable.setFont(MainWindow.getTableFont());
-        parentTable.setRowHeight(MainWindow.getTableFont().getSize() + 2);  
+        parentTable.setRowHeight(MainWindow.getTableFont().getSize() + 2);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Renderers">
@@ -215,7 +216,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 switch (row) {
                     case 0:
                     case 3:
-                        if (col==0) {
+                        if (isCellEditable(row, col)) {
                             return centerRenderer;
                         } else {
                             return blackOutRenderer;
@@ -229,7 +230,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         }
                     case 2:
                     case 5:
-                        if (isCellEditable(row-1, col)) {
+                        if (isCellEditable(row - 1, col)) {
                             return centerRenderer;
                         } else {
                             return blackOutRenderer;
@@ -253,15 +254,15 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         }
     }
     // </editor-fold>
-    
+
     public int getTableType() {
         return this.tableType;
     }
-    
+
     public void setPeriod(int newPeriod) {
         this.currPeriod = newPeriod;
     }
-    
+
     public void setMainWindow(MainWindowUser mainWindow) {
         this.mainWindow = mainWindow;
         this.seed = this.mainWindow.getActiveSeed();

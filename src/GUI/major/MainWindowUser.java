@@ -62,10 +62,10 @@ public class MainWindowUser extends MainWindow {
     private final ATDMScenario activeATM;
     private final ATMUpdater atmUpdater;
     private final PeriodATM[] periodATM;
-    
+
     //private final TableDisplay tableDisplay;
     private final TableDisplaySegmentATM tableDisplaySegmentATM;
-    
+
     private boolean resetReady = false;
 
     /**
@@ -98,15 +98,14 @@ public class MainWindowUser extends MainWindow {
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
-        atmUpdater = new ATMUpdater(activeSeed, activeATM,periodATM);
+        atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM);
         // Adding blank scenario
         ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
         scenarioInfos.add(new ScenarioInfo());
-        activeSeed.setRLScenarios(new Scenario(1,activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null,scenarioInfos);
+        activeSeed.setRLScenarios(new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null, scenarioInfos);
         HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
-
 
         // Preparing Window Components
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
@@ -132,7 +131,7 @@ public class MainWindowUser extends MainWindow {
         activeATDM = 0;
 
     }
-    
+
     /**
      * Connect major components for central control
      */
@@ -148,12 +147,12 @@ public class MainWindowUser extends MainWindow {
         //comparePanel.setMainWindow(this);
     }
     // </editor-fold>
-    
+
     public void applyATM() {
-        int periodJump = atmUpdater.update(activePeriod);
-        
-        selectPeriod(activePeriod+periodJump);
-        dssProgress += periodJump;
+        atmUpdater.update(activePeriod);
+
+        selectPeriod(activePeriod + 1);
+        dssProgress += 1;
     }
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
@@ -723,8 +722,8 @@ public class MainWindowUser extends MainWindow {
         //contourPanel.selectSeedScenATDM(activeSeed, activeScen, activeATDM);
         return ("Run seed finished ("
                 + ((timingEnd - timingStart) > 1000
-                ? (timingEnd - timingStart) / 1000 + " s)"
-                : (timingEnd - timingStart) + " ms)"));
+                        ? (timingEnd - timingStart) / 1000 + " s)"
+                        : (timingEnd - timingStart) + " ms)"));
     }
 
 //    /**
@@ -1015,16 +1014,16 @@ public class MainWindowUser extends MainWindow {
 //    }
     // </editor-fold>
     // </editor-fold>
-    
+
     public ATMUpdater getATMUpdater() {
         return this.atmUpdater;
     }
-    
+
     private void proceedOnly() {
         showNextPeriod();
-        dssProgress+=1;
+        dssProgress += 1;
     }
-    
+
     public void updateButtons() {
         if (activePeriod == 0) {
             reviewPreviousPeriodButton.setEnabled(false);
@@ -1032,7 +1031,7 @@ public class MainWindowUser extends MainWindow {
                 proceedOnlyButton.setText("Review Next Period");
                 takeActionButton.setText("Return to Active Period");
             }
-        } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1 && activePeriod == dssProgress) {
+        } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD) - 1 && activePeriod == dssProgress) {
             reviewPreviousPeriodButton.setEnabled(true);
             proceedOnlyButton.setText("Generate Summary");
             if (this.resetReady) {
@@ -1041,7 +1040,7 @@ public class MainWindowUser extends MainWindow {
             } else {
                 takeActionButton.setEnabled(false);
             }
-            
+
         } else {
             takeActionButton.setEnabled(true);
             reviewPreviousPeriodButton.setEnabled(true);
@@ -1050,11 +1049,11 @@ public class MainWindowUser extends MainWindow {
                 takeActionButton.setText("Return to Active Period");
             } else {
                 proceedOnlyButton.setText("Proceed Only");
-                takeActionButton.setText("Take Action and Proceed"); 
+                takeActionButton.setText("Take Action and Proceed");
             }
         }
     }
-    
+
     private void updateEditLock() {
         if (activePeriod != dssProgress) {
             userIOTableDisplay.setEditLock(true);
@@ -1062,17 +1061,17 @@ public class MainWindowUser extends MainWindow {
             userIOTableDisplay.setEditLock(false);
         }
     }
-    
+
     private void generateSummary() {
         activeSeed.singleRun(activeScen, -1);
         activeSeed.singleRun(activeScen, activeATDM);
         ATDMSetSummaryDialog atdmSetSummaryDialog = new ATDMSetSummaryDialog(activeSeed, activeATDM, true, this);
         atdmSetSummaryDialog.setVisible(true);
-        
+
         resetReady = true;
         updateButtons();
     }
-    
+
     private void resetATM() {
         activePeriod = 0;
         dssProgress = 0;
@@ -1080,7 +1079,7 @@ public class MainWindowUser extends MainWindow {
         // Create new of each
         // Reset window
     }
-    
+
 //    public void showATDMSummary() {
 //        if (checkATDMHasFullResult()) {
 //            SummaryTypeSelectionDialog summaryTypeSelectionDialog = new SummaryTypeSelectionDialog(this, activeSeed);
@@ -1103,7 +1102,6 @@ public class MainWindowUser extends MainWindow {
 //            }
 //        }
 //    }
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1402,7 +1400,7 @@ public class MainWindowUser extends MainWindow {
 //            }
 //        }
 //        ConfigIO.saveSeedListToConfig(seedList);
-        
+
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
@@ -1464,7 +1462,7 @@ public class MainWindowUser extends MainWindow {
     private void proceedOnlyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedOnlyButtonActionPerformed
         if (activePeriod < dssProgress) {
             showNextPeriod();
-        } else if (activePeriod == dssProgress && activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)-1) {
+        } else if (activePeriod == dssProgress && activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD) - 1) {
             proceedOnly();
         } else {
             generateSummary();
@@ -1489,7 +1487,7 @@ public class MainWindowUser extends MainWindow {
     }//GEN-LAST:event_takeActionButtonActionPerformed
 
     private void reviewPreviousPeriodButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reviewPreviousPeriodButtonActionPerformed
-        if (activePeriod>0) {
+        if (activePeriod > 0) {
             showPrevPeriod();
         }
         updateButtons();

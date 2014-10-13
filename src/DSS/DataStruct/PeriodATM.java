@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @author jltrask
  */
 public class PeriodATM {
-    
+
     private final Seed seed;
 
     //Instance Specific variables
@@ -25,10 +25,10 @@ public class PeriodATM {
     private final float[] saf;
 
     // Other ATM
-    private int rmDuration;
+    private int[] rmDuration;
     private final int[] rampMetering;
     private final Boolean[] rampMeteringUsed;
-    private int hsrDuration;
+    private int[] hsrDuration;
     private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 
@@ -57,13 +57,15 @@ public class PeriodATM {
         Arrays.fill(saf, 1.0f);
 
         //Initializing other arrays
-        rmDuration = 1;
+        rmDuration = new int[numSeg];
+        Arrays.fill(rmDuration, 0);
         rampMeteringUsed = new Boolean[numSeg];
         Arrays.fill(rampMeteringUsed, false);
         rampMetering = new int[numSeg];
         Arrays.fill(rampMetering, 2100);
-        
-        hsrDuration = 1;
+
+        hsrDuration = new int[numSeg];
+        Arrays.fill(hsrDuration, 0);
         hsrUsed = new Boolean[numSeg];
         Arrays.fill(hsrUsed, false);
         hsrCapacity = new float[numSeg];
@@ -90,14 +92,14 @@ public class PeriodATM {
             case ID_RAMP_METERING_RATE:
                 return rampMetering[seg];
             case ID_RAMP_METERING_DURATION:
-                return rmDuration;
+                return rmDuration[seg];
             case ID_HSR_DURATION:
-                return hsrDuration;
+                return hsrDuration[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
     }
-    
+
     public boolean getValueBool(String identifier, int seg) {
         switch (identifier) {
             case ID_RAMP_METERING_USED:
@@ -111,38 +113,38 @@ public class PeriodATM {
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Universal Setter">
-    public void setValueFloat(String identifier, float value, int period) {
+    public void setValueFloat(String identifier, float value, int seg) {
         switch (identifier) {
             case ID_AFTYPE_CAF:
-                caf[period] = value;
+                caf[seg] = value;
                 break;
             case ID_AFTYPE_SAF:
-                saf[period] = value;
+                saf[seg] = value;
                 break;
             case ID_HSR_CAPACITY:
-                hsrCapacity[period] = value;
+                hsrCapacity[seg] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
     }
 
-    public void setValueInt(String identifier, int value, int period) {
+    public void setValueInt(String identifier, int value, int seg) {
         switch (identifier) {
             case ID_RAMP_METERING_RATE:
-                rampMetering[period] = value;
+                rampMetering[seg] = value;
                 break;
             case ID_RAMP_METERING_DURATION:
-                rmDuration = value;
+                rmDuration[seg] = value;
                 break;
             case ID_HSR_DURATION:
-                hsrDuration = value;
+                hsrDuration[seg] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
     }
-    
+
     public void setValueBool(String identifier, boolean value, int period) {
         switch (identifier) {
             case ID_RAMP_METERING_USED:
@@ -166,8 +168,8 @@ public class PeriodATM {
         saf[seg] = value;
     }
 
-    public void setRMDuration(int value) {
-        this.rmDuration = value;
+    public void setRMDuration(int value, int seg) {
+        this.rmDuration[seg] = value;
     }
 
     public void setRMUsed(Boolean value, int seg) {
@@ -177,11 +179,11 @@ public class PeriodATM {
     public void setRMRate(int value, int seg) {
         rampMetering[seg] = value;
     }
-    
-    public void setHSRDuration(int value) {
-        this.hsrDuration = value;
+
+    public void setHSRDuration(int value, int seg) {
+        this.hsrDuration[seg] = value;
     }
-    
+
     public void setHSRUsed(Boolean value, int seg) {
         hsrUsed[seg] = value;
     }
@@ -204,10 +206,10 @@ public class PeriodATM {
         return saf[seg];
     }
 
-    public int getRMDuration() {
-        return rmDuration;
+    public int getRMDuration(int seg) {
+        return rmDuration[seg];
     }
-    
+
     public Boolean getRMUsed(int seg) {
         return rampMeteringUsed[seg];
     }
@@ -215,11 +217,11 @@ public class PeriodATM {
     public int getRMRate(int seg) {
         return rampMetering[seg];
     }
-    
-    public int getHSRDuration() {
-        return hsrDuration;
+
+    public int getHSRDuration(int seg) {
+        return hsrDuration[seg];
     }
-    
+
     public Boolean getHSRUsed(int seg) {
         return hsrUsed[seg];
     }
@@ -229,19 +231,13 @@ public class PeriodATM {
     }
 //</editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Getters for ATM Updater">
-    public int getPeriodJump() {
-        int maxRequestedATMDur = getMaxATMDuration();
-        if (period+maxRequestedATMDur >= seed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
-            return seed.getValueInt(CEConst.IDS_NUM_PERIOD)-1-period;
-        } else {
-            return maxRequestedATMDur;
+    private int arrayMax(int[] arr) {
+        int max = -9999;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+            }
         }
+        return max;
     }
-    
-    private int getMaxATMDuration() {
-        return Math.max(rmDuration, hsrDuration);
-    }
-    
-// </editor-fold>
 }

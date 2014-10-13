@@ -24,16 +24,16 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
 
     }
 
-    public void activate(MainWindowUser mainWindow) {        
+    public void activate(MainWindowUser mainWindow) {
         this.mainWindow = mainWindow;
         seed = mainWindow.getActiveSeed();
-        
+
     }
-    
+
     public TableDisplaySegmentATM getTableDisplaySegmentATM() {
         return this.tableDisplaySegmentATM;
     }
-    
+
     public void setEditLock(boolean lock) {
         tableDisplaySegmentATM.setEditLock(lock);
         facilityATMJPanel.setEditLock(lock);
@@ -52,7 +52,7 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
         tableDisplaySegmentATM = new GUI.major.TableDisplaySegmentATM();
         facilityATMJPanel = new GUI.major.FacilityATMJPanel();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ATM Options", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ATM Strategy Menus", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
 
         jSplitPane1.setDividerLocation(153);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
