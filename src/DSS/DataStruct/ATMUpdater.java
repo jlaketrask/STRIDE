@@ -35,48 +35,48 @@ public class ATMUpdater {
     }
 
     public void update(int currPeriod) {
-        PeriodATM currPeriodATM = periodATM[currPeriod];
-        PeriodATM nextPeriodATM = periodATM[currPeriod + 1];
+        PeriodATM currATM = periodATM[currPeriod];
+        PeriodATM nextATM = periodATM[currPeriod + 1];
 
         for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
 
             // Ramp Metering Check
-            if (currPeriodATM.getRMUsed(seg)) {
+            if (currATM.getRMUsed(seg)) {
                 // Assigning Ramp Metering
-                atm.RM().set(currPeriodATM.getRMRate(seg), seg, currPeriod + 1);
-
-                if (currPeriodATM.getRMDuration(seg) > 1) {
+                atm.RM().set(currATM.getRMRate(seg), seg, currPeriod + 1);
+                atm.setRampMetering(true);
+                if (currATM.getRMDuration(seg) > 1) {
                     // Updating next PeriodATM instance
-                    nextPeriodATM.setRMUsed(Boolean.TRUE, seg);
-                    nextPeriodATM.setRMRate(currPeriodATM.getRMRate(seg), seg);
-                    nextPeriodATM.setRMDuration(currPeriodATM.getRMDuration(seg) - 1, seg);
+                    nextATM.setRMUsed(Boolean.TRUE, seg);
+                    nextATM.setRMRate(currATM.getRMRate(seg), seg);
+                    nextATM.setRMDuration(currATM.getRMDuration(seg) - 1, seg);
                 } else {
-                    nextPeriodATM.setRMDuration(0, seg);
+                    nextATM.setRMDuration(0, seg);
                 }
             }
 
             // Hard Shoulder Running Check
-            if (currPeriodATM.getHSRUsed(seg)) {
+            if (currATM.getHSRUsed(seg)) {
                 // Assigning Hard Shoulder Running
                 int numLanesSegment = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg);
-                if (currPeriodATM.getHSRUsed(seg)) {
+                if (currATM.getHSRUsed(seg)) {
                     atm.LAF().add(1, seg, currPeriod + 1); // Adding lane
 
                     // Calculating new segment CAF using shoulder CAF
                     float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
                     float avgCAF = (seedCAF + rlCAF) / 2.0f;
-                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + currPeriodATM.getHSRCapacity(seg)) / (numLanesSegment + 1);
+                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + currATM.getHSRCapacity(seg)) / (numLanesSegment + 1);
                     atm.CAF().set((newCAF / avgCAF), seg, currPeriod + 1);
                 }
 
                 // Update next PeriodATM Instance
-                if (currPeriodATM.getHSRDuration(seg) > 1) {
-                    nextPeriodATM.setHSRUsed(Boolean.TRUE, seg);
-                    nextPeriodATM.setHSRCapacity(currPeriodATM.getHSRCapacity(seg), seg);
-                    nextPeriodATM.setHSRDuration(currPeriodATM.getHSRDuration(seg) - 1, seg);
+                if (currATM.getHSRDuration(seg) > 1) {
+                    nextATM.setHSRUsed(Boolean.TRUE, seg);
+                    nextATM.setHSRCapacity(currATM.getHSRCapacity(seg), seg);
+                    nextATM.setHSRDuration(currATM.getHSRDuration(seg) - 1, seg);
                 } else {
-                    nextPeriodATM.setHSRDuration(0, seg);
+                    nextATM.setHSRDuration(0, seg);
                 }
             }
         }

@@ -25,10 +25,10 @@ public class PeriodATM {
     private final float[] saf;
 
     // Other ATM
-    private int[] rmDuration;
+    private final int[] rmDuration;
     private final int[] rampMetering;
     private final Boolean[] rampMeteringUsed;
-    private int[] hsrDuration;
+    private final int[] hsrDuration;
     private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 

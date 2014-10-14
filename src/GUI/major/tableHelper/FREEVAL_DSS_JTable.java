@@ -20,17 +20,17 @@ import javax.swing.table.TableCellRenderer;
  */
 public class FREEVAL_DSS_JTable extends JTable {
 
-    private final TableSelectionCellEditor defaultCellEditor;
-    private final DefaultCellEditor checkBoxEditor;
+    //private final TableSelectionCellEditor defaultCellEditor;
+    //private final DefaultCellEditor checkBoxEditor;
 
     public FREEVAL_DSS_JTable() {
         super();
-        defaultCellEditor = new TableSelectionCellEditor(true);
-        JCheckBox editorCB = new JCheckBox();
-        editorCB.setHorizontalAlignment(JLabel.CENTER);
-        editorCB.setBackground(Color.WHITE);
-        editorCB.setForeground(Color.WHITE);
-        checkBoxEditor = new DefaultCellEditor(editorCB);
+        //defaultCellEditor = new TableSelectionCellEditor(true);
+        //JCheckBox editorCB = new JCheckBox();
+        //editorCB.setHorizontalAlignment(JLabel.CENTER);
+        //editorCB.setBackground(Color.WHITE);
+        //editorCB.setForeground(Color.WHITE);
+        //checkBoxEditor = new DefaultCellEditor(editorCB);
 
         this.rowSelectionAllowed = false;
         
@@ -53,19 +53,18 @@ public class FREEVAL_DSS_JTable extends JTable {
 
     @Override
     public TableCellEditor getCellEditor(int row, int col) {        
-        switch (((FREEVAL_DSS_TableModel) this.getModel()).getTableType()) {
-            default:
-            case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
-                return defaultCellEditor;
-            case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
-                if (row == 1 || row == 4) {
-                    return checkBoxEditor;
-                } else {
-                    return defaultCellEditor;
-                }
-        }
-        //return tableModel.getCellEditor(row, column);
-        //return defaultCellEditor;
+        //switch (((FREEVAL_DSS_TableModel) this.getModel()).getTableType()) {
+        //    default:
+        //    case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
+        //        return defaultCellEditor;
+        //    case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
+        //        if (row == 1 || row == 4) {
+        //            return checkBoxEditor;
+        //        } else {
+        //            return defaultCellEditor;
+        //        }
+        //}
+        return ((FREEVAL_DSS_TableModel) this.getModel()).getEditor(row,col);
     }
 
     @Override
