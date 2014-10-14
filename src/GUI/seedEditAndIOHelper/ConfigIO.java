@@ -3,7 +3,7 @@ package GUI.seedEditAndIOHelper;
 import GUI.major.graphicHelper.GraphicColorSetting;
 import GUI.major.tableHelper.TableCellSetting;
 import GUI.major.MainWindow;
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -6,8 +6,7 @@
 package GUI.major.eventHelper;
 
 import DSS.DataStruct.ScenarioEvent;
-import coreEngine.CEConst;
-import static coreEngine.CEConst.IDS_NUM_PERIOD;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -24,6 +23,9 @@ public class WorkZoneDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form weatherEventDialog
+     * 
+     * @param parent
+     * @param modal 
      */
     public WorkZoneDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -78,7 +80,7 @@ public class WorkZoneDialog extends javax.swing.JDialog {
      * @return
      */
     private DefaultComboBoxModel periodCBModelCreator(int type) {
-        String[] tempArr = new String[seed.getValueInt(IDS_NUM_PERIOD)];
+        String[] tempArr = new String[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         //tempArr[0] = "<Select Period>";
         int currHour = seed.getStartTime().hour;
         int currMin = seed.getStartTime().minute;
@@ -147,7 +149,7 @@ public class WorkZoneDialog extends javax.swing.JDialog {
      * @return
      */
     private DefaultComboBoxModel periodCBModelCreator(int type, int startPeriod) {
-        String[] tempArr = new String[seed.getValueInt(IDS_NUM_PERIOD) - (startPeriod - 1)];
+        String[] tempArr = new String[seed.getValueInt(CEConst.IDS_NUM_PERIOD) - (startPeriod - 1)];
         //tempArr[0] = "<Select Period>";
         int currHour = seed.getStartTime().hour;
         int currMin = seed.getStartTime().minute;

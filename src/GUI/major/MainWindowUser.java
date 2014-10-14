@@ -11,10 +11,12 @@ import GUI.seedEditAndIOHelper.SeedGlobalDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
-import atdm.DataStruct.ATDMScenario;
-import coreEngine.ASCIISeedFileAdapter;
-import coreEngine.CEConst;
+import coreEngine.Helper.ASCIISeedFileAdapter;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
+import coreEngine.atdm.DataStruct.ATDMScenario;
+import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
+import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -28,8 +30,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import reliabilityAnalysis.DataStruct.Scenario;
-import reliabilityAnalysis.DataStruct.ScenarioInfo;
 
 /**
  * This class is the main window of FREEVAL. All seeds are contained in this

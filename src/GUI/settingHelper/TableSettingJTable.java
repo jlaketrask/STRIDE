@@ -1,7 +1,7 @@
 package GUI.settingHelper;
 
 import GUI.major.tableHelper.TableCellSetting;
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

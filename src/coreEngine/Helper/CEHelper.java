@@ -1,6 +1,6 @@
-package coreEngine;
+package coreEngine.Helper;
 
-import reliabilityAnalysis.DataStruct.ScenarioInfo;
+import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -364,7 +364,7 @@ public class CEHelper {
      * @param coe coefficient
      * @return value in pc
      */
-    static float veh_to_pc(float value, float coe) {
+    public static float veh_to_pc(float value, float coe) {
         return value / coe;// / inPeak / inDriver;
     }
 
@@ -375,7 +375,7 @@ public class CEHelper {
      * @param coe coefficient
      * @return value in veh
      */
-    static float pc_to_veh(float value, float coe) {
+    public static float pc_to_veh(float value, float coe) {
         return value * coe;
     }
 
@@ -386,7 +386,7 @@ public class CEHelper {
      * @param LOS2 second level of service
      * @return worse level of service
      */
-    static String worseLOS(String LOS1, String LOS2) {
+    public static String worseLOS(String LOS1, String LOS2) {
         if (LOS1.length() < 1) {
             return LOS2;
         } else {

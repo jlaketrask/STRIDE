@@ -1,5 +1,6 @@
-package coreEngine;
+package coreEngine.Helper;
 
+import coreEngine.Seed;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -13,6 +14,9 @@ import java.util.Scanner;
 import javax.swing.JFileChooser;
 
 /**
+ * This class is used to import from and export to ASCII(text) input file. The
+ * ASCII(text) input file contains seed input data for GP and ML segments, but
+ * RL and ATDM are not included.
  *
  * @author Shu Liu
  */
@@ -23,247 +27,870 @@ public class ASCIISeedFileAdapter {
      */
     private static final DecimalFormat formatter = new DecimalFormat("0.0#");
 
-    public static final int TIME_DEPENDENT = 0;
-    public static final int TIME_INDEPENDENT = 1;
-    public static final int GENERAL_INFO = 2;
+    /**
+     * Data type marker
+     */
+    private static final int TIME_DEPENDENT = 0;
 
-    public static final int INTEGER = 0;
-    public static final int FLOAT = 1;
-    public static final int BOOLEAN = 2;
-    public static final int STRING = 3;
-    public static final int OTHER = 4;
+    /**
+     * Data type marker
+     */
+    private static final int TIME_INDEPENDENT = 1;
 
+    /**
+     * Data type marker
+     */
+    private static final int GENERAL_INFO = 2;
+
+    /**
+     * Data type marker
+     */
+    private static final int INTEGER = 0;
+
+    /**
+     * Data type marker
+     */
+    private static final int FLOAT = 1;
+
+    /**
+     * Data type marker
+     */
+    private static final int BOOLEAN = 2;
+
+    /**
+     * Data type marker
+     */
+    private static final int STRING = 3;
+
+    /**
+     * Data type marker
+     */
+    private static final int OTHER = 4;
+
+    /**
+     * Format marker
+     */
     private static final int ITEM_WIDTH = 6;
 
+    /**
+     * Map to convert id to header
+     */
     private final HashMap<String, String> idToHeaderMap = new HashMap();
 
     // <editor-fold defaultstate="collapsed" desc="HEADER ID">
     // <editor-fold defaultstate="collapsed" desc="GLOBAL INPUT">
+    /**
+     * Item ID constant
+     */
     private static final String ID_PROJECT_NAME = "001";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_START = "002";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_END = "003";
+
+    /**
+     * Item ID constant
+     */
     private static final String ID_NUM_SEGMENTS = "004";
+
+    /**
+     * Item ID constant
+     */
     private static final String ID_FFS_KNOWN = "005";
+
+    /**
+     * Item ID constant
+     */
     private static final String ID_RAMP_METERING = "006";
+
+    /**
+     * Item ID constant
+     */
     private static final String ID_ML_USED = "007";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ALPHA = "008";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_JAM_DENSITY = "009";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_SEED_DEMAND_DATE = "010";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_GP_OCCU = "011";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_OCCU = "012";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="GP HEADER">
     // Basic Segment Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_SEGMENT_TYPE = "101";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_SEGMENT_LENGTH = "102";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_SEGMENT_WIDTH = "103";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_LATERAL_CLEARANCE = "104";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_TERRAIN = "105";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_TRUCK_CAR_EQ = "106";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_RV_CAR_EQ = "107";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_NUM_LANES = "108";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_FREE_FLOW_SPEED = "109";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_DEMAND_VEH = "110";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_TRUCK_PERCENTAGE = "111";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_RV_PERCENTAGE = "112";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_U_CAF = "113";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_U_OAF = "114";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_U_DAF = "115";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_U_SAF = "116";
 
     // ONR Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_ON_RAMP_SIDE = "117";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ACC_DEC_LANE_LENGTH = "118";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_NUM_ON_RAMP_LANES = "119";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ON_RAMP_DEMAND_VEH = "120";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ON_RAMP_FREE_FLOW_SPEED = "121";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ON_RAMP_METERING_RATE = "122";
 
     // OFR Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_OFF_RAMP_SIDE = "123";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_NUM_OFF_RAMP_LANES = "124";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_OFF_RAMP_DEMAND_VEH = "125";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_OFF_RAMP_FREE_FLOW_SPEED = "126";
 
     // Weaving Segment Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_LENGTH_OF_WEAVING = "127";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_MIN_LANE_CHANGE_ONR_TO_FRWY = "128";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_MIN_LANE_CHANGE_FRWY_TO_OFR = "129";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_MIN_LANE_CHANGE_ONR_TO_OFR = "130";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_NUM_LANES_WEAVING = "131";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_RAMP_TO_RAMP_DEMAND_VEH = "132";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ML HEADER">
     // Basic Segment Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_SEGMENT_TYPE = "201";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_METHOD_TYPE = "202";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_SEPARATION_TYPE = "203";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_NUM_LANES = "204";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_FREE_FLOW_SPEED = "205";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_DEMAND_VEH = "206";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_TRUCK_PERCENTAGE = "207";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_RV_PERCENTAGE = "208";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_UCAF = "209";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_UOAF = "210";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_UDAF = "211";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_USAF = "212";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_ACC_DEC_LANE_LENGTH = "213";
 
     // ONR Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_ON_RAMP_SIDE = "214";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_NUM_ON_RAMP_LANES = "215";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_ON_RAMP_DEMAND_VEH = "216";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_ON_RAMP_FREE_FLOW_SPEED = "217";
 
     // OFR Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_OFF_RAMP_SIDE = "218";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_NUM_OFF_RAMP_LANES = "219";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_OFF_RAMP_DEMAND_VEH = "220";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_OFF_RAMP_FREE_FLOW_SPEED = "221";
 
     // Weaving Segment Variable Column Text
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_LENGTH_SHORT = "222";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_MIN_LANE_CHANGE_ONR_TO_FRWY = "223";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_MIN_LANE_CHANGE_FRWY_TO_OFR = "224";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_MIN_LANE_CHANGE_ONR_TO_OFR = "225";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_NUM_LANES_WEAVING = "226";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_LC_MIN = "227";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_LC_MAX = "228";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_RAMP_TO_RAMP_DEMAND_VEH = "229";
 
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_HAS_CROSS_WEAVE = "230";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_CROSS_WEAVE_LC_MIN = "231";
+
+    /**
+     * Item ID constant
+     */
     private final static String ID_ML_CROSS_WEAVE_VOLUME = "232";
     // </editor-fold>
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="HEADER CONSTANT">
     // <editor-fold defaultstate="collapsed" desc="GLOBAL INPUT">
+    /**
+     * Item header constant
+     */
     private static final String STR_PROJECT_NAME = "Project Name";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_START = "Study Period Start Time (HH:MM)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_END = "Study Period End Time (HH:MM)";
+
+    /**
+     * Item header constant
+     */
     private static final String STR_NUM_SEGMENTS = "# of Segments";
+
+    /**
+     * Item header constant
+     */
     private static final String STR_FFS_KNOWN = "Free Flow Speed Known?";
+
+    /**
+     * Item header constant
+     */
     private static final String STR_RAMP_METERING = "Ramp Metering Used?";
+
+    /**
+     * Item header constant
+     */
     private static final String STR_ML_USED = "Managed Lane Used?";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ALPHA = "Capacity Drop (%)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_JAM_DENSITY = "Jam Density (pc/mi/ln)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_SEED_DEMAND_DATE = "Seed Demand Date (YYYY-MM-DD)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_GP_OCCU = "GP Segment Vehicle Occupancy (p/veh)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_OCCU = "ML Segment Vehicle Occupancy (p/veh)";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="GP HEADER">
     // Basic Segment Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_SEGMENT_TYPE = "General Purpose Segment Type (Basic = 0, ONR = 1, OFR = 2, Overlap = 3, Weaving = 4, Access = 8)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_SEGMENT_LENGTH = "Segment Length (ft)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_SEGMENT_WIDTH = "Lane Width (ft)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_LATERAL_CLEARANCE = "Lateral Clearance (ft)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_TERRAIN = "Terrain (Level = 1, Mountainous = 2, Rolling = 3, Varying = 4)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_TRUCK_CAR_EQ = "Truck-PC Equivalence (ET)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_RV_CAR_EQ = "RV-PC Equivalence (ER)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_NUM_LANES = "# of Lanes: Mainline";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_FREE_FLOW_SPEED = "Free Flow Speed (mph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_DEMAND_VEH = "Mainline Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_TRUCK_PERCENTAGE = "Truck (%)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_RV_PERCENTAGE = "RV (%)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_U_CAF = "Seed Capacity Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_U_OAF = "Seed Entering Dem. Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_U_DAF = "Seed Exit Dem. Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_U_SAF = "Seed Free Flow Speed Adj. Fac.";
 
     // ONR Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_ON_RAMP_SIDE = "ONR Side (Right = 0, Left = 1)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ACC_DEC_LANE_LENGTH = "Acc/Dec Lane Length (ft)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_NUM_ON_RAMP_LANES = "# Lanes: ONR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ON_RAMP_DEMAND_VEH = "ONR/Entering Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ON_RAMP_FREE_FLOW_SPEED = "ONR Free Flow Speed (mph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ON_RAMP_METERING_RATE = "ONR Metering Rate (vph)";
 
     // OFR Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_OFF_RAMP_SIDE = "OFR Side (Right = 0, Left = 1)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_NUM_OFF_RAMP_LANES = "# Lanes: OFR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_OFF_RAMP_DEMAND_VEH = "OFR/Exit Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_OFF_RAMP_FREE_FLOW_SPEED = "OFR Free Flow Speed (mph)";
 
     // Weaving Segment Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_LENGTH_OF_WEAVING = "Weave Segment Ls (ft)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_MIN_LANE_CHANGE_ONR_TO_FRWY = "Weave Segment LCRF";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_MIN_LANE_CHANGE_FRWY_TO_OFR = "Weave Segment LCFR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_MIN_LANE_CHANGE_ONR_TO_OFR = "Weave Segment LCRR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_NUM_LANES_WEAVING = "Weave Segment NW";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_RAMP_TO_RAMP_DEMAND_VEH = "Ramp to Ramp Dem. (vph)";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ML HEADER">
     // Basic Segment Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_SEGMENT_TYPE = "ML Segment Type (Basic = 0, ONR = 1, OFR = 2, Overlap = 3, Weaving = 4, Access = 8)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_METHOD_TYPE = "ML Type of ML (HOV = 0, HOT = 1)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_SEPARATION_TYPE = "ML Type of Separation (Marking = 0, Buffer = 1, Barrier = 2)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_NUM_LANES = "ML # of Lanes: Mainline";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_FREE_FLOW_SPEED = "ML Free Flow Speed (mph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_DEMAND_VEH = "ML Mainline Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_TRUCK_PERCENTAGE = "ML Truck (%)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_RV_PERCENTAGE = "ML RV (%)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_UCAF = "ML Seed Capacity Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_UOAF = "ML Seed Entering Dem. Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_UDAF = "ML Seed Exit Dem. Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_USAF = "ML Seed Free Flow Speed Adj. Fac.";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_ACC_DEC_LANE_LENGTH = "ML Acc/Dec Lane Length (ft)";
 
     // ONR Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_ON_RAMP_SIDE = "ML ONR Side (Right = 0, Left = 1)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_NUM_ON_RAMP_LANES = "ML # Lanes: ONR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_ON_RAMP_DEMAND_VEH = "ML ONR/Entering Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_ON_RAMP_FREE_FLOW_SPEED = "ML ONR Free Flow Speed (mph)";
 
     // OFR Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_OFF_RAMP_SIDE = "ML OFR Side (Right = 0, Left = 1)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_NUM_OFF_RAMP_LANES = "ML # Lanes: OFR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_OFF_RAMP_DEMAND_VEH = "ML OFR/Exiting Dem. (vph)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_OFF_RAMP_FREE_FLOW_SPEED = "ML OFR Free Flow Speed (mph)";
 
     // Weaving Segment Variable Column Text
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_LENGTH_SHORT = "ML Length Short (ft)";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_MIN_LANE_CHANGE_ONR_TO_FRWY = "ML Weave Segment LCRF";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_MIN_LANE_CHANGE_FRWY_TO_OFR = "ML Weave Segment LCFR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_MIN_LANE_CHANGE_ONR_TO_OFR = "ML Weave Segment LCRR";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_NUM_LANES_WEAVING = "ML Weave Segment NW";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_LC_MIN = "ML Min Lane Change";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_LC_MAX = "ML Max Lane Change";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_RAMP_TO_RAMP_DEMAND_VEH = "ML Ramp to Ramp Dem. (vph)";
 
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_HAS_CROSS_WEAVE = "Analysis of Cross Weave Effect";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_CROSS_WEAVE_LC_MIN = "Cross Weave LC-Min";
+
+    /**
+     * Item header constant
+     */
     private final static String STR_ML_CROSS_WEAVE_VOLUME = "Cross Weave Volume";
     // </editor-fold>
     // </editor-fold>
 
+    /**
+     * Item list for general purpose segments
+     */
     private final ArrayList<Item> itemListGP = new ArrayList();
+
+    /**
+     * Item list for managed lanes segments
+     */
     private final ArrayList<Item> itemListML = new ArrayList();
 
+    /**
+     * Constructor
+     */
     public ASCIISeedFileAdapter() {
         buildIDMap();
         buildGPList();
         buildMLList();
     }
 
+    /**
+     * Build ID map
+     */
     private void buildIDMap() {
         // <editor-fold defaultstate="collapsed" desc="GLOBAL INPUT">
         idToHeaderMap.put(ID_PROJECT_NAME, STR_PROJECT_NAME);
@@ -373,6 +1000,9 @@ public class ASCIISeedFileAdapter {
         // </editor-fold>
     }
 
+    /**
+     * Build GP list
+     */
     private void buildGPList() {
         //Global Input
         itemListGP.add(new Item(ID_PROJECT_NAME, CEConst.IDS_PROJECT_NAME, GENERAL_INFO, STRING));
@@ -427,6 +1057,9 @@ public class ASCIISeedFileAdapter {
         itemListGP.add(new Item(ID_RAMP_TO_RAMP_DEMAND_VEH, CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH, TIME_DEPENDENT, INTEGER));
     }
 
+    /**
+     * Build ML list
+     */
     private void buildMLList() {
         //ML Segment Input
         itemListML.add(new Item(ID_ML_SEGMENT_TYPE, CEConst.IDS_ML_SEGMENT_TYPE, TIME_INDEPENDENT, OTHER));
@@ -557,6 +1190,12 @@ public class ASCIISeedFileAdapter {
         return seed;
     }
 
+    /**
+     * Find item from list
+     *
+     * @param headerID header ID
+     * @return item from list
+     */
     private Item findItem(String headerID) {
         for (Item item : itemListGP) {
             if (item.headerID.equals(headerID)) {
@@ -571,11 +1210,27 @@ public class ASCIISeedFileAdapter {
         return null;
     }
 
+    /**
+     * Read general info
+     *
+     * @param seed seed instance
+     * @param item item to be read
+     * @param in input reader
+     * @throws IOException
+     */
     private void readGeneralInfo(Seed seed, Item item, BufferedReader in) throws IOException {
         String value = in.readLine();
         seed.setValue(item.coreEngineID, value);
     }
 
+    /**
+     * Read time independent data
+     *
+     * @param seed seed instance
+     * @param item item to be read
+     * @param in input reader
+     * @throws IOException
+     */
     private void readTimeIndependent(Seed seed, Item item, BufferedReader in) throws IOException {
         in.readLine(); //skip segment index line
         Scanner line = new Scanner(in.readLine());
@@ -588,6 +1243,14 @@ public class ASCIISeedFileAdapter {
         line.close();
     }
 
+    /**
+     * Read time dependent data
+     *
+     * @param seed seed instance
+     * @param item item to be read
+     * @param in input reader
+     * @throws IOException
+     */
     private void readTimeDependent(Seed seed, Item item, BufferedReader in) throws IOException {
         in.readLine(); //skip segment index line
         for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
@@ -605,6 +1268,12 @@ public class ASCIISeedFileAdapter {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Export Functions">
+    /**
+     * Export input of seed instance to an ASCII(text) file
+     *
+     * @param seed seed instance
+     * @return file path and name
+     */
     public String exportToASCII(Seed seed) {
         final JFileChooser fc = new JFileChooser();
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -615,6 +1284,12 @@ public class ASCIISeedFileAdapter {
         }
     }
 
+    /**
+     * Export input of seed instance to an ASCII(text) file
+     *
+     * @param seed seed instance
+     * @param newFileName file path and name
+     */
     public void exportToASCII(Seed seed, String newFileName) {
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(newFileName));
@@ -643,6 +1318,14 @@ public class ASCIISeedFileAdapter {
         }
     }
 
+    /**
+     * Write data
+     *
+     * @param seed seed instance
+     * @param item item to be written
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeItem(Seed seed, Item item, BufferedWriter out) throws IOException {
         switch (item.property) {
             case GENERAL_INFO:
@@ -659,6 +1342,14 @@ public class ASCIISeedFileAdapter {
         }
     }
 
+    /**
+     * Write general information data
+     *
+     * @param seed seed instance
+     * @param item item to be written
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeGeneralInfo(Seed seed, Item item, BufferedWriter out) throws IOException {
         writeHeader(item.headerID, out);
         switch (item.dataType) {
@@ -673,6 +1364,14 @@ public class ASCIISeedFileAdapter {
         out.newLine();
     }
 
+    /**
+     * Write time dependent data
+     *
+     * @param seed seed instance
+     * @param item item to be written
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeTimeDependent(Seed seed, Item item, BufferedWriter out) throws IOException {
         writeHeader(item.headerID, out);
         writeSegmentIndex(seed, out);
@@ -699,6 +1398,14 @@ public class ASCIISeedFileAdapter {
         }
     }
 
+    /**
+     * Write time independent data
+     *
+     * @param seed seed instance
+     * @param item item to be written
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeTimeIndependent(Seed seed, Item item, BufferedWriter out) throws IOException {
         writeHeader(item.headerID, out);
         writeSegmentIndex(seed, out);
@@ -721,11 +1428,25 @@ public class ASCIISeedFileAdapter {
         }
     }
 
+    /**
+     * Write header
+     *
+     * @param headerID header ID
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeHeader(String headerID, BufferedWriter out) throws IOException {
         out.write("<" + headerID + "> " + idToHeaderMap.get(headerID));
         out.newLine();
     }
 
+    /**
+     * Write segment index
+     *
+     * @param seed seed instance
+     * @param out output writer
+     * @throws IOException
+     */
     private void writeSegmentIndex(Seed seed, BufferedWriter out) throws IOException {
         out.write(alignString("Seg."));
         for (int index = 1; index <= seed.getValueInt(CEConst.IDS_NUM_SEGMENT); index++) {
@@ -734,6 +1455,12 @@ public class ASCIISeedFileAdapter {
         out.newLine();
     }
 
+    /**
+     * Align outputs by adding spaces
+     *
+     * @param str output string
+     * @return formatted string
+     */
     private String alignString(String str) {
         if (str.length() < ITEM_WIDTH) {
             String result = "";
@@ -747,32 +1474,44 @@ public class ASCIISeedFileAdapter {
     }
     // </editor-fold>
 
+    /**
+     * Privet helper class for output item parameters
+     */
     private class Item {
 
+        /**
+         * Header ID
+         */
         final String headerID;
+
+        /**
+         * coreEngine ID
+         */
         final String coreEngineID;
+
+        /**
+         * Item property
+         */
         final int property;
+
+        /**
+         * Item data type
+         */
         final int dataType;
 
-        public Item(String headerID, String coreEngineID, int property, int dataType) {
+        /**
+         * Constructor
+         *
+         * @param headerID Header ID
+         * @param coreEngineID coreEngine ID
+         * @param property Item property
+         * @param dataType Item data type
+         */
+        private Item(String headerID, String coreEngineID, int property, int dataType) {
             this.headerID = headerID;
             this.coreEngineID = coreEngineID;
             this.property = property;
             this.dataType = dataType;
         }
-    }
-
-    /* Static main method for testing purposes only */
-    /**
-     * Unit test for this class
-     *
-     * @param args command line arguments (not in use)
-     */
-    public static void main(String[] args) {
-        System.out.println("Starting Test");
-        ASCIISeedFileAdapter seedFile = new ASCIISeedFileAdapter();
-        Seed i40 = seedFile.importFromASCII("/Users/Shu/i40newtest.txt");
-        //seedFile.exportToFile(Paths.get("/Users/Shu/out.txt"), i40);
-        //System.out.println("Finished");
     }
 }

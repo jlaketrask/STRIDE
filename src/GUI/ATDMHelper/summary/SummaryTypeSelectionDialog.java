@@ -1,6 +1,6 @@
 package GUI.ATDMHelper.summary;
 
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

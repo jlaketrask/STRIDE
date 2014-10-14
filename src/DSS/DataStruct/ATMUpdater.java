@@ -5,10 +5,9 @@
  */
 package DSS.DataStruct;
 
-import atdm.DataStruct.ATDMScenario;
-import coreEngine.CEConst;
-import static coreEngine.CEConst.IDS_MAIN_NUM_LANES_IN;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
+import coreEngine.atdm.DataStruct.ATDMScenario;
 
 /**
  *
@@ -59,7 +58,7 @@ public class ATMUpdater {
             // Hard Shoulder Running Check
             if (currPeriodATM.getHSRUsed(seg)) {
                 // Assigning Hard Shoulder Running
-                int numLanesSegment = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, seg);
+                int numLanesSegment = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg);
                 if (currPeriodATM.getHSRUsed(seg)) {
                     atm.LAF().add(1, seg, currPeriod + 1); // Adding lane
 

@@ -1,4 +1,4 @@
-package coreEngine;
+package coreEngine.Helper;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 public class CETime implements Serializable {
 
     /**
-     *
+     * serialVersionUID
      */
     private static final long serialVersionUID = 5345236644L;
 

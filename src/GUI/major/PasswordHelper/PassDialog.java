@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import reliabilityAnalysis.DataStruct.WeatherData;
-
 /**
  *
  * @author jltrask
@@ -54,7 +52,7 @@ public class PassDialog extends javax.swing.JDialog {
         BufferedReader br = null;
 
         try {
-            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/GUI/major/PasswordHelper/pass.db")));
+            br = new BufferedReader(new InputStreamReader(PassDialog.class.getResourceAsStream("/GUI/major/PasswordHelper/pass.db")));
 //                    br = new BufferedReader(new FileReader(csvFile));
             hash = br.readLine();  //Reads and skips header row
         } catch (FileNotFoundException e) {

@@ -1,8 +1,8 @@
-package coreEngine;
+package coreEngine.Helper;
 
+import coreEngine.reliabilityAnalysis.DataStruct.DemandData;
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import reliabilityAnalysis.DataStruct.DemandData;
 
 /**
  * This class is used to store and modify seed and RRP dates.
@@ -13,7 +13,7 @@ import reliabilityAnalysis.DataStruct.DemandData;
 public class CEDate implements Serializable {
 
     /**
-     *
+     * serialVersionUID
      */
     private static final long serialVersionUID = 2435357335649L;
 
@@ -260,11 +260,11 @@ public class CEDate implements Serializable {
      * Note: whether or not a day is active in the study period is not
      * considered.
      *
-     * @param year
-     * @param month
-     * @param startDay
-     * @param endDay
-     * @return
+     * @param year year
+     * @param month month
+     * @param startDay start day
+     * @param endDay end day
+     * @return a integer array of length 7
      */
     public static int[] numEachDayOfWeekInPeriod(int year, int month, int startDay, int endDay) {
 
@@ -282,12 +282,14 @@ public class CEDate implements Serializable {
 
         return numDayOfWeek;
     }
+
     /**
-     * Method that checks if this CEDate is before another. Return true if before, 
-     * returns false if they are the same date or this date is after the input date.
-     * 
-     * @param date
-     * @return 
+     * Method that checks if this CEDate is before another. Return true if
+     * before, returns false if they are the same date or this date is after the
+     * input date.
+     *
+     * @param date date to compare
+     * @return whether this CEDate is before another
      */
     public boolean isBefore(CEDate date) {
         boolean isBefore = false;
@@ -295,22 +297,23 @@ public class CEDate implements Serializable {
             isBefore = true;
         } else if (this.year == date.year) {
             if (this.month < date.month) {
-                isBefore =  true;
+                isBefore = true;
             } else if (this.month == date.month) {
                 if (this.day < date.day) {
-                    isBefore =  true;
+                    isBefore = true;
                 }
             }
         }
         return isBefore;
     }
-    
+
     /**
-     * Method that checks if this CEDate is after another. Return true if after, 
-     * returns false if they are the same date or this date is before the input date.
-     * 
-     * @param date
-     * @return 
+     * Method that checks if this CEDate is after another. Return true if after,
+     * returns false if they are the same date or this date is before the input
+     * date.
+     *
+     * @param date date to compare
+     * @return whether this CEDate is after another
      */
     public boolean isAfter(CEDate date) {
         boolean isAfter = false;
@@ -318,29 +321,42 @@ public class CEDate implements Serializable {
             isAfter = true;
         } else if (this.year == date.year) {
             if (this.month > date.month) {
-                isAfter =  true;
+                isAfter = true;
             } else if (this.month == date.month) {
                 if (this.day > date.day) {
-                    isAfter =  true;
+                    isAfter = true;
                 }
             }
         }
         return isAfter;
     }
+
     /**
      * Method to check if two dates are the same.
-     * 
-     * @param date
-     * @return 
+     *
+     * @param date date to compare
+     * @return whether two dates are the same
      */
     public boolean isSameDateAs(CEDate date) {
         return (this.month == date.month && this.year == date.year && this.day == date.day);
     }
-    
+
+    /**
+     * Compare two dates
+     *
+     * @param date date to compare
+     * @return whether this date is before or same as the other
+     */
     public boolean isBeforeOrSameAs(CEDate date) {
         return (this.isBefore(date) || this.isSameDateAs(date));
     }
-    
+
+    /**
+     * Compare two dates
+     *
+     * @param date date to compare
+     * @return whether this date is after or same as the other
+     */
     public boolean isAfterOrSameAs(CEDate date) {
         return (this.isAfter(date) || this.isSameDateAs(date));
     }
@@ -421,8 +437,9 @@ public class CEDate implements Serializable {
     }
 
     /**
+     * Return a String to represent the month
      *
-     * @param month
+     * @param month month
      * @return String of full name of month
      */
     public static String getMonthString(int month) {
@@ -546,6 +563,11 @@ public class CEDate implements Serializable {
         return year + "-" + formatter.format(month) + "-" + formatter.format(day);
     }
 
+    /**
+     * Return a String to represent the work zone
+     *
+     * @return a String to represent the work zone
+     */
     public String toWorkZoneString() {
         String monthString = "";
         String dayString = "";

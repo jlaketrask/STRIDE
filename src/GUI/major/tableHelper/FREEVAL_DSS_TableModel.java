@@ -8,7 +8,7 @@ package GUI.major.tableHelper;
 import DSS.DataStruct.PeriodATM;
 import GUI.major.MainWindow;
 import GUI.major.MainWindowUser;
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.awt.Color;
 import java.awt.Component;

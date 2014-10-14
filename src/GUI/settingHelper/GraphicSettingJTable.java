@@ -2,7 +2,7 @@ package GUI.settingHelper;
 
 import GUI.major.graphicHelper.GraphicColorSetting;
 import GUI.major.GraphicDisplay;
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

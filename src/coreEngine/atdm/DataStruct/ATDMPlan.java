@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package atdm.DataStruct;
+package coreEngine.atdm.DataStruct;
 
-import coreEngine.CEConst;
-import coreEngine.CM2DInt;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CM2DInt;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,21 +17,51 @@ import java.util.HashMap;
  */
 public class ATDMPlan implements Serializable, Cloneable {
 
+    /**
+     *
+     */
     private static final long serialVersionUID = 7234909154855844L;
 
+    /**
+     *
+     */
     private int id;
+
+    /**
+     *
+     */
     private String name;
+
+    /**
+     *
+     */
     private String description;
 
+    /**
+     *
+     */
     private HashMap<ATDMStrategy, String> strategies;
 
-    private CM2DInt RMRate;
-    private boolean hasRampMetering = false;
-    
-    private CM2DInt HSRMatrix;
-    private float hardShoulderRunningCAF = 1.0f;
-    private boolean hasShoulderOpening = false;
+    //private CM2DInt RMRate;
 
+    /**
+     *
+     */
+        private boolean hasRampMetering = false;
+
+    //private CM2DInt HSRMatrix;
+    //private float hardShoulderRunningCAF = 1.0f;
+
+    /**
+     *
+     */
+        private boolean hasShoulderOpening = false;
+
+    /**
+     *
+     * @param id
+     * @param name
+     */
     public ATDMPlan(int id, String name) {
 
         this.id = id;
@@ -57,27 +87,49 @@ public class ATDMPlan implements Serializable, Cloneable {
         copyStrategies(basePlan);
     }
 
+    /**
+     *
+     * @param strategyType
+     * @param newStrat
+     */
     public void addStrategy(String strategyType, ATDMStrategy newStrat) {
         if (strategies.containsKey(newStrat) == false) {
             strategies.put(newStrat, strategyType);
         }
     }
 
+    /**
+     *
+     * @param strat
+     */
     public void removeStrategy(ATDMStrategy strat) {
         if (strategies.containsKey(strat)) {
             strategies.remove(strat);
         }
     }
 
+    /**
+     *
+     * @param basePlan
+     */
     private void copyStrategies(ATDMPlan basePlan) {
         strategies = (HashMap<ATDMStrategy, String>) basePlan.getAppliedStrategies().clone();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
-    public String getName() {
+
+    /**
+     *
+     * @return
+     */
+        public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDescription() {
         String descD = "";
         String descW = "";
@@ -116,6 +168,10 @@ public class ATDMPlan implements Serializable, Cloneable {
         return description;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getInfo() {
         String descD = "";
         String descW = "";
@@ -153,14 +209,26 @@ public class ATDMPlan implements Serializable, Cloneable {
         return name + ":\n" + descD + descW + descI + descWZ + descRM + descSO;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getID() {
         return this.id;
     }
 
+    /**
+     *
+     * @return
+     */
     public HashMap<ATDMStrategy, String> getAppliedStrategies() {
         return strategies;
     }
 
+    /**
+     *
+     * @return
+     */
     public float[][] getATDMadjFactors() {
         float[][] afArray = new float[4][3];
         Arrays.fill(afArray[0], 1.0f);
@@ -195,6 +263,10 @@ public class ATDMPlan implements Serializable, Cloneable {
         return afArray;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getIncidentDurationReduction() {
         int durAdj = 0;
         for (ATDMStrategy strategy : strategies.keySet()) {
@@ -205,21 +277,53 @@ public class ATDMPlan implements Serializable, Cloneable {
         return durAdj;
     }
 
+    /**
+     *
+     * @return
+     */
     public CM2DInt getRMRate() {
-        return RMRate;
+        for (ATDMStrategy strategy : strategies.keySet()) {
+            if (CEConst.IDS_ATDM_STRAT_TYPE_RAMP_METERING.equalsIgnoreCase(strategies.get(strategy))) {
+                return ((ATDMStrategyMat) strategy).getStrategyMatrix();
+            }
+        }
+        return null;
     }
-    
+
+    /**
+     *
+     * @return
+     */
     public CM2DInt getHSRMatrix() {
-        return HSRMatrix;
+        for (ATDMStrategy strategy : strategies.keySet()) {
+            if (CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING.equalsIgnoreCase(strategies.get(strategy))) {
+                return ((ATDMStrategyMat) strategy).getStrategyMatrix();
+            }
+        }
+        return null;
     }
-    
+
+    /**
+     *
+     * @return
+     */
     public float getHSRCAF() {
-        return hardShoulderRunningCAF;
+        for (ATDMStrategy strategy : strategies.keySet()) {
+            if (CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING.equalsIgnoreCase(strategies.get(strategy))) {
+                return ((ATDMStrategyMat) strategy).getShoulderCapacity();
+            }
+        }
+        throw new RuntimeException("Error: No HSR Strategy assigned to plan");
     }
-    
+
     //</editor-fold>
 
-    public boolean hasStrategy(ATDMStrategy strategy) {
+    /**
+     *
+     * @param strategy
+     * @return
+     */
+        public boolean hasStrategy(ATDMStrategy strategy) {
         for (ATDMStrategy strat : strategies.keySet()) {
             if (strat == strategy) {
                 return true;
@@ -228,43 +332,71 @@ public class ATDMPlan implements Serializable, Cloneable {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean hasRampMetering() {
         return hasRampMetering;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean hasShoulderOpening() {
         return hasShoulderOpening;
     }
-    
-    public void setHSRCAF(float newVal) {
-        hardShoulderRunningCAF = newVal;
-    }
 
+//    public void setHSRCAF(float newVal) {
+//        hardShoulderRunningCAF = newVal;
+//    }
     // <editor-fold defaultstate="collapsed" desc="Setters">
-    public void setID(int newID) {
+
+    /**
+     *
+     * @param newID
+     */
+        public void setID(int newID) {
         this.id = newID;
     }
 
+    /**
+     *
+     * @param newName
+     */
     public void setName(String newName) {
         this.name = newName;
     }
 
+    /**
+     *
+     * @param newDescription
+     */
     public void setDescription(String newDescription) {
         this.description = newDescription;
     }
 
-    public void setRMRate(CM2DInt newRMRate) {
-        RMRate = newRMRate;
-    }
-    
-    public void setHSRMatrix(CM2DInt newHSRMatrix) {
-        HSRMatrix  = newHSRMatrix;
-    }
+//    public void setRMRate(CM2DInt newRMRate) {
+//        RMRate = newRMRate;
+//    }
+//
+//    public void setHSRMatrix(CM2DInt newHSRMatrix) {
+//        HSRMatrix = newHSRMatrix;
+//    }
 
-    public void useRampMetering(boolean val) {
+    /**
+     *
+     * @param val
+     */
+        public void useRampMetering(boolean val) {
         hasRampMetering = val;
     }
 
+    /**
+     *
+     * @param val
+     */
     public void useShoulderOpening(boolean val) {
         hasShoulderOpening = val;
     }

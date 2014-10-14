@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package reliabilityAnalysis.DataStruct;
+package coreEngine.reliabilityAnalysis.DataStruct;
 
 import coreEngine.Seed;
 
@@ -13,110 +12,169 @@ import coreEngine.Seed;
  * @author Lake and tristan
  */
 public class IncidentData {
-	
+
+    /**
+     *
+     */
     private final float[][] incidentProbabilities;
+
+    /**
+     *
+     */
     private final float[] incidentFreqMonth;  // Total number of incidents in a month
-    
+
+    /**
+     *
+     */
     private final float[] incidentDistribution;
+
+    /**
+     *
+     */
     private final float[][] incidentDurationInfo;
-    
+
+    /**
+     *
+     */
     private final float[][] incidentFFSAFs;
+
+    /**
+     *
+     */
     private final float[][] incidentCAFs;
+
+    /**
+     *
+     */
     private final float[][] incidentDAFs;
+
+    /**
+     *
+     */
     private final int[][] incidentLAFs;
-    
+
+    /**
+     *
+     */
     private float crashRateRatio;
-    
+
+    /**
+     *
+     */
     private Seed seed;
-    
-    private final int type;
+
+    /**
+     *
+     */
+    private final int modelType;
+
+    /**
+     *
+     */
     public final static int TYPE_GP = 0;
+
+    /**
+     *
+     */
     public final static int TYPE_ML = 1;
-    
+
     /**
      *
      * @param type
      */
     public IncidentData(int type) {
         if (type == TYPE_GP || type == TYPE_ML) {
-            this.type = type;
+            this.modelType = type;
         } else {
             throw new RuntimeException("Invalid IncidentData type.");
         }
-        
+
         incidentProbabilities = new float[12][6];
         incidentFreqMonth = new float[12];
-        
+
         incidentDistribution = new float[5];
         incidentDurationInfo = new float[5][4];
-        
+
         // 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
         incidentFFSAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
         incidentCAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
         incidentDAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
         incidentLAFs = new int[5][7]; // 5 is incident type, 8 is number of lanes
-        
+
         crashRateRatio = 4.9f;
-                                              
-        
-        // To be removed?
+
         useDefaultFrequencies();
-        //useDefaultDistribution();
-        useNationalDefaultDistribution();
-        useDefaultAdjFactors();
-        
+        if (type == TYPE_GP) {
+            useNationalDefaultDistribution();
+            useDefaultAdjFactors();
+        } else {
+            useMLDefaultDistribution();
+            useMLDefaultAdjFactors();
+        }
+
     }
-    
+
+    /**
+     *
+     * @param seed
+     * @param type
+     */
     public IncidentData(Seed seed, int type) {
-        
+
         if (type == TYPE_GP || type == TYPE_ML) {
-            this.type = type;
+            this.modelType = type;
         } else {
             throw new RuntimeException("Invalid IncidentData type.");
         }
-        
+
         this.seed = seed;
         incidentProbabilities = new float[12][6];
-        
+
         // Reading in data from seed (if data exists)
         incidentFreqMonth = new float[12];
         if (type == TYPE_GP) {
             setIncidentFrequency(seed.getGPIncidentFrequency());
 
-            incidentDistribution = new float[5];
-            if (seed.getGPIncidentDuration()==null) {
-                incidentDurationInfo = new float[5][4];
+            if (seed.getGPIncidentDistribution() == null) {
+                incidentDistribution = new float[5];
+                useNationalDefaultDistribution();
             } else {
-                incidentDurationInfo=seed.getGPIncidentDuration();
+                incidentDistribution = seed.getGPIncidentDistribution();
+            }
+            if (seed.getGPIncidentDuration() == null) {
+                incidentDurationInfo = new float[5][4];
+                useDefaultDuration();
+            } else {
+                incidentDurationInfo = seed.getGPIncidentDuration();
             }
 
             // 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
-            if (seed.getGPIncidentSAF()==null) {
+            if (seed.getGPIncidentSAF() == null) {
                 incidentFFSAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(0);
             } else {
                 incidentFFSAFs = seed.getGPIncidentSAF();
             }
-            if (seed.getGPIncidentCAF()==null) {
+            if (seed.getGPIncidentCAF() == null) {
                 incidentCAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(1);
             } else {
                 incidentCAFs = seed.getGPIncidentCAF();
             }
-            if (seed.getGPIncidentDAF()==null) {
+            if (seed.getGPIncidentDAF() == null) {
                 incidentDAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(2);
             } else {
                 incidentDAFs = seed.getGPIncidentDAF();
             }
-            if (seed.getGPIncidentLAF()==null) {
+            if (seed.getGPIncidentLAF() == null) {
                 incidentLAFs = new int[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(3);
             } else {
                 incidentLAFs = seed.getGPIncidentLAF();
             }
 
-            if (seed.getGPIncidentCrashRatio()==0.0f) {
+            if (seed.getGPIncidentCrashRatio() == 0.0f) {
                 crashRateRatio = 4.9f; // National default
             } else {
                 crashRateRatio = seed.getGPIncidentCrashRatio();
@@ -124,67 +182,76 @@ public class IncidentData {
         } else {
             setIncidentFrequency(seed.getMLIncidentFrequency());
 
-            incidentDistribution = new float[5];
-            if (seed.getMLIncidentDuration()==null) {
-                incidentDurationInfo = new float[5][4];
+            if (seed.getMLIncidentDistribution() == null) {
+                incidentDistribution = new float[5];
+                useMLDefaultDistribution();
             } else {
-                incidentDurationInfo=seed.getMLIncidentDuration();
+                incidentDistribution = seed.getMLIncidentDistribution();
+            }
+            if (seed.getMLIncidentDuration() == null) {
+                incidentDurationInfo = new float[5][4];
+                useDefaultDuration();
+            } else {
+                incidentDurationInfo = seed.getMLIncidentDuration();
             }
 
             // 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
-            if (seed.getMLIncidentSAF()==null) {
+            if (seed.getMLIncidentSAF() == null) {
                 incidentFFSAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(0);
             } else {
                 incidentFFSAFs = seed.getMLIncidentSAF();
             }
-            if (seed.getMLIncidentCAF()==null) {
+            if (seed.getMLIncidentCAF() == null) {
                 incidentCAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(1);
             } else {
                 incidentCAFs = seed.getMLIncidentCAF();
             }
-            if (seed.getMLIncidentDAF()==null) {
+            if (seed.getMLIncidentDAF() == null) {
                 incidentDAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(2);
             } else {
                 incidentDAFs = seed.getMLIncidentDAF();
             }
-            if (seed.getMLIncidentLAF()==null) {
+            if (seed.getMLIncidentLAF() == null) {
                 incidentLAFs = new int[5][7]; // 5 is incident type, 7 is number of lanes (2 lanes to 8 lanes)
                 useDefaultAdjFactors(3);
             } else {
                 incidentLAFs = seed.getMLIncidentLAF();
             }
 
-            if (seed.getMLIncidentCrashRatio()==0.0f) {
+            if (seed.getMLIncidentCrashRatio() == 0.0f) {
                 crashRateRatio = 4.9f; // National default
             } else {
                 crashRateRatio = seed.getMLIncidentCrashRatio();
             }
         }
-                                              
-        
-        // To be removed?
-        //useDefaultFrequencies();
-        //useDefaultDistribution();
-        useNationalDefaultDistribution();
-        //useDefaultAdjFactors();
+
+        if (type == TYPE_GP) {
+            //useNationalDefaultDistribution();
+            //useDefaultAdjFactors();
+        } else {
+            //useMLDefaultDistribution();
+            //useMLDefaultAdjFactors();
+        }
+
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Getters">
-    
-    
     /**
-     * Get method for return the crash rate ratio for incident scenario generation
+     * Get method for return the crash rate ratio for incident scenario
+     * generation
+     *
      * @return float crashRateRatio
      */
     public float getCrashRateRatio() {
         return crashRateRatio;
     }
-    
+
     /**
      * Getter for the incident probabilities (deprecated).
+     *
      * @param incidentType
      * @param month
      * @return
@@ -192,16 +259,17 @@ public class IncidentData {
     public float getIncidentProbability(int incidentType, int month) {
         return incidentProbabilities[month][incidentType];
     }
-    
+
     /**
      * Getter for the expected frequency of incidents in a given month.
+     *
      * @param month 0 - January, 1 - February, etc.
      * @return
      */
     public float getIncidentFrequencyMonth(int month) {
         return incidentFreqMonth[month];
     }
-    
+
     /**
      *
      * @return
@@ -209,7 +277,7 @@ public class IncidentData {
     public float[] getIncidentFrequencyArr() {
         return incidentFreqMonth;
     }
-    
+
     /**
      *
      * @param incidentType
@@ -218,16 +286,24 @@ public class IncidentData {
     public float getIncidentDistribution(int incidentType) {
         return incidentDistribution[incidentType];
     }
-    
+
     /**
      *
      * @param incidentType
      * @return
      */
     public float getIncidentDistributionDecimal(int incidentType) {
-        return incidentDistribution[incidentType]/100.0f;
+        return incidentDistribution[incidentType] / 100.0f;
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public float[] getIncidentDistribution() {
+        return incidentDistribution;
+    }
+
     /**
      *
      * @param incidentType
@@ -236,7 +312,7 @@ public class IncidentData {
     public float getIncidentDurMin(int incidentType) {
         return incidentDurationInfo[incidentType][2];
     }
-    
+
     /**
      *
      * @param incidentType
@@ -245,7 +321,7 @@ public class IncidentData {
     public float getIncidentDurMax(int incidentType) {
         return incidentDurationInfo[incidentType][3];
     }
-    
+
     /**
      *
      * @return
@@ -253,12 +329,12 @@ public class IncidentData {
     public float getIncidentDistributionSum() {
         float sum = 0.0f;
         for (int i = 0; i < incidentDistribution.length; i++) {
-            sum+=incidentDistribution[i];
+            sum += incidentDistribution[i];
         }
-        
+
         return sum;
     }
-    
+
     /**
      *
      * @param incidentType
@@ -267,11 +343,15 @@ public class IncidentData {
     public float getIncidentDuration(int incidentType) {
         return incidentDurationInfo[incidentType][0];
     }
-    
+
+    /**
+     *
+     * @return
+     */
     public float[][] getIncidentDurationInfo() {
         return incidentDurationInfo;
     }
-    
+
     /**
      *
      * @param incidentType
@@ -280,13 +360,14 @@ public class IncidentData {
     public float getIncidentDurationStdDev(int incidentType) {
         return incidentDurationInfo[incidentType][1];
     }
-    
+
     /**
-     * 
+     *
      * @param adjFacType 0 - FFSAF, 1 - CAF, 2 - DAF, 3 - LAF
-     * @param incType 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure 
+     * @param incType 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 -
+     * 3 lane closure, 4 - 4 lane closure
      * @param numLanes
-     * @return 
+     * @return
      */
     public float getIncidentAdjFactor(int adjFacType, int incType, int numLanes) {
         switch (adjFacType) {
@@ -302,7 +383,7 @@ public class IncidentData {
                 return -1.0f;
         }
     }
-    
+
     /**
      *
      * @param incType
@@ -312,15 +393,16 @@ public class IncidentData {
     public float getIncidentFFSAF(int incType, int numLanes) {
         return incidentFFSAFs[incType][numLanes];
     }
-    
+
     /**
      * Get method to return the float[][] of incident FFSAFs
-     * @return  float[][] incidentFFSAFs
+     *
+     * @return float[][] incidentFFSAFs
      */
     public float[][] getIncidentFFSAF() {
         return incidentFFSAFs;
     }
-    
+
     /**
      *
      * @param incType
@@ -330,16 +412,16 @@ public class IncidentData {
     public float getIncidentCAF(int incType, int numLanes) {
         return incidentCAFs[incType][numLanes];
     }
-    
+
     /**
      * Get method to return the float[][] of incident CAFs
+     *
      * @return float[][] incidentCAFs
      */
-    
     public float[][] getIncidentCAF() {
         return incidentCAFs;
     }
-    
+
     /**
      *
      * @param incType
@@ -349,15 +431,16 @@ public class IncidentData {
     public float getIncidentDAF(int incType, int numLanes) {
         return incidentDAFs[incType][numLanes];
     }
-    
+
     /**
      * Get method to return the float[][] of incident DAFs
-     * @return  float[][] incidentDAFs
+     *
+     * @return float[][] incidentDAFs
      */
     public float[][] getIncidentDAF() {
         return incidentDAFs;
     }
-    
+
     /**
      *
      * @param incType
@@ -367,16 +450,16 @@ public class IncidentData {
     public int getIncidentLAF(int incType, int numLanes) {
         return incidentLAFs[incType][numLanes];
     }
-    
+
     /**
      * Get method to get the int[][] array of incident LAFs.
+     *
      * @return int[][] incident LAFs
      */
-    
     public int[][] getIncidentLAF() {
         return incidentLAFs;
     }
-    
+
     /**
      *
      * @param incType
@@ -396,18 +479,21 @@ public class IncidentData {
                 return "Four or more lane closure";
         }
     }
-    
+
+    /**
+     *
+     */
     public void useFrequenciesFromSeed() {
-        if (this.seed!=null) {
+        if (this.seed != null) {
             float[] tempFreqArr;
-            if (type == TYPE_GP) {
+            if (modelType == TYPE_GP) {
                 tempFreqArr = seed.getGPIncidentFrequency();
             } else {
                 tempFreqArr = seed.getMLIncidentFrequency();
             }
-            if (tempFreqArr!=null) {
+            if (tempFreqArr != null) {
                 for (int month = 0; month < tempFreqArr.length; month++) {
-                    this.incidentFreqMonth[month]=tempFreqArr[month];
+                    this.incidentFreqMonth[month] = tempFreqArr[month];
                     //System.out.println(incidentFreqMonth[month]);
                 }
             } else {
@@ -417,60 +503,84 @@ public class IncidentData {
             System.out.println("Seed is null");
         }
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public int getModelType() {
+        return modelType;
+    }
+
     // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Setters">
-    
-    public void setCrashRateRatio(float newVal) {
+
+    /**
+     *
+     * @param newVal
+     */
+        public void setCrashRateRatio(float newVal) {
         this.crashRateRatio = newVal;
     }
-    
-    
+
+    /**
+     *
+     * @param incidentType
+     * @param demandPattern
+     * @param newValue
+     */
     public void setIncidentProbability(int incidentType, int demandPattern, float newValue) {
         incidentProbabilities[demandPattern][incidentType] = newValue;
     }
-    
+
+    /**
+     *
+     * @param month
+     * @param newValue
+     */
     public void setIncidentFrequencyMonth(int month, float newValue) {
         incidentFreqMonth[month] = newValue;
     }
-    
+
+    /**
+     *
+     * @param incidentFrequency
+     */
     public void setIncidentFrequency(float[] incidentFrequency) {
-        if (incidentFrequency!=null) {
+        if (incidentFrequency != null) {
             for (int month = 0; month < incidentFrequency.length; month++) {
                 this.incidentFreqMonth[month] = incidentFrequency[month];
             }
         }
-    }   
-    
-    
+    }
+
     /**
      *
      * @param incidentType
      * @param newValue
      */
     public void setIncidentDistribution(int incidentType, float newValue) {
-        incidentDistribution[incidentType]=newValue;
+        incidentDistribution[incidentType] = newValue;
     }
-    
+
     /**
      *
      * @param incidentType
      * @param newValue
      */
     public void setIncidentDurMin(int incidentType, float newValue) {
-        incidentDurationInfo[incidentType][2]=newValue;
+        incidentDurationInfo[incidentType][2] = newValue;
     }
-    
+
     /**
      *
      * @param incidentType
      * @param newValue
      */
     public void setIncidentDurMax(int incidentType, float newValue) {
-        incidentDurationInfo[incidentType][3]=newValue;
+        incidentDurationInfo[incidentType][3] = newValue;
     }
-    
+
     /**
      *
      * @param incidentType
@@ -479,22 +589,23 @@ public class IncidentData {
     public void setIncidentDuration(int incidentType, float newValue) {
         incidentDurationInfo[incidentType][0] = newValue;
     }
-    
+
     /**
      *
      * @param incidentType
      * @param newValue
      */
     public void setIncidentDurationStdDev(int incidentType, float newValue) {
-        incidentDurationInfo[incidentType][1]=newValue;
+        incidentDurationInfo[incidentType][1] = newValue;
     }
-    
+
     /**
-     * 
+     *
      * @param adjFacType 0 - FFSAF, 1 - CAF, 2 - DAF, 3 - LAF
-     * @param incType 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure 
+     * @param incType 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 -
+     * 3 lane closure, 4 - 4 lane closure
      * @param numLanes
-     * @param newVal 
+     * @param newVal
      */
     public void setIncidentAdjFactor(int adjFacType, int incType, int numLanes, float newVal) {
         switch (adjFacType) {
@@ -513,10 +624,10 @@ public class IncidentData {
             default:
                 System.err.println("Invalid adjustment factor type specified. Value not set.");
                 break;
-                
+
         }
     }
-    
+
     /**
      *
      * @param incType
@@ -524,9 +635,9 @@ public class IncidentData {
      * @param newVal
      */
     public void setIncidentFFSAF(int incType, int numLanes, float newVal) {
-        incidentFFSAFs[incType][numLanes]=newVal;
+        incidentFFSAFs[incType][numLanes] = newVal;
     }
-    
+
     /**
      *
      * @param incType
@@ -534,9 +645,9 @@ public class IncidentData {
      * @param newVal
      */
     public void setIncidentCAF(int incType, int numLanes, float newVal) {
-        incidentCAFs[incType][numLanes]=newVal;
+        incidentCAFs[incType][numLanes] = newVal;
     }
-    
+
     /**
      *
      * @param incType
@@ -544,9 +655,9 @@ public class IncidentData {
      * @param newVal
      */
     public void setIncidentDAF(int incType, int numLanes, float newVal) {
-        incidentDAFs[incType][numLanes]=newVal;
+        incidentDAFs[incType][numLanes] = newVal;
     }
-    
+
     /**
      *
      * @param incType
@@ -554,79 +665,95 @@ public class IncidentData {
      * @param newVal
      */
     public void setIncidentLAF(int incType, int numLanes, int newVal) {
-        incidentLAFs[incType][numLanes]=newVal;
+        incidentLAFs[incType][numLanes] = newVal;
     }
-    
+
     // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Fill presets">
-    
     /**
      *
      */
-        
     public void useDefaultFrequencies() {
-        incidentFreqMonth[0]=0.0f;
-        incidentFreqMonth[1]=0.0f;
-        incidentFreqMonth[2]=0.0f;
-        incidentFreqMonth[3]=0.0f;
-        incidentFreqMonth[4]=0.0f;
-        incidentFreqMonth[5]=0.0f;
-        incidentFreqMonth[6]=0.0f;
-        incidentFreqMonth[7]=0.0f;
-        incidentFreqMonth[8]=0.0f;
-        incidentFreqMonth[9]=0.0f;
-        incidentFreqMonth[10]=0.0f;
-        incidentFreqMonth[11]=0.0f;
+        incidentFreqMonth[0] = 0.0f;
+        incidentFreqMonth[1] = 0.0f;
+        incidentFreqMonth[2] = 0.0f;
+        incidentFreqMonth[3] = 0.0f;
+        incidentFreqMonth[4] = 0.0f;
+        incidentFreqMonth[5] = 0.0f;
+        incidentFreqMonth[6] = 0.0f;
+        incidentFreqMonth[7] = 0.0f;
+        incidentFreqMonth[8] = 0.0f;
+        incidentFreqMonth[9] = 0.0f;
+        incidentFreqMonth[10] = 0.0f;
+        incidentFreqMonth[11] = 0.0f;
     }
-    
+
+    /**
+     *
+     */
     public void useOldI40DefaultFrequencies() {
-        incidentFreqMonth[0]=3.267957f;
-        incidentFreqMonth[1]=3.38f;
-        incidentFreqMonth[2]=3.67f;
-        incidentFreqMonth[3]=3.89f;
-        incidentFreqMonth[4]=3.88f;
-        incidentFreqMonth[5]=4.07f;
-        incidentFreqMonth[6]=4.51f;
-        incidentFreqMonth[7]=4.11f;
-        incidentFreqMonth[8]=4.24f;
-        incidentFreqMonth[9]=3.97f;
-        incidentFreqMonth[10]=3.97f;
-        incidentFreqMonth[11]=3.90f;
+        incidentFreqMonth[0] = 3.267957f;
+        incidentFreqMonth[1] = 3.38f;
+        incidentFreqMonth[2] = 3.67f;
+        incidentFreqMonth[3] = 3.89f;
+        incidentFreqMonth[4] = 3.88f;
+        incidentFreqMonth[5] = 4.07f;
+        incidentFreqMonth[6] = 4.51f;
+        incidentFreqMonth[7] = 4.11f;
+        incidentFreqMonth[8] = 4.24f;
+        incidentFreqMonth[9] = 3.97f;
+        incidentFreqMonth[10] = 3.97f;
+        incidentFreqMonth[11] = 3.90f;
     }
-    
+
     /**
      *
      */
     public void useDefaultDistribution() {
-        
+
         // Setting default distribution
-        incidentDistribution[0]=75.0f;
-        incidentDistribution[1]=20.0f;
-        incidentDistribution[2]=5.0f;
-        incidentDistribution[3]=0.0f;
-        incidentDistribution[4]=0.0f;
-        
+        incidentDistribution[0] = 75.0f;
+        incidentDistribution[1] = 20.0f;
+        incidentDistribution[2] = 5.0f;
+        incidentDistribution[3] = 0.0f;
+        incidentDistribution[4] = 0.0f;
+
         // Setting default durations and duration standard deviations
-        useDefaultDuration();
+        //useDefaultDuration();
     }
-    
+
     /**
      *
      */
     public void useNationalDefaultDistribution() {
-        
+
         // Setting default distribution
-        incidentDistribution[0]=75.4f;
-        incidentDistribution[1]=19.60f;
-        incidentDistribution[2]=3.10f;
-        incidentDistribution[3]=1.90f;
-        incidentDistribution[4]=0.0f;
-        
+        incidentDistribution[0] = 75.4f;
+        incidentDistribution[1] = 19.60f;
+        incidentDistribution[2] = 3.10f;
+        incidentDistribution[3] = 1.90f;
+        incidentDistribution[4] = 0.0f;
+
         // Setting default durations and duration standard deviations
-        useDefaultDuration();
+        //useDefaultDuration();
     }
-    
+
+    /**
+     *
+     */
+    public void useMLDefaultDistribution() {
+
+        // Setting default distribution
+        incidentDistribution[0] = 75.0f;
+        incidentDistribution[1] = 25.0f;
+        incidentDistribution[2] = 0.0f;
+        incidentDistribution[3] = 0.0f;
+        incidentDistribution[4] = 0.0f;
+
+        // Setting default durations and duration standard deviations
+        //useDefaultDuration();
+    }
+
     /**
      *
      */
@@ -636,40 +763,54 @@ public class IncidentData {
         incidentDurationInfo[2][0] = 53.6f;
         incidentDurationInfo[3][0] = 67.9f;
         incidentDurationInfo[4][0] = 67.9f;
-        
-        incidentDurationInfo[0][1]=15.1f;
-        incidentDurationInfo[1][1]=13.8f;
-        incidentDurationInfo[2][1]=13.9f;
-        incidentDurationInfo[3][1]=21.9f;
-        incidentDurationInfo[4][1]=21.9f;
-        
-        incidentDurationInfo[0][2]=8.7f;
-        incidentDurationInfo[1][2]=16.0f;
-        incidentDurationInfo[2][2]=30.5f;
-        incidentDurationInfo[3][2]=36.0f;
-        incidentDurationInfo[4][2]=36.0f;
-        
-        incidentDurationInfo[0][3]=58.0f;
-        incidentDurationInfo[1][3]=58.2f;
-        incidentDurationInfo[2][3]=66.9f;
-        incidentDurationInfo[3][3]=93.3f;
-        incidentDurationInfo[4][3]=93.3f;
-        
+
+        incidentDurationInfo[0][1] = 15.1f;
+        incidentDurationInfo[1][1] = 13.8f;
+        incidentDurationInfo[2][1] = 13.9f;
+        incidentDurationInfo[3][1] = 21.9f;
+        incidentDurationInfo[4][1] = 21.9f;
+
+        incidentDurationInfo[0][2] = 8.7f;
+        incidentDurationInfo[1][2] = 16.0f;
+        incidentDurationInfo[2][2] = 30.5f;
+        incidentDurationInfo[3][2] = 36.0f;
+        incidentDurationInfo[4][2] = 36.0f;
+
+        incidentDurationInfo[0][3] = 58.0f;
+        incidentDurationInfo[1][3] = 58.2f;
+        incidentDurationInfo[2][3] = 66.9f;
+        incidentDurationInfo[3][3] = 93.3f;
+        incidentDurationInfo[4][3] = 93.3f;
+
     }
-    
+
+    /**
+     *
+     */
     private void useDefaultAdjFactors() {
         useDefaultFFSAFs();
         useDefaultCAFs();
         useDefaultDAFs();
         useDefaultLAFs();
     }
-    
+
     /**
-     * Method to set default values for a particular adjustment factor type.
-     * 0 - SAF (FFSAF), 1 - CAF, 2 - DAF, 3 - LAF
-     * @param adjFactor Integer of adjustment factor to fill with default values.
+     *
      */
-    
+    private void useMLDefaultAdjFactors() {
+        useMLDefaultFFSAFs();
+        useMLDefaultCAFs();
+        useMLDefaultDAFs();
+        useMLDefaultLAFs();
+    }
+
+    /**
+     * Method to set default values for a particular adjustment factor type. 0 -
+     * SAF (FFSAF), 1 - CAF, 2 - DAF, 3 - LAF
+     *
+     * @param adjFactor Integer of adjustment factor to fill with default
+     * values.
+     */
     private void useDefaultAdjFactors(int adjFactor) {
         switch (adjFactor) {
             case 0:
@@ -681,7 +822,7 @@ public class IncidentData {
             case 2:
                 useDefaultDAFs();
                 break;
-            case 3: 
+            case 3:
                 useDefaultLAFs();
                 break;
             default:
@@ -689,70 +830,82 @@ public class IncidentData {
                 break;
         }
     }
-    
+
+    /**
+     *
+     */
     private void useDefaultFFSAFs() {
-        float[][] tempFFSAFs = {{1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f}
-                               };
+        float[][] tempFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
+        };
         //System.out.println(incidentFFSAFs[0].length);
         //System.out.println(incidentFFSAFs.length);
         for (int incType = 0; incType < incidentFFSAFs.length; incType++) {
             for (int lane = 0; lane < incidentFFSAFs[0].length; lane++) {
                 //System.out.println("Lane: "+lane+"   incType:" +incType);
-                incidentFFSAFs[incType][lane]=tempFFSAFs[lane][incType];
+                incidentFFSAFs[incType][lane] = tempFFSAFs[lane][incType];
             }
         }
     }
-    
+
+    /**
+     *
+     */
     private void useDefaultCAFs() {
-        float[][] tempCAFs =   {{0.81f,0.70f,0.70f,0.70f,0.70f},
-                                {0.83f,0.74f,0.51f,0.51f,0.51f},
-                                {0.85f,0.77f,0.50f,0.52f,0.52f},
-                                {0.87f,0.81f,0.67f,0.50f,0.50f},
-                                {0.89f,0.85f,0.75f,0.52f,0.52f},
-                                {0.91f,0.88f,0.80f,0.63f,0.63f},
-                                {0.93f,0.89f,0.84f,0.66f,0.66f}
-                               };
-        
+        float[][] tempCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
+        {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
+        {0.85f, 0.77f, 0.50f, 0.52f, 0.52f},
+        {0.87f, 0.81f, 0.67f, 0.50f, 0.50f},
+        {0.89f, 0.85f, 0.75f, 0.52f, 0.52f},
+        {0.91f, 0.88f, 0.80f, 0.63f, 0.63f},
+        {0.93f, 0.89f, 0.84f, 0.66f, 0.66f}
+        };
+
         for (int incType = 0; incType < incidentCAFs.length; incType++) {
             for (int lane = 0; lane < incidentCAFs[0].length; lane++) {
-                incidentCAFs[incType][lane]=tempCAFs[lane][incType];
+                incidentCAFs[incType][lane] = tempCAFs[lane][incType];
             }
         }
     }
-    
+
+    /**
+     *
+     */
     private void useDefaultDAFs() {
-        float[][] tempDAFs =   {{1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f},
-                                {1.0f,1.0f,1.0f,1.0f,1.0f}
-                               };
-        
+        float[][] tempDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
+        };
+
         for (int incType = 0; incType < incidentDAFs.length; incType++) {
             for (int lane = 0; lane < incidentDAFs[0].length; lane++) {
-                incidentDAFs[incType][lane]=tempDAFs[lane][incType];
+                incidentDAFs[incType][lane] = tempDAFs[lane][incType];
             }
         }
     }
-    
+
+    /**
+     *
+     */
     private void useDefaultLAFs() {
-        int[][] tempLAFs =     {{0,-1,-1,-1,-1},
-                                {0,-1,-2,-2,-2},
-                                {0,-1,-2,-3,-3},
-                                {0,-1,-2,-3,-4},
-                                {0,-1,-2,-3,-4},
-                                {0,-1,-2,-3,-4},
-                                {0,-1,-2,-3,-4}
-                               };
-//        
+        int[][] tempLAFs = {{0, -1, -1, -1, -1},
+        {0, -1, -2, -2, -2},
+        {0, -1, -2, -3, -3},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4}
+        };
+//
 //        int[][] tempLAFs =     {{0,-1,-2,-2,-2},
 //                                {0,-1,-2,-3,-3},
 //                                {0,-1,-2,-3,-4},
@@ -761,7 +914,7 @@ public class IncidentData {
 //                                {0,-1,-2,-3,-4},
 //                                {0,-1,-2,-3,-4}
 //                               };
-        
+
 //        int[][] tempLAFs =     {{0,0,0,0,0},
 //                                {0,0,0,0,0},
 //                                {0,0,0,0,0},
@@ -770,14 +923,111 @@ public class IncidentData {
 //                                {0,0,0,0,0},
 //                                {0,0,0,0,0}
 //                               };
-        
         for (int incType = 0; incType < incidentLAFs.length; incType++) {
             for (int lane = 0; lane < incidentLAFs[0].length; lane++) {
-                incidentLAFs[incType][lane]=tempLAFs[lane][incType];
+                incidentLAFs[incType][lane] = tempLAFs[lane][incType];
             }
         }
     }
-    
+
+    /**
+     *
+     */
+    private void useMLDefaultFFSAFs() {
+        float[][] tempFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
+        };
+        //System.out.println(incidentFFSAFs[0].length);
+        //System.out.println(incidentFFSAFs.length);
+        for (int incType = 0; incType < incidentFFSAFs.length; incType++) {
+            for (int lane = 0; lane < incidentFFSAFs[0].length; lane++) {
+                //System.out.println("Lane: "+lane+"   incType:" +incType);
+                incidentFFSAFs[incType][lane] = tempFFSAFs[lane][incType];
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void useMLDefaultCAFs() {
+        float[][] tempCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
+        {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
+        {0.85f, 0.77f, 0.50f, 0.52f, 0.52f},
+        {0.87f, 0.81f, 0.67f, 0.50f, 0.50f},
+        {0.89f, 0.85f, 0.75f, 0.52f, 0.52f},
+        {0.91f, 0.88f, 0.80f, 0.63f, 0.63f},
+        {0.93f, 0.89f, 0.84f, 0.66f, 0.66f}
+        };
+
+        for (int incType = 0; incType < incidentCAFs.length; incType++) {
+            for (int lane = 0; lane < incidentCAFs[0].length; lane++) {
+                incidentCAFs[incType][lane] = tempCAFs[lane][incType];
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void useMLDefaultDAFs() {
+        float[][] tempDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
+        };
+
+        for (int incType = 0; incType < incidentDAFs.length; incType++) {
+            for (int lane = 0; lane < incidentDAFs[0].length; lane++) {
+                incidentDAFs[incType][lane] = tempDAFs[lane][incType];
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void useMLDefaultLAFs() {
+        int[][] tempLAFs = {{0, -1, -1, -1, -1},
+        {0, -1, -2, -2, -2},
+        {0, -1, -2, -3, -3},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4},
+        {0, -1, -2, -3, -4}
+        };
+//
+//        int[][] tempLAFs =     {{0,-1,-2,-2,-2},
+//                                {0,-1,-2,-3,-3},
+//                                {0,-1,-2,-3,-4},
+//                                {0,-1,-2,-3,-4},
+//                                {0,-1,-2,-3,-4},
+//                                {0,-1,-2,-3,-4},
+//                                {0,-1,-2,-3,-4}
+//                               };
+
+//        int[][] tempLAFs =     {{0,0,0,0,0},
+//                                {0,0,0,0,0},
+//                                {0,0,0,0,0},
+//                                {0,0,0,0,0},
+//                                {0,0,0,0,0},
+//                                {0,0,0,0,0},
+//                                {0,0,0,0,0}
+//                               };
+        for (int incType = 0; incType < incidentLAFs.length; incType++) {
+            for (int lane = 0; lane < incidentLAFs[0].length; lane++) {
+                incidentLAFs[incType][lane] = tempLAFs[lane][incType];
+            }
+        }
+    }
+
     // </editor-fold>
-    
 }

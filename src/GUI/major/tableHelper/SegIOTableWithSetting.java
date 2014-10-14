@@ -1,7 +1,7 @@
 package GUI.major.tableHelper;
 
 import GUI.major.MainWindow;
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.awt.Color;
 import java.awt.Component;

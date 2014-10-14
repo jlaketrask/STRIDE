@@ -1,8 +1,8 @@
 package GUI.seedEditAndIOHelper;
 
 import GUI.major.MainWindow;
-import coreEngine.CEConst;
-import coreEngine.CETime;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CETime;
 import coreEngine.Seed;
 import java.awt.Color;
 import java.awt.event.ActionEvent;

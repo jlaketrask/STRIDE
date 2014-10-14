@@ -1,5 +1,7 @@
 package coreEngine;
 
+import coreEngine.GPMLSegment;
+import coreEngine.Helper.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -13,13 +15,29 @@ import java.util.logging.Logger;
  */
 public class DebugOutput {
 
+    /**
+     *
+     */
     private static CSVWriter writer;
 
+    /**
+     *
+     */
     private static final int NUM_ITEMS = 17;
 
+    /**
+     *
+     */
     private static final DecimalFormat f0 = new DecimalFormat("0");
+
+    /**
+     *
+     */
     private static final DecimalFormat f2 = new DecimalFormat("0.00");
 
+    /**
+     *
+     */
     public static void startOutput() {
         try {
             writer = new CSVWriter(new FileWriter("DebugOutput.csv"), '\t');
@@ -28,6 +46,12 @@ public class DebugOutput {
         }
     }
 
+    /**
+     *
+     * @param period
+     * @param Segments
+     * @throws IOException
+     */
     public static void write(int period, ArrayList<GPMLSegment> Segments) throws IOException {
         //Save data to csv file
         String[] empty = new String[]{" "};
@@ -244,6 +268,9 @@ public class DebugOutput {
         }
     }
 
+    /**
+     *
+     */
     public static void finish() {
         try {
             writer.close();

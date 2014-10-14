@@ -1,6 +1,6 @@
 package GUI.major;
 
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;

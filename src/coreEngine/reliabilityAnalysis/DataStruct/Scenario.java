@@ -1,7 +1,7 @@
-package reliabilityAnalysis.DataStruct;
+package coreEngine.reliabilityAnalysis.DataStruct;
 
-import coreEngine.CM3DFloat;
-import coreEngine.CM3DInt;
+import coreEngine.Helper.CM3DFloat;
+import coreEngine.Helper.CM3DInt;
 import java.io.Serializable;
 
 /**

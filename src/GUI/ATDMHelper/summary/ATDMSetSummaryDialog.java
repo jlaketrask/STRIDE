@@ -2,8 +2,8 @@ package GUI.ATDMHelper.summary;
 
 import GUI.major.MainWindow;
 import GUI.seedEditAndIOHelper.CSVFileChooser;
-import coreEngine.CEConst;
-import coreEngine.CSVWriter;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CSVWriter;
 import coreEngine.Seed;
 import java.awt.BasicStroke;
 import java.awt.event.ActionEvent;
@@ -30,7 +30,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.SeriesRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;

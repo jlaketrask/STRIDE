@@ -1,4 +1,4 @@
-package coreEngine;
+package coreEngine.Helper;
 
 /**
  * This class contains constant identifier for core engine.
@@ -2279,17 +2279,58 @@ public class CEConst {
     public final static String IDS_CB_SP_MAX_VC = "IDS_CB_SP_MAC_VC";
     // </editor-fold>
 
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_WEATHER = "IDS_ATDM_STRAT_TYPE_WEATHER";
+
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_DEMAND = "IDS_ATDM_STRAT_TYPE_DEMAND";
+
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_INCIDENT = "IDS_ATDM_STRAT_TYPE_INCIDENT";
+
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_WORKZONE = "IDS_ATDM_STRAT_TYPE_WORKZONE";
+
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_RAMP_METERING = "IDS_ATDM_STRAT_TYPE_RAMP_METERING";
+
+    /**
+     * ATDM parameters identifier
+     */
     public final static String IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING = "IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING";
 
+    /**
+     * Free flow speed known identifier
+     */
     public final static String IDS_FFS_KNOWN = "IDS_FFS_KNOWN";
+
+    /**
+     * Ramp metering used identifier
+     */
     public final static String IDS_RM_USED = "IDS_RM_USED";
+
+    /**
+     * Managed lane used identifier
+     */
     public final static String IDS_MANAGED_LANE_USED = "IDS_MANAGED_LANE_USED";
+
+    /**
+     * Seed demand date identifier
+     */
     public final static String IDS_SEED_DEMAND_DATE = "IDS_SEED_DEMAND_DATE";
 
+    /**
+     * Analysis period heading identifier
+     */
     public final static String IDS_ANALYSIS_PERIOD_HEADING = "IDS_ANALYSIS_PERIOD_HEADING";
 }

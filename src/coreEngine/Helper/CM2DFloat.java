@@ -1,15 +1,15 @@
-package coreEngine;
+package coreEngine.Helper;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Compressed 3-D int matrix (line compression version)
+ * Compressed 2-D float matrix (line compression version)
  *
  * @author Shu Liu
  */
-public class CM3DInt implements Serializable {
+public class CM2DFloat implements Serializable {
 
     /**
      *
@@ -29,17 +29,12 @@ public class CM3DInt implements Serializable {
     /**
      *
      */
-    private int sizeZ;
+    private float[][] fullMatrix;
 
     /**
      *
      */
-    private int[][][] fullMatrix;
-
-    /**
-     *
-     */
-    private int[] lineNum;
+    private float[] lineNum;
 
     /**
      *
@@ -50,25 +45,21 @@ public class CM3DInt implements Serializable {
      *
      * @param sizeX
      * @param sizeY
-     * @param sizeZ
      * @param defaultValue
      */
-    public CM3DInt(int sizeX, int sizeY, int sizeZ, int defaultValue) {
-        if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
+    public CM2DFloat(int sizeX, int sizeY, float defaultValue) {
+        if (sizeX <= 0 || sizeY <= 0) {
             throw new IllegalArgumentException("Invalid size");
         }
 
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
 
-        fullMatrix = new int[sizeX][sizeY][sizeZ];
+        fullMatrix = new float[sizeX][sizeY];
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                for (int z = 0; z < sizeZ; z++) {
-                    fullMatrix[x][y][z] = defaultValue;
-                }
+                fullMatrix[x][y] = defaultValue;
             }
         }
     }
@@ -78,10 +69,10 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param x
      * @param y
-     * @param z
+     *
      */
-    public void set(int value, int x, int y, int z) {
-        fullMatrix[x][y][z] = value;
+    public void set(float value, int x, int y) {
+        fullMatrix[x][y] = value;
     }
 
     /**
@@ -89,17 +80,15 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
-     * @param fromZ
+     *
      * @param toX
      * @param toY
-     * @param toZ
+     *
      */
-    public void set(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+    public void set(float value, int fromX, int fromY, int toX, int toY) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                for (int z = fromZ; z <= toZ; z++) {
-                    fullMatrix[x][y][z] = value;
-                }
+                fullMatrix[x][y] = value;
             }
         }
     }
@@ -109,10 +98,10 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param x
      * @param y
-     * @param z
+     *
      */
-    public void add(int value, int x, int y, int z) {
-        fullMatrix[x][y][z] += value;
+    public void add(float value, int x, int y) {
+        fullMatrix[x][y] += value;
     }
 
     /**
@@ -120,17 +109,15 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
-     * @param fromZ
+     *
      * @param toX
      * @param toY
-     * @param toZ
+     *
      */
-    public void add(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+    public void add(float value, int fromX, int fromY, int toX, int toY) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                for (int z = fromZ; z <= toZ; z++) {
-                    fullMatrix[x][y][z] += value;
-                }
+                fullMatrix[x][y] += value;
             }
         }
     }
@@ -140,10 +127,10 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param x
      * @param y
-     * @param z
+     *
      */
-    public void multiply(int value, int x, int y, int z) {
-        fullMatrix[x][y][z] *= value;
+    public void multiply(float value, int x, int y) {
+        fullMatrix[x][y] *= value;
     }
 
     /**
@@ -151,17 +138,15 @@ public class CM3DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
-     * @param fromZ
+     *
      * @param toX
      * @param toY
-     * @param toZ
+     *
      */
-    public void multiply(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+    public void multiply(float value, int fromX, int fromY, int toX, int toY) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                for (int z = fromZ; z <= toZ; z++) {
-                    fullMatrix[x][y][z] *= value;
-                }
+                fullMatrix[x][y] *= value;
             }
         }
     }
@@ -170,11 +155,11 @@ public class CM3DInt implements Serializable {
      *
      * @param x
      * @param y
-     * @param z
+     *
      * @return
      */
-    public int get(int x, int y, int z) {
-        return fullMatrix[x][y][z];
+    public float get(int x, int y) {
+        return fullMatrix[x][y];
     }
 
     /**
@@ -184,7 +169,7 @@ public class CM3DInt implements Serializable {
     public int getSizeX() {
         return sizeX;
     }
-    
+
     /**
      *
      * @return
@@ -195,14 +180,6 @@ public class CM3DInt implements Serializable {
 
     /**
      *
-     * @return
-     */
-    public int getSizeZ() {
-        return sizeZ;
-    }
- 
-    /**
-     *
      * @param out
      * @throws IOException
      */
@@ -210,7 +187,6 @@ public class CM3DInt implements Serializable {
         compressMatrix();
         out.writeInt(sizeX);
         out.writeInt(sizeY);
-        out.writeInt(sizeZ);
         out.writeObject(lineNum);
         out.writeObject(lineRep);
         lineNum = null;
@@ -226,8 +202,7 @@ public class CM3DInt implements Serializable {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         sizeX = in.readInt();
         sizeY = in.readInt();
-        sizeZ = in.readInt();
-        lineNum = (int[]) in.readObject();
+        lineNum = (float[]) in.readObject();
         lineRep = (int[]) in.readObject();
         expandMatrix();
         lineNum = null;
@@ -238,29 +213,27 @@ public class CM3DInt implements Serializable {
      *
      */
     private void compressMatrix() {
-        int temp = fullMatrix[0][0][0];
+        float temp = fullMatrix[0][0];
         int count = 0;
-        ArrayList<Integer> number = new ArrayList<>();
+        ArrayList<Float> number = new ArrayList<>();
         ArrayList<Integer> repetition = new ArrayList<>();
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                for (int z = 0; z < sizeZ; z++) {
-                    if (fullMatrix[x][y][z] != temp) {
-                        number.add(temp);
-                        repetition.add(count);
-                        temp = fullMatrix[x][y][z];
-                        count = 1;
-                    } else {
-                        count++;
-                    }
+                if (fullMatrix[x][y] != temp) {
+                    number.add(temp);
+                    repetition.add(count);
+                    temp = fullMatrix[x][y];
+                    count = 1;
+                } else {
+                    count++;
                 }
             }
         }
         number.add(temp);
         repetition.add(count);
 
-        lineNum = new int[number.size()];
+        lineNum = new float[number.size()];
         for (int index = 0; index < lineNum.length; index++) {
             lineNum[index] = number.get(index);
         }
@@ -274,24 +247,19 @@ public class CM3DInt implements Serializable {
      *
      */
     private void expandMatrix() {
-
         int index = 0;
-        int value = lineNum[index];
+        float value = lineNum[index];
         int count = lineRep[index];
-
-        fullMatrix = new int[sizeX][sizeY][sizeZ];
-
+        fullMatrix = new float[sizeX][sizeY];
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                for (int z = 0; z < sizeZ; z++) {
-                    if (count == 0) {
-                        index++;
-                        value = lineNum[index];
-                        count = lineRep[index];
-                    }
-                    fullMatrix[x][y][z] = value;
-                    count--;
+                if (count == 0) {
+                    index++;
+                    value = lineNum[index];
+                    count = lineRep[index];
                 }
+                fullMatrix[x][y] = value;
+                count--;
             }
         }
     }

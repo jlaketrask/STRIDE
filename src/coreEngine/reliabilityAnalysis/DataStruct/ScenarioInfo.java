@@ -1,13 +1,13 @@
-package reliabilityAnalysis.DataStruct;
+package coreEngine.reliabilityAnalysis.DataStruct;
 
-import atdm.DataStruct.ATDMDatabase;
-import atdm.DataStruct.ATDMPlan;
-import atdm.DataStruct.ATDMScenario;
-import coreEngine.CEConst;
-import static coreEngine.CEConst.IDS_MAIN_NUM_LANES_IN;
-import static coreEngine.CEConst.IDS_NUM_PERIOD;
-import static coreEngine.CEConst.IDS_NUM_SEGMENT;
-import coreEngine.CM2DInt;
+import coreEngine.atdm.DataStruct.ATDMDatabase;
+import coreEngine.atdm.DataStruct.ATDMPlan;
+import coreEngine.atdm.DataStruct.ATDMScenario;
+import coreEngine.Helper.CEConst;
+import static coreEngine.Helper.CEConst.IDS_MAIN_NUM_LANES_IN;
+import static coreEngine.Helper.CEConst.IDS_NUM_PERIOD;
+import static coreEngine.Helper.CEConst.IDS_NUM_SEGMENT;
+import coreEngine.Helper.CM2DInt;
 import coreEngine.Seed;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1789,6 +1789,12 @@ public class ScenarioInfo implements Serializable {
     }
 //</editor-fold>
 
+    /**
+     *
+     * @param atdmDatabase
+     * @param planIdx
+     * @return
+     */
     public ATDMScenario applyAndGetATDMScenario(ATDMDatabase atdmDatabase, int planIdx) {
 
         return generateATDMScenario(atdmDatabase.getPlan(planIdx));

@@ -1,8 +1,8 @@
-package atdm.DataStruct;
+package coreEngine.atdm.DataStruct;
 
-import coreEngine.CEConst;
-import coreEngine.CM2DFloat;
-import coreEngine.CM2DInt;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CM2DFloat;
+import coreEngine.Helper.CM2DInt;
 import java.io.Serializable;
 
 /**
@@ -48,12 +48,24 @@ public class ATDMScenario implements Serializable {
      */
     private final CM2DInt LAF;
     
+    /**
+     *
+     */
     private boolean hasRampMetering;
 
+    /**
+     *
+     */
     private String name;
 
+    /**
+     *
+     */
     private String discription;
     
+    /**
+     *
+     */
     private int status = CEConst.SCENARIO_INPUT_ONLY;
 
     /**
@@ -119,34 +131,66 @@ public class ATDMScenario implements Serializable {
         return LAF;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDiscription() {
         return discription;
     }
 
+    /**
+     *
+     * @param discription
+     */
     public void setDiscription(String discription) {
         this.discription = discription;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getStatus() {
         return status;
     }
 
+    /**
+     *
+     * @param status
+     */
     public void setStatus(int status) {
         this.status = status;
     }
     
+    /**
+     *
+     * @param val
+     */
     public void setRampMetering(boolean val) {
         this.hasRampMetering = val;
     }
     
+    /**
+     *
+     * @return
+     */
     public boolean hasRampMetering() {
         return this.hasRampMetering;
     }

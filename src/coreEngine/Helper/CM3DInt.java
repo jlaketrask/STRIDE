@@ -1,15 +1,15 @@
-package coreEngine;
+package coreEngine.Helper;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Compressed 2-D int matrix (line compression version)
+ * Compressed 3-D integer matrix (line compression version)
  *
  * @author Shu Liu
  */
-public class CM2DInt implements Serializable {
+public class CM3DInt implements Serializable {
 
     /**
      *
@@ -29,7 +29,12 @@ public class CM2DInt implements Serializable {
     /**
      *
      */
-    private int[][] fullMatrix;
+    private int sizeZ;
+
+    /**
+     *
+     */
+    private int[][][] fullMatrix;
 
     /**
      *
@@ -45,21 +50,25 @@ public class CM2DInt implements Serializable {
      *
      * @param sizeX
      * @param sizeY
+     * @param sizeZ
      * @param defaultValue
      */
-    public CM2DInt(int sizeX, int sizeY, int defaultValue) {
-        if (sizeX <= 0 || sizeY <= 0) {
+    public CM3DInt(int sizeX, int sizeY, int sizeZ, int defaultValue) {
+        if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
             throw new IllegalArgumentException("Invalid size");
         }
 
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
 
-        fullMatrix = new int[sizeX][sizeY];
+        fullMatrix = new int[sizeX][sizeY][sizeZ];
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                fullMatrix[x][y] = defaultValue;
+                for (int z = 0; z < sizeZ; z++) {
+                    fullMatrix[x][y][z] = defaultValue;
+                }
             }
         }
     }
@@ -69,9 +78,10 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param x
      * @param y
+     * @param z
      */
-    public void set(int value, int x, int y) {
-        fullMatrix[x][y] = value;
+    public void set(int value, int x, int y, int z) {
+        fullMatrix[x][y][z] = value;
     }
 
     /**
@@ -79,15 +89,17 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
-     *
+     * @param fromZ
      * @param toX
      * @param toY
-     *
+     * @param toZ
      */
-    public void set(int value, int fromX, int fromY, int toX, int toY) {
+    public void set(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                fullMatrix[x][y] = value;
+                for (int z = fromZ; z <= toZ; z++) {
+                    fullMatrix[x][y][z] = value;
+                }
             }
         }
     }
@@ -97,9 +109,10 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param x
      * @param y
+     * @param z
      */
-    public void add(int value, int x, int y) {
-        fullMatrix[x][y] += value;
+    public void add(int value, int x, int y, int z) {
+        fullMatrix[x][y][z] += value;
     }
 
     /**
@@ -107,13 +120,17 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
+     * @param fromZ
      * @param toX
      * @param toY
+     * @param toZ
      */
-    public void add(int value, int fromX, int fromY, int toX, int toY) {
+    public void add(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                fullMatrix[x][y] += value;
+                for (int z = fromZ; z <= toZ; z++) {
+                    fullMatrix[x][y][z] += value;
+                }
             }
         }
     }
@@ -123,9 +140,10 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param x
      * @param y
+     * @param z
      */
-    public void multiply(int value, int x, int y) {
-        fullMatrix[x][y] *= value;
+    public void multiply(int value, int x, int y, int z) {
+        fullMatrix[x][y][z] *= value;
     }
 
     /**
@@ -133,13 +151,17 @@ public class CM2DInt implements Serializable {
      * @param value
      * @param fromX
      * @param fromY
+     * @param fromZ
      * @param toX
      * @param toY
+     * @param toZ
      */
-    public void multiply(int value, int fromX, int fromY, int toX, int toY) {
+    public void multiply(int value, int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
         for (int x = fromX; x <= toX; x++) {
             for (int y = fromY; y <= toY; y++) {
-                fullMatrix[x][y] *= value;
+                for (int z = fromZ; z <= toZ; z++) {
+                    fullMatrix[x][y][z] *= value;
+                }
             }
         }
     }
@@ -148,10 +170,11 @@ public class CM2DInt implements Serializable {
      *
      * @param x
      * @param y
+     * @param z
      * @return
      */
-    public int get(int x, int y) {
-        return fullMatrix[x][y];
+    public int get(int x, int y, int z) {
+        return fullMatrix[x][y][z];
     }
 
     /**
@@ -172,6 +195,14 @@ public class CM2DInt implements Serializable {
 
     /**
      *
+     * @return
+     */
+    public int getSizeZ() {
+        return sizeZ;
+    }
+
+    /**
+     *
      * @param out
      * @throws IOException
      */
@@ -179,6 +210,7 @@ public class CM2DInt implements Serializable {
         compressMatrix();
         out.writeInt(sizeX);
         out.writeInt(sizeY);
+        out.writeInt(sizeZ);
         out.writeObject(lineNum);
         out.writeObject(lineRep);
         lineNum = null;
@@ -194,6 +226,7 @@ public class CM2DInt implements Serializable {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         sizeX = in.readInt();
         sizeY = in.readInt();
+        sizeZ = in.readInt();
         lineNum = (int[]) in.readObject();
         lineRep = (int[]) in.readObject();
         expandMatrix();
@@ -205,20 +238,22 @@ public class CM2DInt implements Serializable {
      *
      */
     private void compressMatrix() {
-        int temp = fullMatrix[0][0];
+        int temp = fullMatrix[0][0][0];
         int count = 0;
         ArrayList<Integer> number = new ArrayList<>();
         ArrayList<Integer> repetition = new ArrayList<>();
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                if (fullMatrix[x][y] != temp) {
-                    number.add(temp);
-                    repetition.add(count);
-                    temp = fullMatrix[x][y];
-                    count = 1;
-                } else {
-                    count++;
+                for (int z = 0; z < sizeZ; z++) {
+                    if (fullMatrix[x][y][z] != temp) {
+                        number.add(temp);
+                        repetition.add(count);
+                        temp = fullMatrix[x][y][z];
+                        count = 1;
+                    } else {
+                        count++;
+                    }
                 }
             }
         }
@@ -244,26 +279,19 @@ public class CM2DInt implements Serializable {
         int value = lineNum[index];
         int count = lineRep[index];
 
-        fullMatrix = new int[sizeX][sizeY];
+        fullMatrix = new int[sizeX][sizeY][sizeZ];
 
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
-                if (count == 0) {
-                    index++;
-                    value = lineNum[index];
-                    count = lineRep[index];
+                for (int z = 0; z < sizeZ; z++) {
+                    if (count == 0) {
+                        index++;
+                        value = lineNum[index];
+                        count = lineRep[index];
+                    }
+                    fullMatrix[x][y][z] = value;
+                    count--;
                 }
-                fullMatrix[x][y] = value;
-                count--;
-            }
-        }
-    }
-
-    public void deepCopyFrom(CM2DInt newMatrix) {
-        if (newMatrix.sizeX == sizeX && newMatrix.sizeY == sizeY) {
-            fullMatrix = newMatrix.fullMatrix.clone();
-            for (int i  = 0; i < sizeX; i++) {
-                fullMatrix[i] = newMatrix.fullMatrix[i].clone();
             }
         }
     }

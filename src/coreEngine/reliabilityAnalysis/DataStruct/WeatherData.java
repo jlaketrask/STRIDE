@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package reliabilityAnalysis.DataStruct;
+package coreEngine.reliabilityAnalysis.DataStruct;
 
-import coreEngine.CETime;
+import coreEngine.Helper.CETime;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -87,13 +87,39 @@ public class WeatherData {
      */
     public static final int DAF = 2;
 
+    /**
+     *
+     */
     private final float[][] weatherProbability;
+
+    /**
+     *
+     */
     private final float[] averageDuration;
+
+    /**
+     *
+     */
     private final float[][] adjustmentFactors;
+
+    /**
+     *
+     */
     private final float[] defaultCAF;
 
+    /**
+     *
+     */
+    private int seedDefaultFFS;
+
+    /**
+     *
+     */
     private final boolean[] monthActive;
 
+    /**
+     *
+     */
     private String nearestMetroArea;
 
     /**
@@ -107,6 +133,8 @@ public class WeatherData {
         //defaultCAF = new float[] {92.76f, 85.87f, 95.71f, 91.34f, 88.96f, 77.57f, 91.55f, 90.33f, 88.33f, 89.51f, 100.0f};
         defaultCAF = new float[11];
         monthActive = new boolean[12];
+
+        seedDefaultFFS = 70;
 
         initializeFields();
 
@@ -129,6 +157,10 @@ public class WeatherData {
         return 0.0f;
     }
 
+    /**
+     *
+     * @return
+     */
     public float[][] getProbability() {
         return weatherProbability;
     }
@@ -160,6 +192,10 @@ public class WeatherData {
         return 0.0f;
     }
 
+    /**
+     *
+     * @return
+     */
     public float[] getAverageDurationMinutes() {
         return averageDuration;
     }
@@ -227,6 +263,10 @@ public class WeatherData {
         return 0.0f;
     }
 
+    /**
+     *
+     * @return
+     */
     public float[][] getAdjustmentFactors() {
         return adjustmentFactors;
     }
@@ -315,12 +355,24 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNearestMetroArea() {
         return this.nearestMetroArea;
     }
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Setters">
+    /**
+     *
+     * @param seedDefaultFFS
+     */
+    public void setSeedDefaultFFS(int seedDefaultFFS) {
+        this.seedDefaultFFS = seedDefaultFFS;
+    }
+
     /**
      *
      * @param month
@@ -336,6 +388,10 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @param seedWeatherProbabilities
+     */
     public void setProbability(float[][] seedWeatherProbabilities) {
 
         // Assigning probabilities to weatherProbability array
@@ -363,6 +419,10 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @param seedAdjFactors
+     */
     public void setAdjustmentFactors(float[][] seedAdjFactors) {
 
         if (seedAdjFactors != null) {
@@ -375,6 +435,10 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @param seedDurations
+     */
     public void setAverageDurations(float[] seedDurations) {
 
         if (seedDurations != null) {
@@ -395,6 +459,10 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @param location
+     */
     public void setNearestMetroArea(String location) {
         if (location != null) {
             this.nearestMetroArea = location;
@@ -402,6 +470,9 @@ public class WeatherData {
     }
 
     // </editor-fold>
+    /**
+     *
+     */
     private void initializeFields() {
 
         // Zero probabilities
@@ -425,7 +496,7 @@ public class WeatherData {
                 if (adj == 0) {
                     adjustmentFactors[adj][weather] = defaultCAF[weather];
                 } else {
-                    adjustmentFactors[adj][weather] = 100.0f;
+                    adjustmentFactors[adj][weather] = 1.0f;
                 }
             }
         }
@@ -435,6 +506,10 @@ public class WeatherData {
         }
     }
 
+    /**
+     *
+     * @param month
+     */
     private void updateNormalWeather(int month) {
         float sum = 0.0f;
         for (int weather = 0; weather < 10; ++weather) {
@@ -496,7 +571,7 @@ public class WeatherData {
         String cvsSplitter = ",";
 
         try {
-            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/reliabilityAnalysis/database/w_names.csv")));
+            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/coreEngine/reliabilityAnalysis/database/w_names.csv")));
 //                    br = new BufferedReader(new FileReader(csvFile));
             line = br.readLine();  //Reads and skips header row
             while ((line = br.readLine()) != null) {
@@ -522,11 +597,7 @@ public class WeatherData {
                 }
             }
         }
-            //System.out.println("Extracted cityCode from w_names database: "+cityCode);
-        //cityCode="KRDU";
 
-        //need to find cityStart, will need to read from file later
-        //int cityStart=0;
         int startHour = startTime.hour;
         int startMin = startTime.minute;
         int endHour = endTime.hour;
@@ -548,7 +619,7 @@ public class WeatherData {
 
         try {
 //                    br = new BufferedReader(new FileReader(csvFile));
-            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/reliabilityAnalysis/database/weather_db.csv")));
+            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/coreEngine/reliabilityAnalysis/database/weather_db.csv")));
             line = br.readLine();  //Reads and skips header row
             String currCityCode = "";
             while (!currCityCode.equals(cityCode)) {  //Searches for first appearance of cityCode in database
@@ -582,7 +653,6 @@ public class WeatherData {
                 }
                 for (int weather = 0; weather < 10; ++weather) {
                     //Subtracts any time not included in the final hour
-                    //System.out.format("ratio %f%n",(60.0f-endMin)/60.0f);
                     weatherProbability[month][weather] = weatherProbability[month][weather] - ((60.0f - endMin) / 60.0f) * (100.0f * Float.parseFloat(line_tokens[weather + 1]));  //TODO period length?
                     //System.out.format("wp: %f%n", weatherProbability[month][weather]);
                 }
@@ -625,7 +695,7 @@ public class WeatherData {
 
         try {
 //                    br = new BufferedReader(new FileReader(csvFile));
-            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/reliabilityAnalysis/database/w_dur.csv")));
+            br = new BufferedReader(new InputStreamReader(WeatherData.class.getResourceAsStream("/coreEngine/reliabilityAnalysis/database/w_dur.csv")));
             line = br.readLine();  //Reads and skips header row
             while ((line = br.readLine()) != null) {
                 String[] line_tokens = line.split(cvsSplitter);
@@ -655,59 +725,158 @@ public class WeatherData {
         setCapacityAdjFactors();
 
         // Setting default FFS Adjustment Factors
-        setFFSpeedAdjFactors(70);
+        setFFSpeedAdjFactors(seedDefaultFFS);
 
         // Setting default Demand Adjustment Factors
         setDemandAdjFactors();
 
     } //end of extractFromWeatherDB
 
+    /**
+     *
+     */
     private void setCapacityAdjFactors() {
         // Setting default Capacity Adjustment Factors
-        adjustmentFactors[0][0] = 92.76f;
-        adjustmentFactors[0][1] = 85.87f;
-        adjustmentFactors[0][2] = 95.71f;
-        adjustmentFactors[0][3] = 91.34f;
-        adjustmentFactors[0][4] = 88.96f;
-        adjustmentFactors[0][5] = 77.57f;
-        adjustmentFactors[0][6] = 91.55f;
-        adjustmentFactors[0][7] = 90.33f;
-        adjustmentFactors[0][8] = 88.33f;
-        adjustmentFactors[0][9] = 89.51f;
-        adjustmentFactors[0][10] = 100.00f;
+        //adjustmentFactors[0][0] = 92.76f;
+        //adjustmentFactors[0][1] = 85.87f;
+        //adjustmentFactors[0][2] = 95.71f;
+        //adjustmentFactors[0][3] = 91.34f;
+        //adjustmentFactors[0][4] = 88.96f;
+        //adjustmentFactors[0][5] = 77.57f;
+        //adjustmentFactors[0][6] = 91.55f;
+        //adjustmentFactors[0][7] = 90.33f;
+        //adjustmentFactors[0][8] = 88.33f;
+        //adjustmentFactors[0][9] = 89.51f;
+        //adjustmentFactors[0][10] = 100.00f;
+
+        adjustmentFactors[0][0] = .9276f;
+        adjustmentFactors[0][1] = .8587f;
+        adjustmentFactors[0][2] = .9571f;
+        adjustmentFactors[0][3] = .9134f;
+        adjustmentFactors[0][4] = .8896f;
+        adjustmentFactors[0][5] = .7757f;
+        adjustmentFactors[0][6] = .9155f;
+        adjustmentFactors[0][7] = .9033f;
+        adjustmentFactors[0][8] = .8833f;
+        adjustmentFactors[0][9] = .8951f;
+        adjustmentFactors[0][10] = 1.0f;
     }
 
+    /**
+     *
+     * @param defaultFFS
+     */
     private void setFFSpeedAdjFactors(int defaultFFS) {
+        // Setting the FFS adjustment factors
+
+        switch (defaultFFS) {
+            case 55:
+                //adjustmentFactors[1] = new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
+                break;
+            case 60:
+                //adjustmentFactors[1] = new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
+                break;
+            case 65:
+                //adjustmentFactors[1] = new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
+                break;
+            case 70:
+                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
+                break;
+            case 75:
+                //adjustmentFactors[1] = new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
+                break;
+            default:
+                //Interpolate
+                if (defaultFFS < 55) {
+                    adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
+                } else if (defaultFFS > 75) {
+                    adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
+                } else {
+                    adjustmentFactors[1] = new float[11];
+                    float x1 = 0;
+                    float[] lsafs = new float[11];
+                    float[] usafs = new float[11];
+                    if (55 < defaultFFS && defaultFFS < 60) {
+                        x1 = 55.0f;
+                        lsafs = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
+                        usafs = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
+                    } else if (60 < defaultFFS && defaultFFS < 65) {
+                        x1 = 60.0f;
+                        lsafs = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
+                        usafs = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
+                    } else if (65 < defaultFFS && defaultFFS < 70) {
+                        x1 = 65.0f;
+                        lsafs = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
+                        usafs = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
+                    } else if (70 < defaultFFS && defaultFFS < 75) {
+                        x1 = 70.0f;
+                        lsafs = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
+                        usafs = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
+                    }
+                    for (int weatherType = 0; weatherType < 11; weatherType++) {
+                        float m = (usafs[weatherType] - lsafs[weatherType]) / 5.0f;
+                        float b = lsafs[weatherType] - m * x1;
+                        float interpValue = m * defaultFFS + b;
+                        adjustmentFactors[1][weatherType] = interpValue;
+                    }
+                }
+                break;
+        }
+    }
+
+    /**
+     *
+     * @param defaultFFS
+     */
+    private void setFFSpeedAdjFactorsOld(int defaultFFS) {
         // Setting the FFS adjustment factors
         switch (defaultFFS) {
             case 55:
-                adjustmentFactors[1] = new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
                 break;
             case 60:
-                adjustmentFactors[1] = new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
                 break;
             case 65:
-                adjustmentFactors[1] = new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
                 break;
             case 70:
-                adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
                 break;
             case 75:
-                adjustmentFactors[1] = new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
                 break;
             default:
-                adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
                 break;
         }
     }
 
+    /**
+     *
+     */
     private void setDemandAdjFactors() {
         // Setting default Demand Adjustment Factors
         for (int weather = 0; weather < 11; ++weather) {
-            adjustmentFactors[2][weather] = 100.00f;
+            adjustmentFactors[2][weather] = 1.00f;
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean checkNonNegative() {
 
         // Checking to make sure none of the probabilities are negative

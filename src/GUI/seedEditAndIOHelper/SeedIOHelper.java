@@ -1,6 +1,6 @@
 package GUI.seedEditAndIOHelper;
 
-import coreEngine.CEConst;
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

@@ -1,17 +1,23 @@
 package coreEngine;
 
-import atdm.DataStruct.ATDMDatabase;
-import atdm.DataStruct.ATDMScenario;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CEDate;
+import coreEngine.Helper.CEHelper;
+import coreEngine.Helper.CETime;
+import coreEngine.Helper.FacilitySummary;
+import coreEngine.atdm.DataStruct.ATDMDatabase;
+import coreEngine.atdm.DataStruct.ATDMScenario;
+import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
+import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import reliabilityAnalysis.DataStruct.Scenario;
-import reliabilityAnalysis.DataStruct.ScenarioInfo;
 
 /**
- * This class contains all input and output data of a seed. This class should be
- * the only interface of the coreEngine package.
+ * This class contains all input and output data, setters, getters, and analysis
+ * functions of a seed. This class should be the only interface of the
+ * coreEngine package.
  *
  * @author Shu Liu
  */
@@ -24,7 +30,7 @@ public class Seed implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="GENERAL INPUT DATA - GP AND ML SEGMENTS">
     /**
-     * Number of scenarios (NOT including default scenario)
+     * Number of RL scenarios (NOT including default scenario)
      */
     private int inNumScen = 0;
     /**
@@ -106,7 +112,14 @@ public class Seed implements Serializable {
      */
     private boolean seedInputModified = true;
 
+    /**
+     * Scenario index of the currently buffered result (-1 for null)
+     */
     private int bufferScen = -1;
+
+    /**
+     * ATDM set index of the currently buffered result (-1 for null)
+     */
     private int bufferATDM = -1;
     // </editor-fold>
 
@@ -286,12 +299,13 @@ public class Seed implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="GETTER FOR RL AND ATDM ADJUSTMENT FACTORS">
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     private float getRLOAF(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -304,12 +318,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     private float getRLDAF(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -322,12 +337,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     private float getRLSAF(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -340,12 +356,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     public float getRLCAF(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -358,12 +375,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     public int getRLLAFI(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -376,12 +394,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for reliability analysis adjustment factor
      *
-     * @param scen
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return reliability analysis adjustment factor
      */
     private int getRLLAFWZ(int scen, int seg, int period, int segType) {
         if (scen == 0) {
@@ -394,12 +413,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     private float getATDMOAF(int scen, int atdm, int seg, int period) {
         return atdm < 0 ? 1
@@ -407,12 +427,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     private float getATDMDAF(int scen, int atdm, int seg, int period) {
         return atdm < 0 ? 1
@@ -420,12 +441,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     private float getATDMSAF(int scen, int atdm, int seg, int period) {
         return atdm < 0 ? 1
@@ -433,12 +455,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     private float getATDMCAF(int scen, int atdm, int seg, int period) {
         return atdm < 0 ? 1
@@ -446,12 +469,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     private int getATDMLAF(int scen, int atdm, int seg, int period) {
         return atdm < 0 ? 0
@@ -459,77 +483,83 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @return ATDM adjustment factor
      */
     int getATDMRM(int scen, int atdm, int seg, int period) {
         return ATDMSets.get(atdm).get(scen).RM().get(seg, period);
     }
 
     /**
+     * Getter for RL and ATDM combined adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMOAF(int scen, int atdm, int seg, int period, int segType) {
         return getRLOAF(scen, seg, period, segType) * getATDMOAF(scen, atdm, seg, period);
     }
 
     /**
+     * Getter for RL and ATDM combined adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMDAF(int scen, int atdm, int seg, int period, int segType) {
         return getRLDAF(scen, seg, period, segType) * getATDMDAF(scen, atdm, seg, period);
     }
 
     /**
+     * Getter for RL and ATDM combined adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMSAF(int scen, int atdm, int seg, int period, int segType) {
         return getRLSAF(scen, seg, period, segType) * getATDMSAF(scen, atdm, seg, period);
     }
 
     /**
+     * Getter for RL and ATDM combined adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMCAF(int scen, int atdm, int seg, int period, int segType) {
         return getRLCAF(scen, seg, period, segType) * getATDMCAF(scen, atdm, seg, period);
     }
 
     /**
+     * Getter for RL and ATDM combined adjustment factor
      *
-     * @param scen
-     * @param atdm
-     * @param seg
-     * @param period
-     * @param segType
-     * @return
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     * @param seg segment index
+     * @param period period index
+     * @param segType segment GP/ML type
+     * @return RL and ATDM combined adjustment factor
      */
     int getRLAndATDMLAF(int scen, int atdm, int seg, int period, int segType) {
         return getRLLAFI(scen, seg, period, segType) + getRLLAFWZ(scen, seg, period, segType) + getATDMLAF(scen, atdm, seg, period);
@@ -543,7 +573,7 @@ public class Seed implements Serializable {
     private class ScenATDM implements Serializable {
 
         /**
-         *
+         * serialVersionUID
          */
         private static final long serialVersionUID = 3267333236245L;
 
@@ -553,7 +583,7 @@ public class Seed implements Serializable {
         int scen;
 
         /**
-         * ATDM Index
+         * ATDM set index
          */
         int atdm;
 
@@ -561,7 +591,7 @@ public class Seed implements Serializable {
          * Create a new scenario and atdm pair
          *
          * @param scen scenario index
-         * @param atdm atdm index
+         * @param atdm ATDM set index
          */
         private ScenATDM(int scen, int atdm) {
             this.scen = scen;
@@ -580,7 +610,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * ATDM Sets, each set contains a HashMap of related scenarios
      */
     private ArrayList<HashMap<Integer, ATDMScenario>> ATDMSets = new ArrayList();
 
@@ -595,7 +625,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * ATDM database (strategies and plans)
      */
     private ATDMDatabase atdmDatabase;
 
@@ -618,9 +648,10 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Count the number of ATDM analysis for a particular RL scenario
      *
-     * @param scen
-     * @return
+     * @param scen scenario index
+     * @return number of ATDM analysis for a particular RL scenario
      */
     private int countATDM(int scen) {
         int result = 0;
@@ -633,21 +664,22 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Getter for ATDM sets
      *
-     * @return
+     * @return ATDM sets
      */
     public ArrayList<HashMap<Integer, ATDMScenario>> getATDMSets() {
         return ATDMSets;
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="THREAD AND STATUS CHECK">
+    // <editor-fold defaultstate="collapsed" desc="STATUS CHECK">
     /**
      * Check whether a scenario has valid output
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm atdm Index (-1 for RL scenario)
+     * @param atdm ATDM set index (-1 for RL scenario)
      * @return whether a scenario has valid output
      */
     public boolean hasValidOutput(int scen, int atdm) {
@@ -1036,18 +1068,19 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * Calculate number of periods based on start and end times
      */
     private void calNumPeriods() {
         inNumPeriod = (inEndTime.toMinute() - inStartTime.toMinute()) / LENGTH_OF_EACH_PERIOD.toMinute();
     }
 
     /**
+     * Helper for generate segment
      *
-     * @param numSegment
-     * @param numPeriod
-     * @param GPMLType
-     * @return
+     * @param numSegment number of segments
+     * @param numPeriod number of periods
+     * @param GPMLType segment GP/ML type
+     * @return ArrayList of generated segments
      */
     private ArrayList<GPMLSegment> generateSegments(int numSegment, int numPeriod, int GPMLType) {
         ArrayList<GPMLSegment> segments = new ArrayList<>();
@@ -1071,7 +1104,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * Connect parallel GP and ML segments
      */
     private void connectGPAndMLSegments() {
         try {
@@ -1085,7 +1118,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * Disconnect parallel GP and ML segments
      */
     private void disconnectGPAndMLSegments() {
         try {
@@ -1103,10 +1136,10 @@ public class Seed implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="PERIOD AND SEGMENT MODIFIER">
     /**
-     * Add multiple GPSegments
+     * Add multiple segments
      *
      * @param index index of the segment to be added, start from 0
-     * @param num number of GPSegments to be added
+     * @param num number of segments to be added
      * @return whether add segment is successful
      */
     public String addSegment(int index, int num) {
@@ -1120,11 +1153,12 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Helper for add segments
      *
-     * @param index
-     * @param num
-     * @param segments
-     * @param GPMLType
+     * @param index index of the segment to be added, start from 0
+     * @param num number of segments to be added
+     * @param segments original segments ArrayList
+     * @param GPMLType segment GP/ML type
      */
     private void _addSegment(int index, int num, ArrayList<GPMLSegment> segments, int GPMLType) {
         try {
@@ -1167,7 +1201,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     * Delete multiple GPSegments
+     * Delete multiple segments
      *
      * @param fromIndex index of the first segment (inclusive) to be deleted,
      * start from 0
@@ -1186,10 +1220,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Helper for delete segments
      *
-     * @param fromIndex
-     * @param toIndex
-     * @param segments
+     * @param fromIndex index of the first segment (inclusive) to be deleted,
+     * start from 0
+     * @param toIndex index of the last segment (inclusive) to be deleted, start
+     * from 0
+     * @param segments original segments ArrayList
      */
     private void _delSegment(int fromIndex, int toIndex, ArrayList<GPMLSegment> segments) {
         try {
@@ -1226,8 +1263,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Renumbering segments
      *
-     * @param segments
+     * @param segments original segments ArrayList
      */
     private void reindexSegment(ArrayList<GPMLSegment> segments) {
         for (int index = 0; index < segments.size(); index++) {
@@ -1275,10 +1313,12 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Helper for add one or more analysis periods
      *
-     * @param segment
-     * @param numPeriodToBeAdded
-     * @param isAtBeginning
+     * @param segment original segment
+     * @param numPeriodToBeAdded number of analysis periods to be added
+     * @param isAtBeginning whether add these new analysis periods at the
+     * beginning (true) or at the end (false)
      */
     private void _addPeriod(GPMLSegment segment, int numPeriodToBeAdded, boolean isAtBeginning) {
         if (isAtBeginning) {
@@ -1376,10 +1416,13 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Delete one or more analysis periods
      *
-     * @param segment
-     * @param numPeriodToBeDeleted
-     * @param isFromBeginning
+     * @param segment original segment
+     *
+     * @param numPeriodToBeDeleted number of analysis periods to be deleted
+     * @param isFromBeginning whether delete these new analysis periods from the
+     * beginning (true) or from the end (false)
      */
     private void _delPeriod(GPMLSegment segment, int numPeriodToBeDeleted, boolean isFromBeginning) {
         if (isFromBeginning) {
@@ -1444,7 +1487,8 @@ public class Seed implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm ATDM index (0 is the first one, -1 means run without ATDM)
+     * @param atdm ATDM set index (0 is the first one, -1 means run without
+     * ATDM)
      * @return whether analysis is successful
      */
     public int singleRun(int scen, int atdm) {
@@ -1453,7 +1497,6 @@ public class Seed implements Serializable {
                     && GPSegments.size() >= 1
                     && GPSegments.get(0).inType == CEConst.SEG_TYPE_B
                     && GPSegments.get(GPSegments.size() - 1).inType == CEConst.SEG_TYPE_B) {
-                //System.out.println("Running " + scen + " " + atdm);
                 preprocess(scen, atdm);
                 analyze(scen, atdm);
                 summary(scen, atdm);
@@ -1482,7 +1525,7 @@ public class Seed implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)ƒ
-     * @param atdm atdm index
+     * @param atdm ATDM set index
      */
     private void preprocess(int scen, int atdm) {
         //required only once for all scenarios
@@ -1603,7 +1646,6 @@ public class Seed implements Serializable {
             pOutMLSpaceMeanSpeed = new HashMap(); //mph = VMTV / VHT
             pOutMLDensityTotal_veh = new HashMap(); //veh/mi/lane
             pOutMLDensityTotal_pc = new HashMap(); //pc/mi/lane
-//            pOutMLDensityIA_pc = CEHelper.float_2D_normal(numScen + 1, numPeriod, 0); //pc/mi/lane
             pMLReportDensityFactor = new HashMap();
             pOutMLReportLOS = new HashMap();
             pOutMLTravelTimeIndex = new HashMap();
@@ -1651,7 +1693,6 @@ public class Seed implements Serializable {
             pOutMLSpaceMeanSpeed = null; //mph = VMTV / VHT
             pOutMLDensityTotal_veh = null; //veh/mi/lane
             pOutMLDensityTotal_pc = null; //pc/mi/lane
-//            pOutMLDensityIA_pc = CEHelper.float_2D_normal(numScen + 1, numPeriod, 0); //pc/mi/lane
             pMLReportDensityFactor = null;
             pOutMLReportLOS = null;
             pOutMLTravelTimeIndex = null;
@@ -1684,8 +1725,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Configure parameters for access segment
      *
-     * @param seg
+     * @param seg access segment
      */
     private void configAccessSegment(GPMLSegment seg) {
         //TODO: need discussion for default parameters
@@ -1715,21 +1757,34 @@ public class Seed implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index
      */
     private void analyze(int scen, int atdm) {
-        //TODO: for debug only
+        //For debug only
         //DebugOutput.startOutput();
 
         for (int period = 0; period < inNumPeriod; period++) {
-            //run over sat for this period
-            for (int step = 0; step < NUM_STEPS; step++) {
-                //run over sat for each 15-sec step
+
+            if (isUnderSatGP(period)) {
+                //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
-                    segment.runOversaturated(scen, atdm, period, step);
+                    segment.runUndersaturated(scen, atdm, period);
                 }
+            } else {
+                //run over sat for this period
+                for (int step = 0; step < NUM_STEPS; step++) {
+                    //run over sat for each 15-sec step
+                    for (GPMLSegment segment : GPSegments) {
+                        segment.runOversaturated(scen, atdm, period, step);
+                    }
+                }
+                //For debug only
+//                try {
+//                    DebugOutput.write(period, GPSegments);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
-            
 
             if (inManagedLaneUsed) {
                 if (isUnderSatML(period)) {
@@ -1746,6 +1801,7 @@ public class Seed implements Serializable {
                             segment.runOversaturated(scen, atdm, period, step);
                         }
                     }
+                    //For debug only
 //                    try {
 //                        DebugOutput.write(period, MLSegments);
 //                    } catch (Exception e) {
@@ -1755,7 +1811,7 @@ public class Seed implements Serializable {
             }
         }
 
-        //TODO: for debug only
+        //For debug only
         //DebugOutput.finish();
     }
 
@@ -1793,10 +1849,19 @@ public class Seed implements Serializable {
         return true;
     }
 
+    /**
+     * Helper for check whether a particular segment in a particular period in a
+     * particular scenario is under saturated or over saturated
+     *
+     * @param segment segment to be checked
+     * @param period analysis period index (0 is the first analysis period)
+     * @return whether a particular period in a particular scenario is under
+     * saturated (true) or over saturated (false)
+     */
     private boolean isSegmentUnderSat(GPMLSegment segment, int period) {
         if (segment.scenMainlineCapacity_veh[period] < segment.scenMainlineDemand_veh[period]
                 || segment.scenOnCapacity_veh[period] < segment.scenOnDemand_veh[period]
-                || segment.scenRM_veh[period] < segment.scenOnDemand_veh[period]) { //(isRampMeteringUsed() &&
+                || segment.scenRM_veh[period] < segment.scenOnDemand_veh[period]) {
             return false;
         }
         if (period > 0
@@ -1839,7 +1904,7 @@ public class Seed implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index
      */
     private void summary(int scen, int atdm) {
         for (GPMLSegment segment : GPSegments) {
@@ -2075,7 +2140,7 @@ public class Seed implements Serializable {
     /**
      * Delete previous summary result for a particular scenario
      *
-     * @param scenATDM
+     * @param scenATDM scenario index and ATDM set index in String
      */
     private void resetSummary(String scenATDM) {
         //create memory space
@@ -2215,7 +2280,7 @@ public class Seed implements Serializable {
      * @param seg segment index (0 is the first segment)
      * @param period analysis period index (0 is the first analysis period)
      * @param scen scenario index
-     * @param atdm atdm index
+     * @param atdm ATDM set index
      */
     public void setValue(String ID, Object value, int seg, int period, int scen, int atdm) {
         try {
@@ -2224,7 +2289,6 @@ public class Seed implements Serializable {
                 return;
             }
 
-            //boolean seedModifiedBefore = seedInputModified;
             switch (ID) {
                 case CEConst.IDS_SEED_FILE_NAME:
                     inFileName = value == null ? null : value.toString();
@@ -2281,6 +2345,20 @@ public class Seed implements Serializable {
                     break;
                 case CEConst.IDS_TERRAIN:
                     GPSegments.get(seg).inTerrain = Integer.parseInt(value.toString());
+                    switch (GPSegments.get(seg).inTerrain) {
+                        case CEConst.TERRAIN_LEVEL:
+                            GPSegments.get(seg).inET = 1.5f;
+                            GPSegments.get(seg).inER = 1.2f;
+                            break;
+                        case CEConst.TERRAIN_MOUNTAINOUS:
+                            GPSegments.get(seg).inET = 4.5f;
+                            GPSegments.get(seg).inER = 4.0f;
+                            break;
+                        case CEConst.TERRAIN_ROLLING:
+                            GPSegments.get(seg).inET = 2.5f;
+                            GPSegments.get(seg).inER = 2.0f;
+                            break;
+                    }
                     fireDataChanged(CHANGE_SEED);
                     break;
 
@@ -2369,15 +2447,15 @@ public class Seed implements Serializable {
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ML_HAS_CROSS_WEAVE:
-                    MLSegments.get(seg).inMLHasCrossWeave = Boolean.parseBoolean(value.toString());
+                    MLSegments.get(seg).inGPHasCrossWeave = Boolean.parseBoolean(value.toString());
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                    MLSegments.get(seg).inMLCrossWeaveLCMin = Integer.parseInt(value.toString());
+                    MLSegments.get(seg).inGPCrossWeaveLCMin = Integer.parseInt(value.toString());
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
-                    MLSegments.get(seg).inMLCrossWeaveVolume.set(period, Integer.parseInt(value.toString()));
+                    MLSegments.get(seg).inGPCrossWeaveVolume.set(period, Integer.parseInt(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_JAM_DENSITY:
@@ -2542,10 +2620,6 @@ public class Seed implements Serializable {
                             GPSegments.get(seg).inType = CEConst.SEG_TYPE_B;
                         }
                     }
-                    fireDataChanged(CHANGE_SEED);
-                    break;
-                case CEConst.IDS_ML_METHOD_TYPE:
-                    MLSegments.get(seg).inMLMethod = Integer.parseInt(value.toString());
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ML_SEPARATION_TYPE:
@@ -2713,7 +2787,6 @@ public class Seed implements Serializable {
                     System.out.println("Error in setValue: " + ID + " is not supportted");
             }
         } catch (Exception e) {
-            //e.printStackTrace();
             System.out.println("Error in setValue: " + ID + " " + e.toString());
         }
     }
@@ -2763,7 +2836,7 @@ public class Seed implements Serializable {
      * @param period analysis period index (0 is the first analysis period)
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm atdm index
+     * @param atdm ATDM set index
      * @return an integer value from a data field in this Seed object or in one
      * of the GPSegments
      */
@@ -2773,7 +2846,6 @@ public class Seed implements Serializable {
         }
 
         try {
-
             switch (ID) {
                 case CEConst.IDS_NUM_PERIOD:
                     return inNumPeriod;
@@ -2862,8 +2934,6 @@ public class Seed implements Serializable {
                     return MLSegments.size();
                 case CEConst.IDS_ML_SEGMENT_TYPE:
                     return MLSegments.get(seg).inType;
-                case CEConst.IDS_ML_METHOD_TYPE:
-                    return MLSegments.get(seg).inMLMethod;
                 case CEConst.IDS_ML_SEPARATION_TYPE:
                     return MLSegments.get(seg).inMLSeparation;
                 case CEConst.IDS_ML_SEGMENT_LENGTH_FT:
@@ -2907,9 +2977,9 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_RAMP_TO_RAMP_DEMAND_VEH:
                     return MLSegments.get(seg).inRRDemand_veh.get(period);
                 case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                    return MLSegments.get(seg).inMLCrossWeaveLCMin;
+                    return MLSegments.get(seg).inGPCrossWeaveLCMin;
                 case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
-                    return MLSegments.get(seg).inMLCrossWeaveVolume.get(period);
+                    return MLSegments.get(seg).inGPCrossWeaveVolume.get(period);
                 case CEConst.IDS_ML_TYPE_USED:
                     checkInBuffer(scen, atdm);
                     return MLSegments.get(seg).scenType[period];
@@ -2982,7 +3052,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_P_SPACE_MEAN_SPEED:
                 case CEConst.IDS_P_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_P_TOTAL_DENSITY_PC:
-//                case CEConst.IDS_P_INFLUENCED_DENSITY_PC:
                 case CEConst.IDS_P_TTI:
                 case CEConst.IDS_P_MAX_DC:
                 case CEConst.IDS_P_MAX_VC:
@@ -3062,7 +3131,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_P_SPACE_MEAN_SPEED:
                 case CEConst.IDS_ML_P_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_ML_P_TOTAL_DENSITY_PC:
-//                case CEConst.IDS_ML_P_INFLUENCED_DENSITY_PC:
                 case CEConst.IDS_ML_P_TTI:
                 case CEConst.IDS_ML_P_MAX_DC:
                 case CEConst.IDS_ML_P_MAX_VC:
@@ -3139,7 +3207,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_CB_P_SPACE_MEAN_SPEED:
                 case CEConst.IDS_CB_P_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_CB_P_TOTAL_DENSITY_PC:
-//                case CEConst.IDS_CB_P_INFLUENCED_DENSITY_PC:
                 case CEConst.IDS_CB_P_TTI:
                 case CEConst.IDS_CB_P_MAX_DC:
                 case CEConst.IDS_CB_P_MAX_VC:
@@ -3996,7 +4063,7 @@ public class Seed implements Serializable {
      * @param period analysis period index (0 is the first analysis period)
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm ATDM index
+     * @param atdm ATDM set index
      * @return a String value from a data field in this Seed object or in one of
      * the GPSegments
      */
@@ -4141,7 +4208,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
                 case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
                 case CEConst.IDS_ML_CROSS_WEAVE_CAF:
-                    if (!MLSegments.get(seg).inMLHasCrossWeave) {
+                    if (!MLSegments.get(seg).inGPHasCrossWeave) {
                         return CEConst.IDS_NA;
                     }
                     break;
@@ -4172,7 +4239,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_SEED_DEMAND_DATE:
                     return RL_SeedFileDate.toString();
                 case CEConst.IDS_ML_HAS_CROSS_WEAVE:
-                    return Boolean.toString(MLSegments.get(seg).inMLHasCrossWeave);
+                    return Boolean.toString(MLSegments.get(seg).inGPHasCrossWeave);
 
                 case CEConst.IDS_ANALYSIS_PERIOD_HEADING:
                     return "#" + (period + 1)
@@ -4499,7 +4566,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_CB_P_SPACE_MEAN_SPEED:
                 case CEConst.IDS_CB_P_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_CB_P_TOTAL_DENSITY_PC:
-//                case CEConst.IDS_CB_P_INFLUENCED_DENSITY_PC:
                 case CEConst.IDS_CB_P_TTI:
                 case CEConst.IDS_CB_P_MAX_DC:
                 case CEConst.IDS_CB_P_MAX_VC:
@@ -4625,10 +4691,9 @@ public class Seed implements Serializable {
      *
      * @param scenariosGP generated 2-D RL scenarios for GP segments
      * [numSegments][numScenarios] (Do NOT include default scenario)
-     * * @param scenariosML generated 2-D RL scenarios for ML segments (null if
+     * @param scenariosML generated 2-D RL scenarios for ML segments (null if
      * not applicable) [numSegments][numScenarios] (Do NOT include default
      * scenario)
-     * @param scenariosML
      * @param scenarioInfo reliability analysis scenario information
      * @return whether setting scenarios is successful
      */
@@ -4650,8 +4715,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Get random number seed for RL scenario generation
      *
-     * @return
+     * @return random number seed for RL scenario generation
      */
     public Long getRLRNGSeed() {
         return RL_RngSeed;
@@ -4660,7 +4726,7 @@ public class Seed implements Serializable {
     /**
      * Sets the value of the random number generator seed as newVal.
      *
-     * @param newVal
+     * @param newVal new random number seed for RL scenario generation
      */
     public void setRLRNGSeed(long newVal) {
         RL_RngSeed = newVal;
@@ -4887,7 +4953,7 @@ public class Seed implements Serializable {
     /**
      * Setter for whether free flow speed is known
      *
-     * @param freeFlowSpeedKnown
+     * @param freeFlowSpeedKnown whether free flow speed is known
      */
     public void setFreeFlowSpeedKnown(boolean freeFlowSpeedKnown) {
         if (inFreeFlowSpeedKnown != freeFlowSpeedKnown) {
@@ -4908,7 +4974,7 @@ public class Seed implements Serializable {
     /**
      * Setter for whether ramp metering is used
      *
-     * @param rampMeteringUsed
+     * @param rampMeteringUsed whether ramp metering is used
      */
     public void setRampMeteringUsed(boolean rampMeteringUsed) {
         if (inRampMeteringUsed != rampMeteringUsed) {
@@ -4961,7 +5027,6 @@ public class Seed implements Serializable {
         for (int month = 0; month < incidentFrequency.length; month++) {
             this.RL_IncidentFrequency_GP[month] = incidentFrequency[month];
         }
-        //this.incidentFrequency = incidentFrequency;  // Old way, just sets a pointer
     }
 
     /**
@@ -4983,18 +5048,18 @@ public class Seed implements Serializable {
     }
 
     /**
-     * Setter for GP incident severity distribution
+     * Getter for GP incident severity distribution
      *
-     * @return
+     * @return GP incident severity distribution
      */
     public float[] getGPIncidentDistribution() {
         return RL_IncidentDistribution_GP;
     }
 
     /**
-     * Getter for GP incident severity distribution.
+     * Setter for GP incident severity distribution.
      *
-     * @param incidentDistribution
+     * @param incidentDistribution GP incident severity distribution
      */
     public void setGPIncidentDistribution(float[] incidentDistribution) {
         this.RL_IncidentDistribution_GP = incidentDistribution;
@@ -5064,8 +5129,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Setter for GP incident LAF
      *
-     * @param incidentLAF
+     * @param incidentLAF incident LAF
      */
     public void setGPIncidentLAF(int[][] incidentLAF) {
         this.RL_IncidentLAF_GP = incidentLAF;
@@ -5081,8 +5147,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Setter for GP incident crash ratio
      *
-     * @param incidentCrashRatio
+     * @param incidentCrashRatio incident crash ratio
      */
     public void setGPIncidentCrashRatio(float incidentCrashRatio) {
         this.RL_IncidentCrashRatio_GP = incidentCrashRatio;
@@ -5130,18 +5197,18 @@ public class Seed implements Serializable {
     }
 
     /**
-     * Setter for ML incident severity distribution
+     * Getter for ML incident severity distribution
      *
-     * @return
+     * @return ML incident severity distribution
      */
     public float[] getMLIncidentDistribution() {
         return RL_IncidentDistribution_ML;
     }
 
     /**
-     * Getter for ML incident severity distribution.
+     * Setter for ML incident severity distribution.
      *
-     * @param incidentDistribution
+     * @param incidentDistribution ML incident severity distribution
      */
     public void setMLIncidentDistribution(float[] incidentDistribution) {
         this.RL_IncidentDistribution_ML = incidentDistribution;
@@ -5211,8 +5278,9 @@ public class Seed implements Serializable {
     }
 
     /**
+     * Setter for ML incident LAF
      *
-     * @param incidentLAF
+     * @param incidentLAF incident LAF
      */
     public void setMLIncidentLAF(int[][] incidentLAF) {
         this.RL_IncidentLAF_ML = incidentLAF;
@@ -5239,7 +5307,7 @@ public class Seed implements Serializable {
     /**
      * Getter for list of Work Zone dates
      *
-     * @return
+     * @return list of Work Zone dates
      */
     public ArrayList<CEDate[]> getWorkZoneDates() {
         return RL_WorkZoneDates;
@@ -5248,7 +5316,7 @@ public class Seed implements Serializable {
     /**
      * Setter for list of Work Zone Dates
      *
-     * @param RL_WorkZoneDates
+     * @param RL_WorkZoneDates list of Work Zone dates
      */
     public void setWorkZoneDates(ArrayList<CEDate[]> RL_WorkZoneDates) {
         this.RL_WorkZoneDates = RL_WorkZoneDates;
@@ -5258,7 +5326,8 @@ public class Seed implements Serializable {
      * Getter for segments corresponding to the work zone dates of the same
      * indices as RL_WorkZoneDates
      *
-     * @return
+     * @return segments corresponding to the work zone dates of the same indices
+     * as RL_WorkZoneDates
      */
     public ArrayList<Integer[]> getWorkZoneSegments() {
         return RL_WorkZoneSegments;
@@ -5268,7 +5337,8 @@ public class Seed implements Serializable {
      * Setter for segments corresponding to the work zone dates of the same
      * indices as RL_WorkZoneDates
      *
-     * @param RL_WorkZoneSegments
+     * @param RL_WorkZoneSegments segments corresponding to the work zone dates
+     * of the same indices as RL_WorkZoneDates
      */
     public void setWorkZoneSegments(ArrayList<Integer[]> RL_WorkZoneSegments) {
         this.RL_WorkZoneSegments = RL_WorkZoneSegments;
@@ -5278,7 +5348,8 @@ public class Seed implements Serializable {
      * Getter for daily active periods corresponding to the work zone dates of
      * the same indices as RL_WorkZoneDates
      *
-     * @return
+     * @return daily active periods corresponding to the work zone dates of the
+     * same indices as RL_WorkZoneDates
      */
     public ArrayList<Integer[]> getWorkZonePeriods() {
         return RL_WorkZonePeriods;
@@ -5288,7 +5359,8 @@ public class Seed implements Serializable {
      * Setter for daily active periods corresponding to the work zone dates of
      * the same indices as RL_WorkZoneDates
      *
-     * @param RL_WorkZonePeriods
+     * @param RL_WorkZonePeriods daily active periods corresponding to the work
+     * zone dates of the same indices as RL_WorkZoneDates
      */
     public void setWorkZonePeriods(ArrayList<Integer[]> RL_WorkZonePeriods) {
         this.RL_WorkZonePeriods = RL_WorkZonePeriods;
@@ -5298,7 +5370,8 @@ public class Seed implements Serializable {
      * Getter for work zone severity corresponding to the work zone dates of the
      * same indices as RL_WorkZoneDates
      *
-     * @return
+     * @return work zone severity corresponding to the work zone dates of the
+     * same indices as RL_WorkZoneDates
      */
     public ArrayList<Integer> getWorkZoneSeverities() {
         return RL_WorkZoneSeverities;
@@ -5308,7 +5381,8 @@ public class Seed implements Serializable {
      * Setter for severity corresponding to the work zone dates of the same
      * indices as RL_WorkZoneDates
      *
-     * @param RL_WorkZoneSeverities
+     * @param RL_WorkZoneSeverities work zone severity corresponding to the work
+     * zone dates of the same indices as RL_WorkZoneDates
      */
     public void setWorkZoneSeverities(ArrayList<Integer> RL_WorkZoneSeverities) {
         this.RL_WorkZoneSeverities = RL_WorkZoneSeverities;
@@ -5317,7 +5391,7 @@ public class Seed implements Serializable {
     /**
      * Getter for Work Zone SAFs
      *
-     * @return
+     * @return Work Zone SAFs
      */
     public float[][] getWorkZoneSAFs() {
         return RL_WorkZoneSAFs;
@@ -5326,7 +5400,7 @@ public class Seed implements Serializable {
     /**
      * Setter for Work Zone SAFs
      *
-     * @param RL_WorkZoneSAFs
+     * @param RL_WorkZoneSAFs Work Zone SAFs
      */
     public void setWorkZoneSAFs(float[][] RL_WorkZoneSAFs) {
         this.RL_WorkZoneSAFs = RL_WorkZoneSAFs;
@@ -5335,7 +5409,7 @@ public class Seed implements Serializable {
     /**
      * Getter for Work Zone CAFs
      *
-     * @return
+     * @return Work Zone CAFs
      */
     public float[][] getWorkZoneCAFs() {
         return RL_WorkZoneCAFs;
@@ -5344,7 +5418,7 @@ public class Seed implements Serializable {
     /**
      * Setter for Work Zone CAFs
      *
-     * @param RL_WorkZoneCAFs
+     * @param RL_WorkZoneCAFs Work Zone CAFs
      */
     public void setWorkZoneCAFs(float[][] RL_WorkZoneCAFs) {
         this.RL_WorkZoneCAFs = RL_WorkZoneCAFs;
@@ -5353,7 +5427,7 @@ public class Seed implements Serializable {
     /**
      * Getter for Work Zone DAFs
      *
-     * @return
+     * @return Work Zone DAFs
      */
     public float[][] getWorkZoneDAFs() {
         return RL_WorkZoneDAFs;
@@ -5362,7 +5436,7 @@ public class Seed implements Serializable {
     /**
      * Setter for Work Zone DAFs
      *
-     * @param RL_WorkZoneDAFs
+     * @param RL_WorkZoneDAFs Work Zone DAFs
      */
     public void setWorkZoneDAFs(float[][] RL_WorkZoneDAFs) {
         this.RL_WorkZoneDAFs = RL_WorkZoneDAFs;
@@ -5371,7 +5445,7 @@ public class Seed implements Serializable {
     /**
      * Getter for Work Zone LAFs
      *
-     * @return
+     * @return Work Zone LAFs
      */
     public int[][] getWorkZoneLAFs() {
         return RL_WorkZoneLAFs;
@@ -5380,39 +5454,43 @@ public class Seed implements Serializable {
     /**
      * Setter for Work Zone LAFs
      *
-     * @param RL_WorkZoneLAFs
+     * @param RL_WorkZoneLAFs Work Zone LAFs
      */
     public void setWorkZoneLAFs(int[][] RL_WorkZoneLAFs) {
         this.RL_WorkZoneLAFs = RL_WorkZoneLAFs;
     }
 
     /**
+     * Setter for ATDM database
      *
-     * @param newDB
+     * @param newDB ATDM database
      */
     public void setATDMDatabase(ATDMDatabase newDB) {
         this.atdmDatabase = newDB;
     }
 
     /**
+     * Getter for ATDM database
      *
-     * @return
+     * @return ATDM database
      */
     public ATDMDatabase getATDMDatabase() {
         return this.atdmDatabase;
     }
 
     /**
+     * Getter for TTI
      *
-     * @return
+     * @return TTI
      */
     public float[] getTTI_Value() {
         return TTI_Value;
     }
 
     /**
+     * Setter for TTI
      *
-     * @param TTI_Value
+     * @param TTI_Value TTI
      */
     public void setTTI_Value(float[] TTI_Value) {
         this.TTI_Value = TTI_Value;
@@ -5421,16 +5499,18 @@ public class Seed implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="MANAGED LANE FUNCTIONS">
     /**
+     * Getter for whether managed lane is used
      *
-     * @return
+     * @return whether managed lane is used
      */
     public boolean isManagedLaneUsed() {
         return inManagedLaneUsed;
     }
 
     /**
+     * Setter for whether managed lane is used
      *
-     * @param managedLaneUsed
+     * @param managedLaneUsed whether managed lane is used
      */
     public void setManagedLaneUsed(boolean managedLaneUsed) {
         if (this.inManagedLaneUsed != managedLaneUsed) {
@@ -5455,7 +5535,7 @@ public class Seed implements Serializable {
     }
 
     /**
-     *
+     * Free managed lane memory
      */
     private void reduceMLMemory() {
         pOutMLMaxDC = null;
@@ -5513,7 +5593,6 @@ public class Seed implements Serializable {
 
     /**
      * Check whether output is valid (for debug only)
-     *
      */
     private void debugCheckOutput() {
         for (GPMLSegment segment : GPSegments) {
@@ -5542,17 +5621,43 @@ public class Seed implements Serializable {
         fireDataChanged(CHANGE_RESET_TO_INPUT);
     }
 
+    /**
+     * Check whether a scenario/ATDM is in output buffer
+     *
+     * @param scen scenario index
+     * @param atdm ATDM set index
+     */
     private void checkInBuffer(int scen, int atdm) {
         if (scen != bufferScen || atdm != bufferATDM) {
             singleRun(scen, atdm);
         }
     }
 
+    /**
+     * Seed level change mark
+     */
     private static final int CHANGE_SEED = 0;
+
+    /**
+     * Scenario level change mark
+     */
     private static final int CHANGE_SCEN = 1;
+
+    /**
+     * ATDM level change mark
+     */
     private static final int CHANGE_ATDM = 2;
+
+    /**
+     * Reset to input mark
+     */
     private static final int CHANGE_RESET_TO_INPUT = 3;
 
+    /**
+     * Modify seed when seed data changes
+     *
+     * @param changeType change type
+     */
     private void fireDataChanged(int changeType) {
         _resetBuffer();
 
@@ -5583,11 +5688,17 @@ public class Seed implements Serializable {
         }
     }
 
+    /**
+     * Reset result buffer to null
+     */
     private void _resetBuffer() {
         bufferScen = -1;
         bufferATDM = -1;
     }
 
+    /**
+     * Helper for delete RL scenarios
+     */
     private void _deleteRLScenarios() {
         inNumScen = 0;
         RL_Scenarios_GP = null;

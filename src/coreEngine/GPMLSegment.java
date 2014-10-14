@@ -1,6 +1,8 @@
 package coreEngine;
 
 import GUI.major.MainWindow;
+import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CEHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,21 +10,21 @@ import java.util.Arrays;
 /**
  * This class represent a single general purpose (GP) or managed lane (ML)
  * segment. Only used in coreEngine package (no public methods). This class
- * includes 1. Input and output data for GP segment. 2. Both under saturated and
- * over saturated GP segment calculations.
+ * includes 1. Input and output data for a single segment. 2. Both under
+ * saturated and over saturated segment calculations.
  *
  * @author Shu Liu
  */
-class GPMLSegment implements Serializable {
+public class GPMLSegment implements Serializable {
 
     /**
-     *
+     * serialVersionUID
      */
     private static final long serialVersionUID = 67867856456L;
 
     // <editor-fold defaultstate="collapsed" desc="INPUT DATA">
     /**
-     *
+     * Seed instance that contains this segment
      */
     private Seed seed;
 
@@ -210,39 +212,34 @@ class GPMLSegment implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="MANAGED LANE ADDITIONAL INPUT DATA">
     /**
-     *
-     */
-    int inMLMethod = CEConst.ML_METHOD_HOV;
-
-    /**
-     *
+     * ML separation type
      */
     int inMLSeparation = CEConst.ML_SEPARATION_MARKING;
 
     /**
-     *
+     * ML min lane change
      */
     int inMLMinLC = 1;
 
     /**
-     *
+     * ML max lane change
      */
     int inMLMaxLC = 1;
 
     /**
-     *
+     * Whether GP has cross weave effect, only possible when ML is used
      */
-    boolean inMLHasCrossWeave = false;
+    boolean inGPHasCrossWeave = false;
 
     /**
-     *
+     * Cross weave min lane change
      */
-    int inMLCrossWeaveLCMin = 1;
+    int inGPCrossWeaveLCMin = 1;
 
     /**
-     *
+     * Cross weave volume
      */
-    ArrayList<Integer> inMLCrossWeaveVolume;
+    ArrayList<Integer> inGPCrossWeaveVolume;
     // </editor-fold>
     // </editor-fold>
 
@@ -344,21 +341,9 @@ class GPMLSegment implements Serializable {
      */
     transient float[] scenAllDensity_veh;
     /**
-     * Overall density for each segment, in pc/mi/ln
-     */
-    //transient float[] scenAllDensity_pc;
-    /**
      * Influence area density for ONR or OFR segment, in pc/mi/ln
      */
     transient float[] scenIADensity_pc;
-    /**
-     * Density based LOS
-     */
-    //transient String[] scenDensityLOS;
-    /**
-     * Demand based LOS
-     */
-    //transient String[] scenDemandLOS;
     /**
      * Mainline volume served in vph
      */
@@ -372,27 +357,11 @@ class GPMLSegment implements Serializable {
      */
     transient float[] scenOffVolume_veh;
     /**
-     * Capacity drop, two capacity
-     */
-    //transient float[] scenCapaDrop;
-    /**
      * Whether is front clearing queue
      */
     transient boolean[] scenIsFrontClearingQueues;
 
     //Extended Output Data
-    /**
-     * Actual travel time
-     */
-    //transient float[] scenActualTime;
-    /**
-     * Free flow speed travel time
-     */
-    //transient float[] scenFFSTime;
-    /**
-     * Mainline delay
-     */
-    //transient float[] scenMainlineDelay;
     /**
      * On ramp delay
      */
@@ -417,10 +386,6 @@ class GPMLSegment implements Serializable {
      * VHD delay / interval (hrs)
      */
     transient float[] scenVHD;
-    /**
-     * Travel time index
-     */
-    //transient float[] scenTTI;
     /**
      * Deny entry queue length
      */
@@ -476,7 +441,7 @@ class GPMLSegment implements Serializable {
 
         inRM_veh = CEHelper.int_1D(inNumPeriod, 2100); //ramp metering rate vph
 
-        inMLCrossWeaveVolume = CEHelper.int_1D(inNumPeriod, 1);
+        inGPCrossWeaveVolume = CEHelper.int_1D(inNumPeriod, 1);
     }
 
     /**
@@ -575,7 +540,6 @@ class GPMLSegment implements Serializable {
     // <editor-fold defaultstate="collapsed" desc="PREPROCESS">
     /**
      * Estimate free flow speed if free flow speed is unknown
-     *
      */
     void estimateFFS() {
         float f_LW;
@@ -638,7 +602,7 @@ class GPMLSegment implements Serializable {
     }
 
     /**
-     *
+     * Reset memory
      */
     private void resetMemory() {
         scenMaxDC = 0;
@@ -646,13 +610,14 @@ class GPMLSegment implements Serializable {
     }
 
     /**
+     * Calculate ramp metering
      *
-     * @param scen
-     * @param atdm
+     * @param scen scenario index
+     * @param atdm ATDM set index
      */
     private void calRM(int scen, int atdm) {
         if (inGPMLType == CEConst.SEG_TYPE_GP) {
-            if (atdm < 0) {
+            if (atdm < 0 || (seed.getATDMSets().get(atdm).get(scen) != null && !seed.getATDMSets().get(atdm).get(scen).hasRampMetering())) {
                 for (int period = 0; period < inNumPeriod; period++) {
                     scenRM_veh[period] = inRM_veh.get(period);
                 }
@@ -670,7 +635,7 @@ class GPMLSegment implements Serializable {
     }
 
     /**
-     *
+     * Check front clear queue
      */
     private void checkFrontClearQueue() {
         scenIsFrontClearingQueues[0] = false;
@@ -688,14 +653,13 @@ class GPMLSegment implements Serializable {
         //calculate for fHV
         for (int period = 0; period < inNumPeriod; period++) {
             inMainlineFHV[period] = (float) (1.0 / (1.0
-                    + inMainlineTruck.get(period) * (inET - 1.0) / 100.0
-                    + inMainlineRV.get(period) * (inER - 1.0) / 100.0));
+                    + inMainlineTruck.get(period) * ((inGPMLType == CEConst.SEG_TYPE_GP ? inET : inParallelSeg.inET) - 1.0) / 100.0
+                    + inMainlineRV.get(period) * ((inGPMLType == CEConst.SEG_TYPE_GP ? inER : inParallelSeg.inER) - 1.0) / 100.0));
         }
     }
 
     /**
      * Calculate total ramp density
-     *
      */
     private void calTotalRampDensity() {
         //only first segment does calculation
@@ -728,7 +692,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      */
     private void calDemand(int scen, int atdm) {
         float value;
@@ -797,10 +761,12 @@ class GPMLSegment implements Serializable {
     }
 
     /**
+     * Calculate mainline demand
      *
-     * @param scen
-     * @param atdm
-     * @param period
+     * @param scen scenario index (0 is the default scenario, 1 is the first
+     * generated scenario)
+     * @param atdm ATDM set index (start form 0)
+     * @param period period index (start form 0)
      */
     private void calDemand_Mainline(int scen, int atdm, int period) {
 
@@ -827,6 +793,12 @@ class GPMLSegment implements Serializable {
         }
     }
 
+    /**
+     * Calculate mainline demand
+     *
+     * @param period period index (start form 0)
+     * @return mainline demand
+     */
     private float funcDemandMainline(int period) {
         return inUpSeg.scenMainlineDemand_veh[period] - inUpSeg.scenOffDemand_veh[period]
                 + scenOnDemand_veh[period];
@@ -866,7 +838,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      */
     private void calFFS(int scen, int atdm) {
         for (int period = 0; period < inNumPeriod; period++) {
@@ -885,7 +857,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      */
     private void calLane(int scen, int atdm) {
         if (inGPMLType == CEConst.SEG_TYPE_GP) {
@@ -908,7 +880,6 @@ class GPMLSegment implements Serializable {
 
     /**
      * Calculate processing segment type for one scenario
-     *
      */
     private void calType() {
         for (int period = 0; period < inNumPeriod; period++) {
@@ -961,7 +932,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      */
     private void calCapacity(int scen, int atdm) {
         float result;
@@ -1007,13 +978,16 @@ class GPMLSegment implements Serializable {
         }
     }
 
+    /**
+     * Calculate cross weave CAF
+     */
     private void calCrossCAF() {
         //calculate for CrossCAF
         for (int period = 0; period < inNumPeriod; period++) {
-            if (seed.isManagedLaneUsed() && inGPMLType == CEConst.SEG_TYPE_GP && inParallelSeg.inMLHasCrossWeave) {
+            if (seed.isManagedLaneUsed() && inGPMLType == CEConst.SEG_TYPE_GP && inParallelSeg.inGPHasCrossWeave) {
                 //Equation 13-24
-                inCrossCAF[period] = 1 - (float) Math.max(-0.0897 + 0.0252 * Math.log(inParallelSeg.inMLCrossWeaveVolume.get(period))
-                        - 0.00001453 * inSegLength_ft + 0.002967 * inParallelSeg.inMLCrossWeaveLCMin, 0);
+                inCrossCAF[period] = 1 - (float) Math.max(-0.0897 + 0.0252 * Math.log(inParallelSeg.inGPCrossWeaveVolume.get(period))
+                        - 0.00001453 * inSegLength_ft + 0.002967 * inParallelSeg.inGPCrossWeaveLCMin, 0);
             } else {
                 inCrossCAF[period] = 1;
             }
@@ -1025,7 +999,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return adjusted mainline capacity (vph) for basic segment
      */
@@ -1040,11 +1014,18 @@ class GPMLSegment implements Serializable {
                     inMainlineFHV[period]);
         } else {
             //ML basic mainline capacity
-            result = funcMLBasicMainlineCapacity(period);
+            result = CEHelper.pc_to_veh(funcMLBasicMainlineCapacity(period),
+                    inMainlineFHV[period]);
         }
         return result * CAF; //vph
     }
 
+    /**
+     * Calculate ML basic mainline capacity
+     *
+     * @param period analysis period index (0 is the first period)
+     * @return ML basic mainline capacity
+     */
     private float funcMLBasicMainlineCapacity(int period) {
         final float C_75;
         final float lamda_C = 10;
@@ -1099,7 +1080,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return adjusted mainline capacity (vph) for weaving segment
      */
@@ -1188,7 +1169,6 @@ class GPMLSegment implements Serializable {
 
     /**
      * Calculate demand over capacity ratio
-     *
      */
     private void calDC() {
         float max = 0;
@@ -1208,7 +1188,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      */
     void runUndersaturated(int scen, int atdm, int period) {
@@ -1248,7 +1228,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @param status whether under saturated, over saturated, or background
      * density calculation
@@ -1263,18 +1243,18 @@ class GPMLSegment implements Serializable {
                 scenAllDensity_veh[period] = funcBasicDensity(status, scen, atdm, period);
                 break;
             case CEConst.SEG_TYPE_ONR:
-                scenSpeed[period] = funcOnSpeed(status, period);
+                scenSpeed[period] = Math.min(funcBasicSpeed(status, scen, atdm, period), funcOnSpeed(status, period));
                 scenIADensity_pc[period] = funcOnIADensity(status, period);
                 scenAllDensity_veh[period] = funcOnAllDensity(status, period);
                 break;
             case CEConst.SEG_TYPE_OFR:
-                scenSpeed[period] = funcOffSpeed(status, period);
+                scenSpeed[period] = Math.min(funcBasicSpeed(status, scen, atdm, period), funcOffSpeed(status, period));
                 scenIADensity_pc[period] = funcOffIADensity(status, period);
                 scenAllDensity_veh[period] = funcOffAllDensity(status, period);
                 break;
             case CEConst.SEG_TYPE_W:
             case CEConst.SEG_TYPE_ACS:
-                scenSpeed[period] = funcWeaveSpeed(status, scen, atdm, period);
+                scenSpeed[period] = Math.min(funcBasicSpeed(status, scen, atdm, period), funcWeaveSpeed(status, scen, atdm, period));
                 scenAllDensity_veh[period] = funcWeaveDensity(status, scen, atdm, period);
                 break;
             case CEConst.SEG_TYPE_R:
@@ -1308,7 +1288,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return speed (mph)
      */
@@ -1428,7 +1408,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return density (unit depends on status, veh/mi/ln or veh/mi)
      */
@@ -1945,7 +1925,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return speed (mph)
      */
@@ -2017,7 +1997,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return density (unit depends on status, veh/mi/ln or veh/mi)
      */
@@ -2052,7 +2032,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return speed (mph)
      */
@@ -2073,7 +2053,7 @@ class GPMLSegment implements Serializable {
      * density calculation
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first period)
      * @return density (unit depends on status, veh/mi/ln or veh/mi)
      */
@@ -2098,8 +2078,6 @@ class GPMLSegment implements Serializable {
                     = Math.min(inUpSeg.scenSpeed[period], scenSpeed[period]);
             inUpSeg.scenAllDensity_veh[period]
                     = Math.max(inUpSeg.scenAllDensity_veh[period], scenAllDensity_veh[period]);
-//            inUpSeg.scenAllDensity_pc[period]
-//                    = Math.max(inUpSeg.scenAllDensity_pc[period], scenAllDensity_pc[period]);
         }
     }
     // </editor-fold>
@@ -2217,7 +2195,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first analysis period)
      * @param step time step index (0 is the first step)
      */
@@ -2426,7 +2404,7 @@ class GPMLSegment implements Serializable {
      * Calculate ED for a particular period in a particular scenario
      *
      * @param period analysis period index (0 is the first analysis period)
-     * @return ED
+     * @return ED Expect Demand
      */
     private float funcED(int period) {
         float result;
@@ -2453,7 +2431,7 @@ class GPMLSegment implements Serializable {
      *
      * @param scen scenario index (0 is the default scenario, 1 is the first
      * generated scenario)
-     * @param atdm
+     * @param atdm ATDM set index (start form 0)
      * @param period analysis period index (0 is the first analysis period)
      * @return KB
      */

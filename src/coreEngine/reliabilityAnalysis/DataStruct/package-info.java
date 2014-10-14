@@ -2,4 +2,4 @@
  * contains data structure classes for reliability analysis
  *
  */
-package reliabilityAnalysis.DataStruct;
+package coreEngine.reliabilityAnalysis.DataStruct;
