@@ -438,7 +438,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             lineChartDatasetTime.addSeries(seriesTTIvTime_RL);
             lineChartDatasetTime.addSeries(seriesTTIv_Time_ATM);
             lineChartObjectTTIvTime = ChartFactory.createXYLineChart(
-                    "TTI vs Time Period", "TTI", "Percentage",
+                    "TTI Profile Accros Study Period", "Analysis Period (15 min.)", "TTI",
                     lineChartDatasetTime, PlotOrientation.VERTICAL, true, true, false);
             ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setRange(ttiMin, ttiMax);
             ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,seed.getValueInt(CEConst.IDS_NUM_PERIOD)+1);
@@ -446,11 +446,11 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setAutoRangeMinimumSize((ttiMax-ttiMin));
             
             int UNITS;
-            if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 24) {
+            if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 12) {
                 UNITS = 1;
-            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 48) {
+            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 24) {
                 UNITS = 2;
-            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 72) {
+            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 48) {
                 UNITS = 3;
             } else {
                 UNITS = 4;
@@ -463,8 +463,8 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                                                                                 10.0f,
                                                                                 new float[] {5.0f, 10.0f}, 0.0f));
             //lineChartObjectTTIvTime.getXYPlot().setSeriesRenderingOrder(SeriesRenderingOrder.FORWARD);
-            chartPanel.add(new ChartPanel(lineChartObjectTTIvTime));
-            chartPanel.validate();
+            ttiChartPanel.add(new ChartPanel(lineChartObjectTTIvTime));
+            ttiChartPanel.validate();
             
             // create line chart
             final XYSeriesCollection lineChartDataset = new XYSeriesCollection();
@@ -480,9 +480,9 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                                                                                 BasicStroke.JOIN_MITER, 
                                                                                 10.0f,
                                                                                 new float[] {5.0f, 10.0f}, 0.0f));
-            chartPanel.add(new ChartPanel(lineChartObject));
+            ttiChartPanel.add(new ChartPanel(lineChartObject));
 
-            chartPanel.validate();
+            ttiChartPanel.validate();
             // </editor-fold>
         } catch (Exception e) {
             mainWindow.printLog("Error when create chart " + e.toString());
@@ -511,24 +511,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
         exportRawDataButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
-        facilityPanelBefore = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        meanTextBefore = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        p50TextBefore = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        p80TextBefore = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        p95TextBefore = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        miseryTextBefore = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
-        semiSTDTextBefore = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        ratingTextBefore = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        VMT2TextBefore = new javax.swing.JTextField();
-        chartPanel = new javax.swing.JPanel();
         generalInfoPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         projectNameText = new javax.swing.JTextField();
@@ -546,7 +528,9 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         startDateText = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         endDateText = new javax.swing.JTextField();
-        detailTTIButton = new javax.swing.JButton();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        ttiPanel = new javax.swing.JPanel();
+        ttiChartPanel = new javax.swing.JPanel();
         facilityPanelAfter = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
         meanTextAfter = new javax.swing.JTextField();
@@ -564,7 +548,28 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         ratingTextAfter = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         VMT2TextAfter = new javax.swing.JTextField();
+        facilityPanelBefore = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        meanTextBefore = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        p50TextBefore = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        p80TextBefore = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        p95TextBefore = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        miseryTextBefore = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        semiSTDTextBefore = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        ratingTextBefore = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        VMT2TextBefore = new javax.swing.JTextField();
+        detailTTIButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jLabel25 = new javax.swing.JLabel();
+        ttiComboBox = new javax.swing.JComboBox();
+        jPanel1 = new javax.swing.JPanel();
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -593,84 +598,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 okButtonActionPerformed(evt);
             }
         });
-
-        facilityPanelBefore.setBorder(javax.swing.BorderFactory.createTitledBorder("Facility Reliability Performance Measures Before ATDM"));
-        facilityPanelBefore.setLayout(new java.awt.GridLayout(2, 8));
-
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText(" Mean TTI ");
-        facilityPanelBefore.add(jLabel1);
-
-        meanTextBefore.setEditable(false);
-        meanTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        meanTextBefore.setText("1.00");
-        facilityPanelBefore.add(meanTextBefore);
-
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("     50th % TTI ");
-        facilityPanelBefore.add(jLabel4);
-
-        p50TextBefore.setEditable(false);
-        p50TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        p50TextBefore.setText("1.00");
-        facilityPanelBefore.add(p50TextBefore);
-
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("     80th % TTI ");
-        facilityPanelBefore.add(jLabel2);
-
-        p80TextBefore.setEditable(false);
-        p80TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        p80TextBefore.setText("1.00");
-        facilityPanelBefore.add(p80TextBefore);
-
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("  95th % TTI ");
-        facilityPanelBefore.add(jLabel3);
-
-        p95TextBefore.setEditable(false);
-        p95TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        p95TextBefore.setText("1.00");
-        facilityPanelBefore.add(p95TextBefore);
-
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel13.setText("Misery Index ");
-        facilityPanelBefore.add(jLabel13);
-
-        miseryTextBefore.setEditable(false);
-        miseryTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        miseryTextBefore.setText("1.00");
-        facilityPanelBefore.add(miseryTextBefore);
-
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel14.setText("Semi-STD ");
-        facilityPanelBefore.add(jLabel14);
-
-        semiSTDTextBefore.setEditable(false);
-        semiSTDTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        semiSTDTextBefore.setText("1.00");
-        facilityPanelBefore.add(semiSTDTextBefore);
-
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel15.setText("  Reliability Rating ");
-        facilityPanelBefore.add(jLabel15);
-
-        ratingTextBefore.setEditable(false);
-        ratingTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        ratingTextBefore.setText("1.00");
-        facilityPanelBefore.add(ratingTextBefore);
-
-        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel16.setText("  VMT % at TTI > 2 ");
-        facilityPanelBefore.add(jLabel16);
-
-        VMT2TextBefore.setEditable(false);
-        VMT2TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        VMT2TextBefore.setText("1.00");
-        facilityPanelBefore.add(VMT2TextBefore);
-
-        chartPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Chart"));
-        chartPanel.setLayout(new java.awt.GridLayout(1, 2));
 
         generalInfoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("General Information"));
         generalInfoPanel.setLayout(new java.awt.GridLayout(2, 6));
@@ -747,12 +674,8 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         endDateText.setText("2014-12-31");
         generalInfoPanel.add(endDateText);
 
-        detailTTIButton.setText("Show TTI Percentile Detail");
-        detailTTIButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                detailTTIButtonActionPerformed(evt);
-            }
-        });
+        ttiChartPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        ttiChartPanel.setLayout(new java.awt.GridLayout(1, 2));
 
         facilityPanelAfter.setBorder(javax.swing.BorderFactory.createTitledBorder("Facility Reliability Performance Measures After ATDM"));
         facilityPanelAfter.setLayout(new java.awt.GridLayout(2, 8));
@@ -829,6 +752,88 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         VMT2TextAfter.setText("1.00");
         facilityPanelAfter.add(VMT2TextAfter);
 
+        facilityPanelBefore.setBorder(javax.swing.BorderFactory.createTitledBorder("Facility Reliability Performance Measures Before ATDM"));
+        facilityPanelBefore.setLayout(new java.awt.GridLayout(2, 8));
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText(" Mean TTI ");
+        facilityPanelBefore.add(jLabel1);
+
+        meanTextBefore.setEditable(false);
+        meanTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        meanTextBefore.setText("1.00");
+        facilityPanelBefore.add(meanTextBefore);
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("     50th % TTI ");
+        facilityPanelBefore.add(jLabel4);
+
+        p50TextBefore.setEditable(false);
+        p50TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        p50TextBefore.setText("1.00");
+        facilityPanelBefore.add(p50TextBefore);
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("     80th % TTI ");
+        facilityPanelBefore.add(jLabel2);
+
+        p80TextBefore.setEditable(false);
+        p80TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        p80TextBefore.setText("1.00");
+        facilityPanelBefore.add(p80TextBefore);
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("  95th % TTI ");
+        facilityPanelBefore.add(jLabel3);
+
+        p95TextBefore.setEditable(false);
+        p95TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        p95TextBefore.setText("1.00");
+        facilityPanelBefore.add(p95TextBefore);
+
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel13.setText("Misery Index ");
+        facilityPanelBefore.add(jLabel13);
+
+        miseryTextBefore.setEditable(false);
+        miseryTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        miseryTextBefore.setText("1.00");
+        facilityPanelBefore.add(miseryTextBefore);
+
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel14.setText("Semi-STD ");
+        facilityPanelBefore.add(jLabel14);
+
+        semiSTDTextBefore.setEditable(false);
+        semiSTDTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        semiSTDTextBefore.setText("1.00");
+        facilityPanelBefore.add(semiSTDTextBefore);
+
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel15.setText("  Reliability Rating ");
+        facilityPanelBefore.add(jLabel15);
+
+        ratingTextBefore.setEditable(false);
+        ratingTextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        ratingTextBefore.setText("1.00");
+        facilityPanelBefore.add(ratingTextBefore);
+
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel16.setText("  VMT % at TTI > 2 ");
+        facilityPanelBefore.add(jLabel16);
+
+        VMT2TextBefore.setEditable(false);
+        VMT2TextBefore.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        VMT2TextBefore.setText("1.00");
+        facilityPanelBefore.add(VMT2TextBefore);
+
+        detailTTIButton.setText("Show TTI Percentile Detail");
+        detailTTIButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detailTTIButtonActionPerformed(evt);
+            }
+        });
+
         jButton1.setText("Reset Graphs");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -836,38 +841,85 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel25.setText("Show by: ");
+
+        ttiComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Period", "Segment" }));
+
+        javax.swing.GroupLayout ttiPanelLayout = new javax.swing.GroupLayout(ttiPanel);
+        ttiPanel.setLayout(ttiPanelLayout);
+        ttiPanelLayout.setHorizontalGroup(
+            ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ttiPanelLayout.createSequentialGroup()
+                .addGap(4, 4, 4)
+                .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(ttiChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(ttiPanelLayout.createSequentialGroup()
+                        .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ttiPanelLayout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(jLabel25)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ttiComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(detailTTIButton))
+                            .addComponent(facilityPanelBefore, javax.swing.GroupLayout.DEFAULT_SIZE, 1068, Short.MAX_VALUE)
+                            .addComponent(facilityPanelAfter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
+        );
+        ttiPanelLayout.setVerticalGroup(
+            ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ttiPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(facilityPanelBefore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(facilityPanelAfter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(detailTTIButton)
+                    .addComponent(jButton1)
+                    .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel25)
+                        .addComponent(ttiComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ttiChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE))
+        );
+
+        jTabbedPane2.addTab("Travel Time Index", ttiPanel);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1084, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 582, Short.MAX_VALUE)
+        );
+
+        jTabbedPane2.addTab("Delay", jPanel1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(chartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(detailTTIButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(generalInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(okButton)
                 .addContainerGap())
-            .addComponent(generalInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(facilityPanelBefore, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(facilityPanelAfter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(generalInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(facilityPanelBefore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(facilityPanelAfter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(okButton)
-                    .addComponent(detailTTIButton)
-                    .addComponent(jButton1))
+                .addComponent(okButton)
                 .addContainerGap())
         );
 
@@ -1036,7 +1088,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     private javax.swing.JTextField VMT2TextAfter;
     private javax.swing.JTextField VMT2TextBefore;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel chartPanel;
     private javax.swing.JButton detailTTIButton;
     private javax.swing.JTextField endDateText;
     private javax.swing.JButton exportRawDataButton;
@@ -1061,6 +1112,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1068,6 +1120,8 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField lengthText;
     private javax.swing.JTextField meanTextAfter;
     private javax.swing.JTextField meanTextBefore;
@@ -1090,6 +1144,9 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     private javax.swing.JTextField semiSTDTextAfter;
     private javax.swing.JTextField semiSTDTextBefore;
     private javax.swing.JTextField startDateText;
+    private javax.swing.JPanel ttiChartPanel;
+    private javax.swing.JComboBox ttiComboBox;
+    private javax.swing.JPanel ttiPanel;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

@@ -28,19 +28,24 @@ public class PeriodATM {
     private final int[] rmDuration;
     private final int[] rampMetering;
     private final Boolean[] rampMeteringUsed;
+    private final int[] rampMeteringType;
     private final int[] hsrDuration;
     private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
-    private static final String ID_AFTYPE_CAF = "ID_AFTYPE_CAF";
-    private static final String ID_AFTYPE_SAF = "ID_AFTYPE_SAF";
-    private static final String ID_RAMP_METERING_DURATION = "ID_RAMP_METERING_DURATION";
-    private static final String ID_RAMP_METERING_USED = "ID_RAMP_METERING_USED";
-    private static final String ID_RAMP_METERING_RATE = "ID_RAMP_METERING";
-    private static final String ID_HSR_DURATION = "ID_HSR_DURATION";
-    private static final String ID_HSR_USED = "ID_HSR_USED";
-    private static final String ID_HSR_CAPACITY = "ID_HSR_CAPACITY";
+    public static final String ID_AFTYPE_CAF = "ID_AFTYPE_CAF";
+    public static final String ID_AFTYPE_SAF = "ID_AFTYPE_SAF";
+    public static final String ID_RAMP_METERING_DURATION = "ID_RAMP_METERING_DURATION";
+    public static final String ID_RAMP_METERING_USED = "ID_RAMP_METERING_USED";
+    public static final String ID_RAMP_METERING_TYPE = "ID_RAMP_METERING_TYPE";
+    public static final int ID_RM_TYPE_NONE = 0;
+    public static final int ID_RM_TYPE_USER = 1;
+    public static final int ID_RM_TYPE_ADAPTIVE = 2;
+    public static final String ID_RAMP_METERING_RATE = "ID_RAMP_METERING";
+    public static final String ID_HSR_DURATION = "ID_HSR_DURATION";
+    public static final String ID_HSR_USED = "ID_HSR_USED";
+    public static final String ID_HSR_CAPACITY = "ID_HSR_CAPACITY";
     // </editor-fold>
 
     public PeriodATM(Seed seed, int period) {
@@ -61,6 +66,8 @@ public class PeriodATM {
         Arrays.fill(rmDuration, 0);
         rampMeteringUsed = new Boolean[numSeg];
         Arrays.fill(rampMeteringUsed, false);
+        rampMeteringType = new int[numSeg];
+        Arrays.fill(rampMeteringType, 0);
         rampMetering = new int[numSeg];
         Arrays.fill(rampMetering, 2100);
 
@@ -89,6 +96,8 @@ public class PeriodATM {
 
     public int getValueInt(String identifier, int seg) {
         switch (identifier) {
+            case ID_RAMP_METERING_TYPE:
+                return rampMeteringType[seg];
             case ID_RAMP_METERING_RATE:
                 return rampMetering[seg];
             case ID_RAMP_METERING_DURATION:
@@ -131,6 +140,9 @@ public class PeriodATM {
 
     public void setValueInt(String identifier, int value, int seg) {
         switch (identifier) {
+            case ID_RAMP_METERING_TYPE:
+                rampMeteringType[seg] = value;
+                break;
             case ID_RAMP_METERING_RATE:
                 rampMetering[seg] = value;
                 break;
@@ -172,8 +184,17 @@ public class PeriodATM {
         this.rmDuration[seg] = value;
     }
 
-    public void setRMUsed(Boolean value, int seg) {
+    private void setRMUsed(Boolean value, int seg) {
         rampMeteringUsed[seg] = value;
+    }
+    
+    public void setRMType(int value, int seg) {
+        rampMeteringType[seg] = value;
+        if (value == ID_RM_TYPE_USER || value == ID_RM_TYPE_ADAPTIVE) {
+            setRMUsed(true, seg);
+        } else {
+            setRMUsed(false, seg);
+        }
     }
 
     public void setRMRate(int value, int seg) {
@@ -212,6 +233,10 @@ public class PeriodATM {
 
     public Boolean getRMUsed(int seg) {
         return rampMeteringUsed[seg];
+    }
+    
+    public int getRMType(int seg) {
+        return rampMeteringType[seg];
     }
 
     public int getRMRate(int seg) {

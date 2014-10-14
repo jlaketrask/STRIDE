@@ -47,7 +47,7 @@ public class ATMUpdater {
                 atm.setRampMetering(true);
                 if (currATM.getRMDuration(seg) > 1) {
                     // Updating next PeriodATM instance
-                    nextATM.setRMUsed(Boolean.TRUE, seg);
+                    nextATM.setRMType(currATM.getRMType(seg), seg);
                     nextATM.setRMRate(currATM.getRMRate(seg), seg);
                     nextATM.setRMDuration(currATM.getRMDuration(seg) - 1, seg);
                 } else {

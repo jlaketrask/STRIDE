@@ -1048,7 +1048,7 @@ public class MainWindowUser extends MainWindow {
                 proceedOnlyButton.setText("Review Next Period");
                 takeActionButton.setText("Return to Active Period");
             } else {
-                proceedOnlyButton.setText("Proceed Only");
+                proceedOnlyButton.setText("Proceed With No Action");
                 takeActionButton.setText("Take Action and Proceed");
             }
         }
@@ -1309,7 +1309,7 @@ public class MainWindowUser extends MainWindow {
             }
         });
 
-        jPanel3.setLayout(new java.awt.GridLayout());
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
 
         reviewPreviousPeriodButton.setText("Review Previous Period");
         reviewPreviousPeriodButton.setEnabled(false);
@@ -1320,7 +1320,7 @@ public class MainWindowUser extends MainWindow {
         });
         jPanel3.add(reviewPreviousPeriodButton);
 
-        proceedOnlyButton.setText("Proceed Only");
+        proceedOnlyButton.setText("Proceed With No Action");
         proceedOnlyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proceedOnlyButtonActionPerformed(evt);
