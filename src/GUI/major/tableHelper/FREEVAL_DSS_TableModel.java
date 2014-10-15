@@ -161,7 +161,11 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                     case ROW_RM_IMPLEMENTATION_PERIODS:
                         return periodATM[currPeriod].getRMDuration(col);
                     case ROW_RM_RATE:
-                        return periodATM[currPeriod].getRMRate(col);
+                        if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_USER) {
+                            return periodATM[currPeriod].getRMRate(col);
+                        } else {
+                            return "*";
+                        }
                     case ROW_HSR_TOGGLE:
                         return periodATM[currPeriod].getHSRUsed(col);
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
@@ -195,9 +199,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                                 periodATM[currPeriod].setRMType(PeriodATM.ID_RM_TYPE_ADAPTIVE, col);
                                 //parentTable.setColumnSelectionInterval(col, col);
                                 //parentTable.setRowSelectionInterval(ROW_RM_IMPLEMENTATION_PERIODS,ROW_RM_IMPLEMENTATION_PERIODS);
-                                parentTable.changeSelection(ROW_RM_IMPLEMENTATION_PERIODS, col, false, false);
+                                this.fireTableCellUpdated(ROW_RM_IMPLEMENTATION_PERIODS, col);
                             } else {
                                 periodATM[currPeriod].setRMType(PeriodATM.ID_RM_TYPE_NONE, col);
+                                this.fireTableCellUpdated(ROW_RM_IMPLEMENTATION_PERIODS, col);
                             }
                             break;
                         case ROW_RM_RATE:
@@ -208,6 +213,11 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             break;
                         case ROW_HSR_TOGGLE:
                             periodATM[currPeriod].setHSRUsed((boolean) value, col);
+                            if (periodATM[currPeriod].getHSRUsed(col)) {
+                                parentTable.changeSelection(ROW_HSR_IMPLEMENTATION_PERIODS, col, false, false);
+                            } else {
+                                this.fireTableCellUpdated(ROW_HSR_IMPLEMENTATION_PERIODS, col);
+                            }
                             break;
                         //case 5:
                         //    periodATM[currPeriod].setHSRCapacity(Integer.parseInt((String) value), col);
@@ -236,8 +246,9 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                     case ROW_HSR_TOGGLE:
                         return true;
                     case ROW_RM_IMPLEMENTATION_PERIODS:
-                    case ROW_RM_RATE:
                         return (periodATM[currPeriod].getRMUsed(col));
+                    case ROW_RM_RATE:
+                        return (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_USER);
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
                         return (periodATM[currPeriod].getHSRUsed(col));
                     default:
@@ -273,11 +284,16 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case TYPE_ATM_INPUT:
                 switch (row) {
                     case ROW_RM_IMPLEMENTATION_PERIODS:
-                    case ROW_RM_RATE:
-                        if (isCellEditable(ROW_RM_TYPE, col)) {
+                        if (isCellEditable(ROW_RM_IMPLEMENTATION_PERIODS, col)) {
                             return centerRenderer;
                         } else {
                             return blackOutRenderer;
+                        }
+                    case ROW_RM_RATE:
+                        if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_NONE) {
+                            return blackOutRenderer;
+                        } else {
+                            return centerRenderer;
                         }
                     case ROW_RM_TYPE:
                         if (isCellEditable(row, col)) {
@@ -286,12 +302,17 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             return blackOutRenderer;
                         }
                     case ROW_HSR_TOGGLE:
-                        if (isCellEditable(row, col)) {
+                        if (isCellEditable(ROW_HSR_TOGGLE, col)) {
                             return checkBoxRenderer;
                         } else {
                             return blackOutRenderer;
                         }
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
+                        if (isCellEditable(ROW_HSR_IMPLEMENTATION_PERIODS, col)) {
+                            return centerRenderer;
+                        } else {
+                            return blackOutRenderer;
+                        }
                     default:
                         return centerRenderer;
                 }
