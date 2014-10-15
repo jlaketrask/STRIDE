@@ -98,7 +98,6 @@ public class MainWindow extends javax.swing.JFrame {
         setNullSeed();
         toolbox.setNullSeed();
         menuBar.setNullSeed();
-        System.out.println("here");
         setVisible(true);
 
         //load last opened files
@@ -267,6 +266,9 @@ public class MainWindow extends javax.swing.JFrame {
     public void addSeed(Seed seed) {
         seedList.add(seed);
         navigator.seedAdded(seed);
+        if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) != 0) {
+            selectSeedScen(activeSeed, 1);
+        }
     }
 
     /**
@@ -967,51 +969,85 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void addWeatherEvent(ScenarioEvent weatherEvent) {
-        if (scenario == null) {
+        if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
             initScenario();
         }
+        selectSeedScen(activeSeed, 1);
         addScenarioEvent(weatherEvent, ScenarioEvent.WEATHER_EVENT);
     }
 
     public void addIncidentEvent(ScenarioEvent incidentEvent) {
-        if (scenario == null) {
+        if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
             initScenario();
         }
+        selectSeedScen(activeSeed, 1);
         addScenarioEvent(incidentEvent, ScenarioEvent.INCIDENT_EVENT);
     }
 
     public void addWorkZone(ScenarioEvent workZone) {
-        if (scenario == null) {
+        if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
             initScenario();
         }
+        selectSeedScen(activeSeed, 1);
         addScenarioEvent(workZone, ScenarioEvent.WORK_ZONE_EVENT);
     }
 
     private void addScenarioEvent(ScenarioEvent scenEvent, String type) {
-
-        scenario.CAF().multiply(scenEvent.caf,
-                0, scenEvent.startSegment, scenEvent.startPeriod,
-                0, scenEvent.endSegment, scenEvent.endPeriod);
-        scenario.DAF().multiply(scenEvent.daf,
-                0, scenEvent.startSegment, scenEvent.startPeriod,
-                0, scenEvent.endSegment, scenEvent.endPeriod);
-        scenario.OAF().multiply(scenEvent.daf,
-                0, scenEvent.startSegment, scenEvent.startPeriod,
-                0, scenEvent.endSegment, scenEvent.endPeriod);
-        scenario.SAF().multiply(scenEvent.saf,
-                0, scenEvent.startSegment, scenEvent.startPeriod,
-                0, scenEvent.endSegment, scenEvent.endPeriod);
-        if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
-            scenario.LAFI().add(scenEvent.laf,
-                    0, scenEvent.startSegment, scenEvent.startPeriod,
-                    0, scenEvent.endSegment, scenEvent.endPeriod);
-        } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
-            scenario.LAFWZ().add(scenEvent.laf,
-                    0, scenEvent.startSegment, scenEvent.startPeriod,
-                    0, scenEvent.endSegment, scenEvent.endPeriod);
+        
+        for (int period = scenEvent.startPeriod; period <= scenEvent.endPeriod; period++) {
+            for (int segment = scenEvent.startSegment; segment <= scenEvent.endSegment; segment++) {
+                
+                activeSeed.setValue(CEConst.IDS_RL_CAF_GP, 
+                        scenEvent.caf*activeSeed.getValueFloat(CEConst.IDS_RL_CAF_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
+                activeSeed.setValue(CEConst.IDS_RL_DAF_GP, 
+                        scenEvent.daf*activeSeed.getValueFloat(CEConst.IDS_RL_DAF_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
+                activeSeed.setValue(CEConst.IDS_RL_OAF_GP, 
+                        scenEvent.daf*activeSeed.getValueFloat(CEConst.IDS_RL_OAF_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
+                activeSeed.setValue(CEConst.IDS_RL_SAF_GP, 
+                        scenEvent.saf*activeSeed.getValueFloat(CEConst.IDS_RL_SAF_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
+                
+                if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
+                    activeSeed.setValue(CEConst.IDS_RL_LAFI_GP, 
+                            scenEvent.laf+activeSeed.getValueInt(CEConst.IDS_RL_LAFI_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
+                } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
+                    activeSeed.setValue(CEConst.IDS_RL_LAFWZ_GP, 
+                            scenEvent.laf+activeSeed.getValueInt(CEConst.IDS_RL_LAFWZ_GP,segment,period,1,-1),
+                        segment, period, 1, -1);
         }
+            }
+        }
+        
+    //<editor-fold defaultstate="collapsed" desc="Deprecated code">
+//        scenario.CAF().multiply(scenEvent.caf,
+//                0, scenEvent.startSegment, scenEvent.startPeriod,
+//                0, scenEvent.endSegment, scenEvent.endPeriod);
+//        scenario.DAF().multiply(scenEvent.daf,
+//                0, scenEvent.startSegment, scenEvent.startPeriod,
+//                0, scenEvent.endSegment, scenEvent.endPeriod);
+//        scenario.OAF().multiply(scenEvent.daf,
+//                0, scenEvent.startSegment, scenEvent.startPeriod,
+//                0, scenEvent.endSegment, scenEvent.endPeriod);
+//        scenario.SAF().multiply(scenEvent.saf,
+//                0, scenEvent.startSegment, scenEvent.startPeriod,
+//                0, scenEvent.endSegment, scenEvent.endPeriod);
+//        if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
+//            scenario.LAFI().add(scenEvent.laf,
+//                    0, scenEvent.startSegment, scenEvent.startPeriod,
+//                    0, scenEvent.endSegment, scenEvent.endPeriod);
+//        } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
+//            scenario.LAFWZ().add(scenEvent.laf,
+//                    0, scenEvent.startSegment, scenEvent.startPeriod,
+//                    0, scenEvent.endSegment, scenEvent.endPeriod);
+//        }
+//</editor-fold>
 
-        selectSeedScen(activeSeed, 1);
+        numPeriodChanged = true;
+        selectPeriod(activePeriod);
     }
 
     /**
