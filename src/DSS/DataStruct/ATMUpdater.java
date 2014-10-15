@@ -18,6 +18,7 @@ public class ATMUpdater {
     private final Seed seed;
     private final ATDMScenario atm;
     private final PeriodATM[] periodATM;
+    private final UserLevelParameterSet userParams;
 
     /**
      * Constructor for the ATM Updater
@@ -27,11 +28,18 @@ public class ATMUpdater {
      * adjustments
      * @param periodATM Contains period by period specification of ATM
      * strategies
+     * @param userParams
      */
-    public ATMUpdater(Seed seed, ATDMScenario atmScenario, PeriodATM[] periodATM) {
+    public ATMUpdater(Seed seed, ATDMScenario atmScenario, PeriodATM[] periodATM, UserLevelParameterSet userParams) {
         this.seed = seed;
         this.atm = atmScenario;  //x = segment, y = period
         this.periodATM = periodATM;
+        if (userParams != null) {
+            this.userParams = userParams;
+        } else {
+            this.userParams = new UserLevelParameterSet();
+            this.userParams.useDefaults();
+        }
     }
 
     public void update(int currPeriod) {
@@ -66,14 +74,14 @@ public class ATMUpdater {
                     float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
                     float avgCAF = (seedCAF + rlCAF) / 2.0f;
-                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + currATM.getHSRCapacity(seg)) / (numLanesSegment + 1);
+                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + userParams.atm.hsrCapacity[seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg,currPeriod)]) / (numLanesSegment + 1);
                     atm.CAF().set((newCAF / avgCAF), seg, currPeriod + 1);
                 }
 
                 // Update next PeriodATM Instance
                 if (currATM.getHSRDuration(seg) > 1) {
                     nextATM.setHSRUsed(Boolean.TRUE, seg);
-                    nextATM.setHSRCapacity(currATM.getHSRCapacity(seg), seg);
+                    //nextATM.setHSRCapacity(, seg);
                     nextATM.setHSRDuration(currATM.getHSRDuration(seg) - 1, seg);
                 } else {
                     nextATM.setHSRDuration(0, seg);

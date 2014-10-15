@@ -30,7 +30,7 @@ public class PeriodATM {
     private final Boolean[] rampMeteringUsed;
     private final int[] rampMeteringType;
     private final int[] hsrDuration;
-    private final float[] hsrCapacity;
+    //private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
@@ -75,8 +75,8 @@ public class PeriodATM {
         Arrays.fill(hsrDuration, 0);
         hsrUsed = new Boolean[numSeg];
         Arrays.fill(hsrUsed, false);
-        hsrCapacity = new float[numSeg];
-        Arrays.fill(hsrCapacity, 1.0f);
+        //hsrCapacity = new float[numSeg];
+        //Arrays.fill(hsrCapacity, 1.0f);
 
     }
 
@@ -87,8 +87,8 @@ public class PeriodATM {
                 return caf[seg];
             case ID_AFTYPE_SAF:
                 return saf[seg];
-            case ID_HSR_CAPACITY:
-                return hsrCapacity[seg];
+            //case ID_HSR_CAPACITY:
+            //    return hsrCapacity[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -130,9 +130,9 @@ public class PeriodATM {
             case ID_AFTYPE_SAF:
                 saf[seg] = value;
                 break;
-            case ID_HSR_CAPACITY:
-                hsrCapacity[seg] = value;
-                break;
+            //case ID_HSR_CAPACITY:
+            //    hsrCapacity[seg] = value;
+            //    break;
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -209,9 +209,9 @@ public class PeriodATM {
         hsrUsed[seg] = value;
     }
 
-    public void setHSRCapacity(float value, int seg) {
-        hsrCapacity[seg] = value;
-    }
+    //public void setHSRCapacity(float value, int seg) {
+    //    hsrCapacity[seg] = value;
+    //}
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Getters for Fields">
@@ -251,9 +251,9 @@ public class PeriodATM {
         return hsrUsed[seg];
     }
 
-    public float getHSRCapacity(int seg) {
-        return hsrCapacity[seg];
-    }
+    //public float getHSRCapacity(int seg) {
+    //    return hsrCapacity[seg];
+    //}
 //</editor-fold>
 
     private int arrayMax(int[] arr) {

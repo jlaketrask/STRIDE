@@ -26,4 +26,12 @@ public class ATMParameterSet {
                 return hsrCapacity;
         }
     }
+    
+    public void useDefaults() {
+        hsrCapacity[0] = 0.7f;
+        hsrCapacity[1] = 0.75f;
+        hsrCapacity[2] = 0.8f;
+        hsrCapacity[3] = 0.85f;
+        hsrCapacity[4] = 0.9f;
+    }
 }

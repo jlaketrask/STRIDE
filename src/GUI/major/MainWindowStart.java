@@ -5,6 +5,7 @@
  */
 package GUI.major;
 
+import DSS.DataStruct.UserLevelParameterSet;
 import GUI.major.PasswordHelper.PassDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import coreEngine.Seed;
@@ -17,6 +18,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainWindowStart extends javax.swing.JDialog {
 
+    private UserLevelParameterSet userLevelParams;
+    
     //public static MainWindow mainWindow;
     /**
      * Creates new form MainWindow
@@ -40,6 +43,10 @@ public class MainWindowStart extends javax.swing.JDialog {
     public void doClose() {
         this.setVisible(false);
         dispose();
+    }
+    
+    public void setUserLevelParameterSet(UserLevelParameterSet userParams) {
+        this.userLevelParams = userParams;
     }
 
     /**
@@ -143,7 +150,7 @@ public class MainWindowStart extends javax.swing.JDialog {
         Seed seed = SeedIOHelper.openSeed();
         if (seed != null) {
             this.setVisible(false);
-            MainWindowUser mainWindow = new MainWindowUser(this,seed); 
+            MainWindowUser mainWindow = new MainWindowUser(this,seed, userLevelParams); 
         }
     }//GEN-LAST:event_userButtonActionPerformed
 

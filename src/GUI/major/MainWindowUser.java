@@ -2,6 +2,7 @@ package GUI.major;
 
 import DSS.DataStruct.ATMUpdater;
 import DSS.DataStruct.PeriodATM;
+import DSS.DataStruct.UserLevelParameterSet;
 import GUI.ATDMHelper.summary.ATDMSetSummaryDialog;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
@@ -59,6 +60,8 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
+    private final UserLevelParameterSet userLevelParams;
+    
     private ATDMScenario activeATM;
     private final ATMUpdater atmUpdater;
     private final PeriodATM[] periodATM;
@@ -80,8 +83,9 @@ public class MainWindowUser extends MainWindow {
      *
      * @param mainWindowStart
      * @param seed
+     * @param userParams
      */
-    public MainWindowUser(MainWindowStart mainWindowStart, Seed seed) {
+    public MainWindowUser(MainWindowStart mainWindowStart, Seed seed, UserLevelParameterSet userParams) {
         super();
         mainWindow = this;
         this.mainWindowStart = mainWindowStart;
@@ -100,7 +104,10 @@ public class MainWindowUser extends MainWindow {
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
-        atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM);
+        
+        userLevelParams = userParams;
+        
+        atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM, userLevelParams);
         if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
             // Adding blank scenario
             ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
@@ -111,6 +118,7 @@ public class MainWindowUser extends MainWindow {
         HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
+        
 
         completedRunsPeriodATM = new ArrayList();
         completedRunsATDMScen = new ArrayList();

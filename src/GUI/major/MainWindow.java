@@ -1320,7 +1320,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         ConfigIO.saveSeedListToConfig(seedList);
-
+        
+        mainWindowStart.setUserLevelParameterSet(userParams);
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 

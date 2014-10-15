@@ -5,6 +5,8 @@
  */
 package DSS.DataStruct;
 
+import java.util.Arrays;
+
 /**
  *
  * @author jltrask
@@ -64,6 +66,37 @@ public class UserLevelParameterSet {
             case (ID_HSR_TYPE_VPH):
                 return atm.hsrCapacity;
         }
+    }
+    
+    public void useDefaults() {
+        atm = new ATMParameterSet();
+        atm.useDefaults();
+        
+        Arrays.fill(IncidentCAFs_GP,1.0f);
+        Arrays.fill(IncidentDAFs_GP,1.0f);
+        Arrays.fill(IncidentSAFs_GP,1.0f);
+        
+        Arrays.fill(IncidentCAFs_ML,1.0f);
+        Arrays.fill(IncidentDAFs_ML,1.0f);
+        Arrays.fill(IncidentSAFs_ML,1.0f);
+        
+        Arrays.fill(WorkZoneCAFs_GP,1.0f);
+        Arrays.fill(WorkZoneDAFs_GP,1.0f);
+        Arrays.fill(WorkZoneSAFs_GP,1.0f);
+        
+        Arrays.fill(WorkZoneCAFs_ML,1.0f);
+        Arrays.fill(WorkZoneDAFs_ML,1.0f);
+        Arrays.fill(WorkZoneSAFs_ML,1.0f);
+        
+        Arrays.fill(WeatherCAFs_GP,1.0f);
+        Arrays.fill(WeatherDAFs_GP,1.0f);
+        Arrays.fill(WeatherSAFs_GP,1.0f);
+        
+        Arrays.fill(WeatherCAFs_ML,1.0f);
+        Arrays.fill(WeatherDAFs_ML,1.0f);
+        Arrays.fill(WeatherSAFs_ML,1.0f);
+        
+        
     }
     
 }
