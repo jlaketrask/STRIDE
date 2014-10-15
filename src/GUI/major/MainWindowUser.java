@@ -101,10 +101,13 @@ public class MainWindowUser extends MainWindow {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
         atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM);
-        // Adding blank scenario
-        ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
-        scenarioInfos.add(new ScenarioInfo());
-        activeSeed.setRLScenarios(new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null, scenarioInfos);
+        if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
+            // Adding blank scenario
+            ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
+            scenarioInfos.add(new ScenarioInfo());
+            activeSeed.setRLScenarios(new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null, scenarioInfos);
+        } 
+        
         HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
@@ -131,8 +134,9 @@ public class MainWindowUser extends MainWindow {
         inOutCB.setEnabled(false);
 
         numPeriodChanged = true;
+        selectSeedScen(activeSeed, 1);
         selectPeriod(0);
-        activeScen = 1;
+        //activeScen = 1;
         activeATDM = 0;
 
     }
@@ -1035,6 +1039,9 @@ public class MainWindowUser extends MainWindow {
             if (activePeriod != dssProgress) {
                 proceedOnlyButton.setText("Review Next Period");
                 takeActionButton.setText("Return to Active Period");
+            } else {
+                proceedOnlyButton.setText("Proceed With No Action");
+                takeActionButton.setText("Take Action and Proceed");
             }
         } else if (activePeriod == activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD) - 1 && activePeriod == dssProgress) {
             reviewPreviousPeriodButton.setEnabled(true);
@@ -1078,8 +1085,8 @@ public class MainWindowUser extends MainWindow {
     }
 
     private void resetATM() {
-        activePeriod = 0;
-        dssProgress = 0;
+        //activePeriod = 0;
+        //dssProgress = 0;
         
         // Save periodATM and activeATDM
         completedRunsPeriodATM.add(periodATM.clone());
@@ -1090,9 +1097,13 @@ public class MainWindowUser extends MainWindow {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
         activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
-        
+        HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
+        atmHolder.put(1, activeATM);
+        activeSeed.addATDMSet(atmHolder);
+        activeATDM++;
         // Reset window
         dssProgress = 0;
+        //selectScenSeed
         selectPeriod(0);
     }
 
