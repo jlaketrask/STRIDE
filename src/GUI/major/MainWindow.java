@@ -1,6 +1,8 @@
 package GUI.major;
 
+import DSS.DataStruct.ATMParameterSet;
 import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.UserLevelParameterSet;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -62,6 +64,8 @@ public class MainWindow extends javax.swing.JFrame {
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
     private Scenario scenario;
+    
+    private UserLevelParameterSet userParams;
 
     /**
      * Version of the FREEVAL
@@ -117,6 +121,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
+        
+        userParams = new UserLevelParameterSet();
 
     }
 
@@ -1022,7 +1028,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         
-    //<editor-fold defaultstate="collapsed" desc="Deprecated code">
+        //<editor-fold defaultstate="collapsed" desc="Deprecated code">
 //        scenario.CAF().multiply(scenEvent.caf,
 //                0, scenEvent.startSegment, scenEvent.startPeriod,
 //                0, scenEvent.endSegment, scenEvent.endPeriod);
@@ -1048,6 +1054,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         numPeriodChanged = true;
         selectPeriod(activePeriod);
+    }
+    
+    public void setATMParameters(ATMParameterSet atmParameterSet) {
+        userParams.atm = atmParameterSet;
     }
 
     /**

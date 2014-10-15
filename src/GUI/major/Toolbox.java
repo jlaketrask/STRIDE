@@ -1,5 +1,6 @@
 package GUI.major;
 
+import GUI.major.ATMParamHelper.ATMParameterDialog;
 import GUI.major.eventHelper.IncidentEventDialog;
 import GUI.major.eventHelper.WeatherEventDialog;
 import GUI.major.eventHelper.WorkZoneDialog;
@@ -61,6 +62,8 @@ public class Toolbox extends javax.swing.JPanel {
         weatherEventButton = new javax.swing.JButton();
         incidentEventButton = new javax.swing.JButton();
         workZoneEventButton = new javax.swing.JButton();
+        cfgATMPanel = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
 
         newButton.setText("New");
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -261,6 +264,17 @@ public class Toolbox extends javax.swing.JPanel {
         });
         egPanel.add(workZoneEventButton);
 
+        cfgATMPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Configure User Level Defaults"));
+        cfgATMPanel.setLayout(new java.awt.GridLayout());
+
+        jButton1.setText("ATM Parameters");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        cfgATMPanel.add(jButton1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -271,13 +285,16 @@ public class Toolbox extends javax.swing.JPanel {
                 .addComponent(mlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(egPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cfgATMPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(77, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(cfgPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(mlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(egPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cfgATMPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -399,6 +416,17 @@ public class Toolbox extends javax.swing.JPanel {
         }
         wzDialog.dispose();
     }//GEN-LAST:event_workZoneEventButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ATMParameterDialog atmParamDialog = new ATMParameterDialog(null, true);
+        atmParamDialog.setSeed(mainWindow.getActiveSeed());
+        atmParamDialog.setLocationRelativeTo(null);
+        atmParamDialog.setVisible(true);
+        if (atmParamDialog.getReturnStatus()) {
+            mainWindow.setATMParameters(atmParamDialog.getATMParameterSet());
+        }
+        atmParamDialog.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 //    /**
 //     * Show a particular analysis period data
@@ -585,6 +613,7 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JButton atdmBatchRunButton;
     private javax.swing.JButton batchRunButton;
     private javax.swing.JPanel caPanel;
+    private javax.swing.JPanel cfgATMPanel;
     private javax.swing.JPanel cfgPanel;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton copyButton;
@@ -593,6 +622,7 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JButton firstButton;
     private javax.swing.JButton globalButton;
     private javax.swing.JButton incidentEventButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JTextField jumpText;
     private javax.swing.JButton jumpToButton;
     private javax.swing.JButton lastButton;
