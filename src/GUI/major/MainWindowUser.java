@@ -51,7 +51,7 @@ public class MainWindowUser extends MainWindow {
     private boolean isShowingInput = true;
     private boolean numPeriodChanged = false;
     private boolean isOutputEnabled = true;
-    public static final Font DEFAULT_TABLE_FONT = new Font("Arial", Font.PLAIN, 17);
+    //public static final Font DEFAULT_TABLE_FONT = new Font("Arial", Font.PLAIN, 17);
     private static Font tableFont = DEFAULT_TABLE_FONT;
 
     private static final DefaultComboBoxModel GPML_MODEL = new DefaultComboBoxModel(new String[]{"GP Only", "ML Only", "GP & ML"});
@@ -59,9 +59,11 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
-    private final ATDMScenario activeATM;
+    private ATDMScenario activeATM;
     private final ATMUpdater atmUpdater;
     private final PeriodATM[] periodATM;
+    private final ArrayList<PeriodATM[]> completedRunsPeriodATM;
+    private final ArrayList<ATDMScenario> completedRunsATDMScen;
 
     //private final TableDisplay tableDisplay;
     private final TableDisplaySegmentATM tableDisplaySegmentATM;
@@ -107,6 +109,9 @@ public class MainWindowUser extends MainWindow {
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
 
+        completedRunsPeriodATM = new ArrayList();
+        completedRunsATDMScen = new ArrayList();
+        
         // Preparing Window Components
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
@@ -1075,9 +1080,20 @@ public class MainWindowUser extends MainWindow {
     private void resetATM() {
         activePeriod = 0;
         dssProgress = 0;
-        // Save activeScen, periodATM, and activeATDM to seed
+        
+        // Save periodATM and activeATDM
+        completedRunsPeriodATM.add(periodATM.clone());
+        completedRunsATDMScen.add(activeATM);
+        
         // Create new of each
+        for (int per = 0; per < periodATM.length; per++) {
+            periodATM[per] = new PeriodATM(activeSeed, per);
+        }
+        activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
+        
         // Reset window
+        dssProgress = 0;
+        selectPeriod(0);
     }
 
 //    public void showATDMSummary() {

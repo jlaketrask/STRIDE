@@ -8,7 +8,6 @@ package GUI.major.eventHelper;
 import DSS.DataStruct.ScenarioEvent;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
-import javax.swing.DefaultComboBoxModel;
 
 /**
  *
@@ -37,8 +36,8 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     }
 
     private void resetPanel() {
-        startPeriodCB.setModel(periodCBModelCreator(0));
-        endPeriodCB.setModel(periodCBModelCreator(1));
+        startPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 0));
+        endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1));
     }
 
     public ScenarioEvent getWeatherEvent() {
@@ -53,82 +52,6 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         wEvent.laf = 0;
         return wEvent;
 
-    }
-
-    /**
-     * Creates the model for the period selection combo box. The type designates
-     * whether it is for start period (0) selection or end period selection (1).
-     * End period selection indicates that the periods go through the end
-     * period, and the clock time displayed is the time at the end of the period
-     * (as opposed to clock time at the beginning of the period for start
-     * times).
-     *
-     * @param type
-     * @return
-     */
-    private DefaultComboBoxModel periodCBModelCreator(int type) {
-        String[] tempArr = new String[seed.getValueInt(CEConst.IDS_NUM_PERIOD)];
-        //tempArr[0] = "<Select Period>";
-        int currHour = seed.getStartTime().hour;
-        int currMin = seed.getStartTime().minute;
-        if (type == 1) {
-            currMin += 15;
-        }
-        for (int perIdx = 1; perIdx <= tempArr.length - 1; perIdx++) {
-            if (currMin == 60) {
-                currMin = 0;
-                currHour++;
-            }
-            if (currMin == 0) {
-                tempArr[perIdx - 1] = String.valueOf(perIdx) + "  (" + currHour + ":00)";
-            } else {
-                tempArr[perIdx - 1] = String.valueOf(perIdx) + "  (" + currHour + ":" + currMin + ")";
-            }
-            currMin += 15;
-        }
-
-        return new DefaultComboBoxModel(tempArr);
-    }
-
-    /**
-     * Creates the model for the period selection combo box. The type designates
-     * whether it is for start period (0) selection or end period selection (1).
-     * End period selection indicates that the periods go through the end
-     * period, and the clock time displayed is the time at the end of the period
-     * (as opposed to clock time at the beginning of the period for start
-     * times).
-     *
-     * @param type
-     * @param startPeriod
-     * @return
-     */
-    private DefaultComboBoxModel periodCBModelCreator(int type, int startPeriod) {
-        String[] tempArr = new String[seed.getValueInt(CEConst.IDS_NUM_PERIOD) - (startPeriod - 1)];
-        //tempArr[0] = "<Select Period>";
-        int currHour = seed.getStartTime().hour;
-        int currMin = seed.getStartTime().minute;
-        if (type == 1) {
-            currMin += 15;
-        }
-        int currIdx = 0;
-        for (int perIdx = 1; perIdx <= tempArr.length - 1; perIdx++) {
-            if (currMin == 60) {
-                currMin = 0;
-                currHour++;
-            }
-            if (perIdx >= startPeriod) {
-                if (currMin == 0) {
-                    tempArr[currIdx] = String.valueOf(perIdx) + "  (" + currHour + ":00)";
-                } else {
-                    tempArr[currIdx] = String.valueOf(perIdx) + "  (" + currHour + ":" + currMin + ")";
-                }
-                currIdx++;
-            }
-            currMin += 15;
-
-        }
-
-        return new DefaultComboBoxModel(tempArr);
     }
 
     public boolean getReturnStatus() {
@@ -278,7 +201,7 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private void startPeriodCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_startPeriodCBItemStateChanged
         int endCBidx = endPeriodCB.getSelectedIndex();
         int startCBidx = startPeriodCB.getSelectedIndex();
-        endPeriodCB.setModel(periodCBModelCreator(1, startPeriodCB.getSelectedIndex() + 1));
+        endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1, startPeriodCB.getSelectedIndex() + 1));
         if (endCBidx >= startCBidx) {
             endPeriodCB.setSelectedIndex(endCBidx - startCBidx);
         } else {
