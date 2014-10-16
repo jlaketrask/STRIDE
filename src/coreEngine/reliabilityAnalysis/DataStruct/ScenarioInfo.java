@@ -891,7 +891,7 @@ public class ScenarioInfo implements Serializable {
                 // Get list of upstream mainline and onramp segments
                 ArrayList<Integer> divSegments = new ArrayList<>();
                 divSegments.add(0);
-                System.out.println(seg);
+                //System.out.println(seg);
                 for (int segIdx = 1; segIdx < seg; segIdx++) {
                     if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_ONR) {
                         divSegments.add(segIdx);
@@ -1230,17 +1230,18 @@ public class ScenarioInfo implements Serializable {
         
         if (atdmPlan.hasShoulderOpening()) {
             CM2DInt hsrMat = atdmPlan.getHSRMatrix();
+            int numLanesSegment;
             for (int segment = 0; segment < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
-                int numLanesSegment = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, segment);
                 //System.out.println(numLanesSegment);
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     if (hsrMat.get(segment, period) == 1) {
+                        numLanesSegment = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, segment, period);
                         tempATDMScenario.LAF().add(1, segment, period); // Adding lane
                         
                         // Calculating new segment CAF using shoulder CAF
                         float rlCAF = seed.getRLCAF(group + 1, segment, period, CEConst.SEG_TYPE_GP); //To Lake: Maybe need to switch between GP and ML
                         //System.out.println(rlCAF);
-                        float newCAF = ((numLanesSegment * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF()) / (numLanesSegment + 1);
+                        float newCAF = ((numLanesSegment * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF(numLanesSegment)) / (numLanesSegment + 1);
                         //System.out.println(newCAF);
                         tempATDMScenario.CAF().set((newCAF / rlCAF), segment, period);
                     }
@@ -1764,17 +1765,18 @@ public class ScenarioInfo implements Serializable {
         
         if (atdmPlan.hasShoulderOpening()) {
             CM2DInt hsrMat = atdmPlan.getHSRMatrix();
+            int numLanesSegment;
             for (int segment = 0; segment < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
-                int numLanesSegment = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, segment);
                 //System.out.println(numLanesSegment);
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     if (hsrMat.get(segment, period) == 1) {
+                        numLanesSegment = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, segment);
                         tempATDMScenario.LAF().add(1, segment, period); // Adding lane
                         
                         // Calculating new segment CAF using shoulder CAF
                         float rlCAF = seed.getRLCAF(group + 1, segment, period, CEConst.SEG_TYPE_GP); //To Lake: Maybe need to switch between GP and ML
                         //System.out.println(rlCAF);
-                        float newCAF = ((numLanesSegment * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF()) / (numLanesSegment + 1);
+                        float newCAF = ((numLanesSegment * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF(numLanesSegment)) / (numLanesSegment + 1);
                         //System.out.println(newCAF);
                         tempATDMScenario.CAF().set((newCAF / rlCAF), segment, period);
                     }

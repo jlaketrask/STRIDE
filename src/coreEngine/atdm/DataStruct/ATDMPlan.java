@@ -307,10 +307,23 @@ public class ATDMPlan implements Serializable, Cloneable {
      *
      * @return
      */
-    public float getHSRCAF() {
+    public float[] getHSRCAF() {
         for (ATDMStrategy strategy : strategies.keySet()) {
             if (CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING.equalsIgnoreCase(strategies.get(strategy))) {
                 return ((ATDMStrategyMat) strategy).getShoulderCapacity();
+            }
+        }
+        throw new RuntimeException("Error: No HSR Strategy assigned to plan");
+    }
+    
+    /**
+     *@param numLanes
+     * @return
+     */
+    public float getHSRCAF(int numLanes) {
+        for (ATDMStrategy strategy : strategies.keySet()) {
+            if (CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING.equalsIgnoreCase(strategies.get(strategy))) {
+                return ((ATDMStrategyMat) strategy).getShoulderCapacity(numLanes);
             }
         }
         throw new RuntimeException("Error: No HSR Strategy assigned to plan");

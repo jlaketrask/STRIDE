@@ -37,7 +37,7 @@ public class ATDMStrategyMat extends ATDMStrategy {
     /**
      *
      */
-    private float shoulderCapacity = 1.0f;
+    private float shoulderCapacity[];
 
     /**
      *
@@ -52,16 +52,19 @@ public class ATDMStrategyMat extends ATDMStrategy {
         this.strategyType = strategyType;
         this.numSeg = numSegments;
         this.numPeriods = numPeriods;
+        this.shoulderCapacity = new float[5];
         switch (this.strategyType) {
             case CEConst.IDS_ATDM_STRAT_TYPE_RAMP_METERING:
                 this.strategyMatrix = new CM2DInt(numSeg, this.numPeriods, 2100);
                 break;
             case CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING:
                 this.strategyMatrix = new CM2DInt(numSeg, this.numPeriods, 0);
+                fillShoulderDefaults();
                 break;
             default:
                 throw new RuntimeException("Invalid Strategy Type");
         }
+        
     }
 
     /**
@@ -82,18 +85,45 @@ public class ATDMStrategyMat extends ATDMStrategy {
 
     /**
      *
+     * @param numLanes
      * @return
      */
-    public float getShoulderCapacity() {
-        return shoulderCapacity;
+    public float getShoulderCapacity(int numLanes) {
+        return shoulderCapacity[numLanes];
     }
 
     /**
+     * 
+     * @return 
+     */
+    public float[] getShoulderCapacity() {
+        return shoulderCapacity;
+    }
+    
+    /**
      *
      * @param newValue
+     * @param numLanes
      */
-    public void setShoulderCapacity(float newValue) {
-        shoulderCapacity = newValue;
+    public void setShoulderCapacity(float newValue, int numLanes) {
+        shoulderCapacity[numLanes] = newValue;
+    }
+    
+    /**
+     *
+     * @param newValues
+     */
+    public void setShoulderCapacity(float[] newValues) {
+        shoulderCapacity = newValues;
+    }
+    
+    private void fillShoulderDefaults() {
+        shoulderCapacity[0] = 0.7f;
+        shoulderCapacity[1] = 0.75f;
+        shoulderCapacity[2] = 0.8f;
+        shoulderCapacity[3] = 0.85f;
+        shoulderCapacity[4] = 0.9f;
+        
     }
 
 }
