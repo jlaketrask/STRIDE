@@ -40,7 +40,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * This class is the main window of FREEVAL. All seeds are contained in this
  * class. All central control functions are in this class.
  *
- * @author Shu Liu
+ * @author Lake Trask
  */
 public class MainWindow extends javax.swing.JFrame {
 
@@ -122,7 +122,7 @@ public class MainWindow extends javax.swing.JFrame {
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
         
-        userParams = new UserLevelParameterSet();
+        userParams = new UserLevelParameterSet(activeSeed);
 
     }
 
@@ -1058,6 +1058,10 @@ public class MainWindow extends javax.swing.JFrame {
     
     public void setATMParameters(ATMParameterSet atmParameterSet) {
         userParams.atm = atmParameterSet;
+    }
+    
+    public UserLevelParameterSet getUserLevelParameters() {
+        return userParams;
     }
 
     /**

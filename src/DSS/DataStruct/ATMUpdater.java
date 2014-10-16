@@ -38,7 +38,7 @@ public class ATMUpdater {
             this.userParams = userParams;
         } else {
             this.userParams = new UserLevelParameterSet();
-            this.userParams.useDefaults();
+            //this.userParams.useDefaults();
         }
     }
 

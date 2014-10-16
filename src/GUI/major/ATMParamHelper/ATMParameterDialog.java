@@ -6,7 +6,6 @@
 package GUI.major.ATMParamHelper;
 
 import DSS.DataStruct.ATMParameterSet;
-import coreEngine.Seed;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -17,7 +16,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
     private int laneMaxCapacity;
     
-    private Seed seed;
+    private ATMParameterSet atmParams;
     
     private boolean returnStatus = false;
     
@@ -106,18 +105,28 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         updateHSRSpinnersVPH();
     }
 
-    public void setSeed(Seed seed) {
-        this.seed = seed;
+    public void setATMParameters(ATMParameterSet atmParams) {
+        setHardShoulderCAFs(atmParams.hsrCapacity);
+        this.atmParams = atmParams;
     }
     
-    public ATMParameterSet getATMParameterSet() {
-        ATMParameterSet atmParams = new ATMParameterSet();
-        atmParams.hsrCapacity[0] = (int) hsr1LPct.getValue()/100.0f;
-        atmParams.hsrCapacity[1] = (int) hsr2LPct.getValue()/100.0f;
-        atmParams.hsrCapacity[2] = (int) hsr3LPct.getValue()/100.0f;
-        atmParams.hsrCapacity[3] = (int) hsr4LPct.getValue()/100.0f;
-        atmParams.hsrCapacity[4] = (int) hsr5LPct.getValue()/100.0f;
-        return atmParams;
+    private void setHardShoulderCAFs(float[] hsrCAFs) {
+        hsr1LPct.setValue(Math.round(hsrCAFs[0]*100.0f));
+        hsr2LPct.setValue(Math.round(hsrCAFs[1]*100.0f));
+        hsr3LPct.setValue(Math.round(hsrCAFs[2]*100.0f));
+        hsr4LPct.setValue(Math.round(hsrCAFs[3]*100.0f));
+        hsr5LPct.setValue(Math.round(hsrCAFs[4]*100.0f));
+    }
+    
+    public float[] getHardShoulderCAFs() {
+        float[] hsrCAFs = new float[5];
+        hsrCAFs[0] = ((int) hsr1LPct.getValue())/100.0f;
+        hsrCAFs[1] = ((int) hsr2LPct.getValue())/100.0f;
+        hsrCAFs[2] = ((int) hsr3LPct.getValue())/100.0f;
+        hsrCAFs[3] = ((int) hsr4LPct.getValue())/100.0f;
+        hsrCAFs[4] = ((int) hsr5LPct.getValue())/100.0f;
+        
+        return hsrCAFs;
     }
     
     public boolean getReturnStatus() {
@@ -384,6 +393,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         this.returnStatus = true;
+        this.atmParams.hsrCapacity = this.getHardShoulderCAFs();
         doClose();
     }//GEN-LAST:event_okButtonActionPerformed
 

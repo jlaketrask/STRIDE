@@ -17,6 +17,7 @@ public class ATMParameterSet {
     
     public ATMParameterSet() {
         hsrCapacity = new float[5];
+        useDefaults();
     }
     
     public Object getHSRCapacity(String type) {

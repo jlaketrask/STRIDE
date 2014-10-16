@@ -63,7 +63,7 @@ public class Toolbox extends javax.swing.JPanel {
         incidentEventButton = new javax.swing.JButton();
         workZoneEventButton = new javax.swing.JButton();
         cfgATMPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        atmParametersButton = new javax.swing.JButton();
 
         newButton.setText("New");
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -265,15 +265,15 @@ public class Toolbox extends javax.swing.JPanel {
         egPanel.add(workZoneEventButton);
 
         cfgATMPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Configure User Level Defaults"));
-        cfgATMPanel.setLayout(new java.awt.GridLayout());
+        cfgATMPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        jButton1.setText("ATM Parameters");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        atmParametersButton.setText("ATM Parameters");
+        atmParametersButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                atmParametersButtonActionPerformed(evt);
             }
         });
-        cfgATMPanel.add(jButton1);
+        cfgATMPanel.add(atmParametersButton);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -417,16 +417,13 @@ public class Toolbox extends javax.swing.JPanel {
         wzDialog.dispose();
     }//GEN-LAST:event_workZoneEventButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void atmParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atmParametersButtonActionPerformed
         ATMParameterDialog atmParamDialog = new ATMParameterDialog(null, true);
-        atmParamDialog.setSeed(mainWindow.getActiveSeed());
+        atmParamDialog.setATMParameters(mainWindow.getUserLevelParameters().atm);
         atmParamDialog.setLocationRelativeTo(null);
         atmParamDialog.setVisible(true);
-        if (atmParamDialog.getReturnStatus()) {
-            mainWindow.setATMParameters(atmParamDialog.getATMParameterSet());
-        }
         atmParamDialog.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_atmParametersButtonActionPerformed
 
 //    /**
 //     * Show a particular analysis period data
@@ -526,6 +523,9 @@ public class Toolbox extends javax.swing.JPanel {
         weatherEventButton.setEnabled(false);
         incidentEventButton.setEnabled(false);
         workZoneEventButton.setEnabled(false);
+        
+        cfgATMPanel.setEnabled(false);
+        atmParametersButton.setEnabled(false);
     }
 
     /**
@@ -579,6 +579,9 @@ public class Toolbox extends javax.swing.JPanel {
         weatherEventButton.setEnabled(true);
         incidentEventButton.setEnabled(true);
         workZoneEventButton.setEnabled(true);
+        
+        cfgATMPanel.setEnabled(true);
+        atmParametersButton.setEnabled(true);
     }
 
     public void enableML() {
@@ -611,6 +614,7 @@ public class Toolbox extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel APPanel;
     private javax.swing.JButton atdmBatchRunButton;
+    private javax.swing.JButton atmParametersButton;
     private javax.swing.JButton batchRunButton;
     private javax.swing.JPanel caPanel;
     private javax.swing.JPanel cfgATMPanel;
@@ -622,7 +626,6 @@ public class Toolbox extends javax.swing.JPanel {
     private javax.swing.JButton firstButton;
     private javax.swing.JButton globalButton;
     private javax.swing.JButton incidentEventButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JTextField jumpText;
     private javax.swing.JButton jumpToButton;
     private javax.swing.JButton lastButton;
