@@ -15,18 +15,24 @@ public class ScenarioEvent {
     public float daf = 1.0f;
     public float saf = 1.0f;
     public int laf = 0;
+
     public int startPeriod = 0;
     public int endPeriod = 0;
     public int startSegment;
     public int endSegment;
 
-    public final String type;
+    public int severity;
+    public final String eventType;
 
     public final static String WEATHER_EVENT = "WEATHER_EVENT";
     public final static String INCIDENT_EVENT = "INCIDENT_EVENT";
     public final static String WORK_ZONE_EVENT = "WORK_ZONE_EVENT";
 
-    public ScenarioEvent(String type) {
-        this.type = type;
+    public ScenarioEvent(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public int getDuration() {
+        return startPeriod - endPeriod + 1;
     }
 }

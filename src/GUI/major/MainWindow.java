@@ -13,9 +13,11 @@ import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
 import coreEngine.Helper.ASCIISeedFileAdapter;
 import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CEDate;
 import coreEngine.Seed;
 import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
 import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
+import coreEngine.reliabilityAnalysis.DataStruct.WorkZoneData;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -980,7 +982,13 @@ public class MainWindow extends javax.swing.JFrame {
             initScenario();
         }
         selectSeedScen(activeSeed, 1);
-        addScenarioEvent(weatherEvent, ScenarioEvent.WEATHER_EVENT);
+        ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
+        if (!currScenario.checkWeatherOverlap(weatherEvent.startPeriod, weatherEvent.getDuration())) {
+            currScenario.addWeatherEvent(weatherEvent.severity, weatherEvent.startPeriod, weatherEvent.getDuration());
+            addScenarioEvent(weatherEvent, ScenarioEvent.WEATHER_EVENT);
+        } else {
+            JOptionPane.showMessageDialog(this, "Weather Event conflicts with existing weather event and could not be added.", "Error: Weather Event Overlap", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void addIncidentEvent(ScenarioEvent incidentEvent) {
@@ -988,7 +996,13 @@ public class MainWindow extends javax.swing.JFrame {
             initScenario();
         }
         selectSeedScen(activeSeed, 1);
-        addScenarioEvent(incidentEvent, ScenarioEvent.INCIDENT_EVENT);
+        ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
+        if (!currScenario.checkGPIncidentOverlap(incidentEvent.startPeriod, incidentEvent.getDuration(), incidentEvent.startSegment)) {
+            currScenario.addIncidentGP(incidentEvent.severity, incidentEvent.startPeriod, incidentEvent.getDuration(), incidentEvent.startSegment);
+            addScenarioEvent(incidentEvent, ScenarioEvent.INCIDENT_EVENT);
+        } else {
+            JOptionPane.showMessageDialog(this, "Incident Event conflicts with existing incident event and could not be added.", "Error: Incident Event Overlap", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void addWorkZone(ScenarioEvent workZone) {
@@ -996,7 +1010,18 @@ public class MainWindow extends javax.swing.JFrame {
             initScenario();
         }
         selectSeedScen(activeSeed, 1);
-        addScenarioEvent(workZone, ScenarioEvent.WORK_ZONE_EVENT);
+        WorkZoneData candWorkZone = new WorkZoneData(new CEDate[]{new CEDate(), new CEDate()},
+                new int[]{workZone.startSegment + 1, workZone.endSegment + 1},
+                new int[]{workZone.startPeriod + 1, workZone.endPeriod + 1},
+                workZone.severity
+        );
+        ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
+        if (!currScenario.checkWorkZoneOverlap(candWorkZone)) {
+            currScenario.addWorkZone(candWorkZone);
+            addScenarioEvent(workZone, ScenarioEvent.WORK_ZONE_EVENT);
+        } else {
+            JOptionPane.showMessageDialog(this, "Work zone conflicts with existing work zone and could not be added.", "Error: Work Zone Overlap", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void addScenarioEvent(ScenarioEvent scenEvent, String type) {

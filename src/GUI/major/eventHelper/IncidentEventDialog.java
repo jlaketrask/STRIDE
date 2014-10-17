@@ -20,13 +20,14 @@ public class IncidentEventDialog extends javax.swing.JDialog {
     private Seed seed;
 
     private UserLevelParameterSet userParams;
-    
+
     private boolean status;
 
     /**
      * Creates new form incidentEventDialog
+     *
      * @param parent
-     * @param modal 
+     * @param modal
      */
     public IncidentEventDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -36,9 +37,9 @@ public class IncidentEventDialog extends javax.swing.JDialog {
     public void setSeed(Seed seed) {
         this.seed = seed;
         resetPanel();
-          
+
     }
-    
+
     public void setUserParams(UserLevelParameterSet userParams) {
         this.userParams = userParams;
     }
@@ -48,21 +49,22 @@ public class IncidentEventDialog extends javax.swing.JDialog {
         endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1));
 
         segmentCB.setModel(ModelCreator.segmentCBModelCreator(seed));
-        
+
         endPeriodCB.setEnabled(false);
         startPeriodCB.setEnabled(false);
         segmentCB.setEnabled(false);
-        
+
         cafTextField.setEnabled(false);
         dafTextField.setEnabled(false);
         safTextField.setEnabled(false);
-        
+
         okButton.setEnabled(false);
-        
+
     }
 
     public ScenarioEvent getIncidentEvent() {
         ScenarioEvent incEvent = new ScenarioEvent(ScenarioEvent.INCIDENT_EVENT);
+        incEvent.severity = severityCB.getSelectedIndex() - 1;
         incEvent.startSegment = segmentCB.getSelectedIndex();
         incEvent.endSegment = segmentCB.getSelectedIndex();
         incEvent.startPeriod = startPeriodCB.getSelectedIndex();
@@ -278,27 +280,27 @@ public class IncidentEventDialog extends javax.swing.JDialog {
             endPeriodCB.setEnabled(true);
             startPeriodCB.setEnabled(true);
             segmentCB.setEnabled(true);
-            
-            int segmentLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN,segmentCB.getSelectedIndex());
-            int numLanes = Math.min(6, Math.max(0, segmentLanes-2));
-            
+
+            int segmentLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, segmentCB.getSelectedIndex());
+            int numLanes = Math.min(6, Math.max(0, segmentLanes - 2));
+
             cafTextField.setEnabled(true);
             cafTextField.setText(String.valueOf(userParams.IncidentCAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
             dafTextField.setEnabled(true);
             dafTextField.setText(String.valueOf(userParams.IncidentDAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
             safTextField.setEnabled(true);
             safTextField.setText(String.valueOf(userParams.IncidentSAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
-            
+
             okButton.setEnabled(true);
-            
+
         }
     }//GEN-LAST:event_severityCBItemStateChanged
 
     private void segmentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_segmentCBItemStateChanged
-        
-        int segmentLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN,segmentCB.getSelectedIndex());
-        int numLanes = Math.min(6, Math.max(0, segmentLanes-2));
-        
+
+        int segmentLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, segmentCB.getSelectedIndex());
+        int numLanes = Math.min(6, Math.max(0, segmentLanes - 2));
+
         cafTextField.setEnabled(true);
         cafTextField.setText(String.valueOf(userParams.IncidentCAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
         dafTextField.setEnabled(true);

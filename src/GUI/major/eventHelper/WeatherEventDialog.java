@@ -19,14 +19,14 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private Seed seed;
 
     private UserLevelParameterSet userParams;
-    
+
     private boolean status;
 
     /**
      * Creates new form weatherEventDialog
-     * 
+     *
      * @param parent
-     * @param modal 
+     * @param modal
      */
     public WeatherEventDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -37,7 +37,7 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         this.seed = seed;
         resetPanel();
     }
-    
+
     public void setUserParams(UserLevelParameterSet userParams) {
         this.userParams = userParams;
     }
@@ -45,20 +45,21 @@ public class WeatherEventDialog extends javax.swing.JDialog {
     private void resetPanel() {
         startPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 0));
         endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1));
-        
+
         endPeriodCB.setEnabled(false);
         startPeriodCB.setEnabled(false);
-        
+
         cafTextField.setEnabled(false);
         dafTextField.setEnabled(false);
         safTextField.setEnabled(false);
-        
+
         okButton.setEnabled(false);
-        
+
     }
 
     public ScenarioEvent getWeatherEvent() {
         ScenarioEvent wEvent = new ScenarioEvent(ScenarioEvent.WEATHER_EVENT);
+        wEvent.severity = severityCB.getSelectedIndex() - 1;
         wEvent.startSegment = 0;
         wEvent.endSegment = seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1;
         wEvent.startPeriod = startPeriodCB.getSelectedIndex();
@@ -252,7 +253,7 @@ public class WeatherEventDialog extends javax.swing.JDialog {
             dafTextField.setText(String.valueOf(userParams.WeatherDAFs_GP[severityCB.getSelectedIndex() - 1]));
             safTextField.setEnabled(true);
             safTextField.setText(String.valueOf(userParams.WeatherSAFs_GP[severityCB.getSelectedIndex() - 1]));
-            
+
             okButton.setEnabled(true);
         }
     }//GEN-LAST:event_severityCBItemStateChanged

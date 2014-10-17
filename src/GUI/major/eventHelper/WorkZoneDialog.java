@@ -6,6 +6,7 @@
 package GUI.major.eventHelper;
 
 import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.UserLevelParameterSet;
 import coreEngine.Seed;
 import javax.swing.JOptionPane;
 
@@ -17,13 +18,15 @@ public class WorkZoneDialog extends javax.swing.JDialog {
 
     private Seed seed;
 
+    private UserLevelParameterSet userParams;
+
     private boolean status;
 
     /**
      * Creates new form weatherEventDialog
-     * 
+     *
      * @param parent
-     * @param modal 
+     * @param modal
      */
     public WorkZoneDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -35,16 +38,32 @@ public class WorkZoneDialog extends javax.swing.JDialog {
         resetPanel();
     }
 
+    public void setUserParams(UserLevelParameterSet userParams) {
+        this.userParams = userParams;
+    }
+
     private void resetPanel() {
         startPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 0));
         endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1));
 
         startSegmentCB.setModel(ModelCreator.segmentCBModelCreator(seed));
         endSegmentCB.setModel(ModelCreator.segmentCBModelCreator(seed));
+
+        endPeriodCB.setEnabled(false);
+        startPeriodCB.setEnabled(false);
+        startSegmentCB.setEnabled(false);
+        endSegmentCB.setEnabled(false);
+
+        cafTextField.setEnabled(false);
+        dafTextField.setEnabled(false);
+        safTextField.setEnabled(false);
+
+        okButton.setEnabled(false);
     }
 
     public ScenarioEvent getWorkZoneEvent() {
         ScenarioEvent wzEvent = new ScenarioEvent(ScenarioEvent.WORK_ZONE_EVENT);
+        wzEvent.severity = severityCB.getSelectedIndex() - 1;
         wzEvent.startSegment = startSegmentCB.getSelectedIndex();
         wzEvent.endSegment = Integer.parseInt((String) endSegmentCB.getSelectedItem()) - 1;
         wzEvent.startPeriod = startPeriodCB.getSelectedIndex();
@@ -65,8 +84,6 @@ public class WorkZoneDialog extends javax.swing.JDialog {
         return wzEvent;
 
     }
-
-    
 
     public boolean getReturnStatus() {
         return status;
@@ -152,6 +169,11 @@ public class WorkZoneDialog extends javax.swing.JDialog {
         jPanel2.add(jLabel1);
 
         severityCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Type>", "Shoulder Closure", "1 Lane Closure", "2 Lane Closure", "3 Lane Closure", "4 Lane Closure" }));
+        severityCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                severityCBItemStateChanged(evt);
+            }
+        });
         jPanel2.add(severityCB);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -254,7 +276,7 @@ public class WorkZoneDialog extends javax.swing.JDialog {
     private void startSegmentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_startSegmentCBItemStateChanged
         int endSeg = Integer.parseInt(((String) endSegmentCB.getSelectedItem()));
         int startCBidx = startSegmentCB.getSelectedIndex();
-        endSegmentCB.setModel(ModelCreator.segmentCBModelCreator(seed, startCBidx+1));
+        endSegmentCB.setModel(ModelCreator.segmentCBModelCreator(seed, startCBidx + 1));
         if (endSeg >= (startCBidx + 1)) {
             //System.out.println((endCBidx - (startCBidx + 1)));
             endSegmentCB.setSelectedIndex(endSeg - (startCBidx + 1));
@@ -262,6 +284,38 @@ public class WorkZoneDialog extends javax.swing.JDialog {
             endSegmentCB.setSelectedIndex(0);
         }
     }//GEN-LAST:event_startSegmentCBItemStateChanged
+
+    private void severityCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_severityCBItemStateChanged
+        if (severityCB.getSelectedIndex() == 0) {
+            endPeriodCB.setEnabled(false);
+            startPeriodCB.setEnabled(false);
+            startSegmentCB.setEnabled(false);
+            endSegmentCB.setEnabled(false);
+
+            cafTextField.setEnabled(false);
+            dafTextField.setEnabled(false);
+            safTextField.setEnabled(false);
+
+            okButton.setEnabled(false);
+        } else {
+            endPeriodCB.setEnabled(true);
+            startPeriodCB.setEnabled(true);
+            startSegmentCB.setEnabled(true);
+            endSegmentCB.setEnabled(true);
+
+            //int segmentLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, startSegmentCB.getSelectedIndex());
+            //int numLanes = Math.min(6, Math.max(0, segmentLanes - 2));
+            cafTextField.setEnabled(true);
+            //cafTextField.setText(String.valueOf(userParams.IncidentCAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
+            dafTextField.setEnabled(true);
+            //dafTextField.setText(String.valueOf(userParams.IncidentDAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
+            safTextField.setEnabled(true);
+            //safTextField.setText(String.valueOf(userParams.IncidentSAFs_GP[severityCB.getSelectedIndex() - 1][numLanes]));
+
+            okButton.setEnabled(true);
+
+        }
+    }//GEN-LAST:event_severityCBItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField cafTextField;
