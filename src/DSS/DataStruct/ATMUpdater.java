@@ -74,7 +74,7 @@ public class ATMUpdater {
                     float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
                     float avgCAF = (seedCAF + rlCAF) / 2.0f;
-                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + userParams.atm.hsrCapacity[seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg,currPeriod)]) / (numLanesSegment + 1);
+                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + userParams.atm.hsrCapacity[Math.min(seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg, currPeriod) - 1, 4)]) / (numLanesSegment + 1);
                     atm.CAF().set((newCAF / avgCAF), seg, currPeriod + 1);
                 }
 

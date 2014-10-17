@@ -16,17 +16,19 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
      */
     public FacilityATMJPanel() {
         initComponents();
+        jTabbedPane1.setEnabledAt(1, false);
+        jTabbedPane1.setEnabledAt(2, false);
     }
-    
+
     public void setEditLock(boolean lock) {
         jComboBox1.setEnabled(!lock);
         updatePanelOnLock(lock);
     }
 
     public void updatePanelOnLock(boolean lock) {
-        
+
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,9 +47,9 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
 
-        jLabel1.setText("Incident Duration Reduction:");
+        jLabel1.setText("Incident Management Response");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 Min", "30 Min", "45 Min", "60 Min", "75 Min", "90 Min" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Light", "Medium", "Intense" }));
 
         javax.swing.GroupLayout incidentManagementPanelLayout = new javax.swing.GroupLayout(incidentManagementPanel);
         incidentManagementPanel.setLayout(incidentManagementPanelLayout);
@@ -72,6 +74,8 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
 
         jTabbedPane1.addTab("Incident Management", incidentManagementPanel);
 
+        jPanel2.setEnabled(false);
+
         jButton2.setText("Configure Sign Locations");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -92,6 +96,8 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
         );
 
         jTabbedPane1.addTab("Demand Diversion", jPanel2);
+
+        jPanel3.setEnabled(false);
 
         jButton3.setText("jButton3");
 
@@ -129,7 +135,6 @@ public class FacilityATMJPanel extends javax.swing.JPanel {
                 .addComponent(jTabbedPane1))
         );
     }// </editor-fold>//GEN-END:initComponents
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel incidentManagementPanel;
