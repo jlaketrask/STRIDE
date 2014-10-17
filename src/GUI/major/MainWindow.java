@@ -64,7 +64,7 @@ public class MainWindow extends javax.swing.JFrame {
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
     private Scenario scenario;
-    
+
     private UserLevelParameterSet userParams;
 
     /**
@@ -121,7 +121,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
-        
+
         userParams = new UserLevelParameterSet(activeSeed);
 
     }
@@ -275,6 +275,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) != 0) {
             selectSeedScen(activeSeed, 1);
         }
+        userParams.setSeed(activeSeed);
     }
 
     /**
@@ -999,35 +1000,35 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void addScenarioEvent(ScenarioEvent scenEvent, String type) {
-        
+
         for (int period = scenEvent.startPeriod; period <= scenEvent.endPeriod; period++) {
             for (int segment = scenEvent.startSegment; segment <= scenEvent.endSegment; segment++) {
-                
-                activeSeed.setValue(CEConst.IDS_RL_CAF_GP, 
-                        scenEvent.caf*activeSeed.getValueFloat(CEConst.IDS_RL_CAF_GP,segment,period,1,-1),
+
+                activeSeed.setValue(CEConst.IDS_RL_CAF_GP,
+                        scenEvent.caf * activeSeed.getValueFloat(CEConst.IDS_RL_CAF_GP, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_DAF_GP, 
-                        scenEvent.daf*activeSeed.getValueFloat(CEConst.IDS_RL_DAF_GP,segment,period,1,-1),
+                activeSeed.setValue(CEConst.IDS_RL_DAF_GP,
+                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_RL_DAF_GP, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_OAF_GP, 
-                        scenEvent.daf*activeSeed.getValueFloat(CEConst.IDS_RL_OAF_GP,segment,period,1,-1),
+                activeSeed.setValue(CEConst.IDS_RL_OAF_GP,
+                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_RL_OAF_GP, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_SAF_GP, 
-                        scenEvent.saf*activeSeed.getValueFloat(CEConst.IDS_RL_SAF_GP,segment,period,1,-1),
+                activeSeed.setValue(CEConst.IDS_RL_SAF_GP,
+                        scenEvent.saf * activeSeed.getValueFloat(CEConst.IDS_RL_SAF_GP, segment, period, 1, -1),
                         segment, period, 1, -1);
-                
+
                 if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_RL_LAFI_GP, 
-                            scenEvent.laf+activeSeed.getValueInt(CEConst.IDS_RL_LAFI_GP,segment,period,1,-1),
-                        segment, period, 1, -1);
+                    activeSeed.setValue(CEConst.IDS_RL_LAFI_GP,
+                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_RL_LAFI_GP, segment, period, 1, -1),
+                            segment, period, 1, -1);
                 } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_RL_LAFWZ_GP, 
-                            scenEvent.laf+activeSeed.getValueInt(CEConst.IDS_RL_LAFWZ_GP,segment,period,1,-1),
-                        segment, period, 1, -1);
-        }
+                    activeSeed.setValue(CEConst.IDS_RL_LAFWZ_GP,
+                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, segment, period, 1, -1),
+                            segment, period, 1, -1);
+                }
             }
         }
-        
+
         //<editor-fold defaultstate="collapsed" desc="Deprecated code">
 //        scenario.CAF().multiply(scenEvent.caf,
 //                0, scenEvent.startSegment, scenEvent.startPeriod,
@@ -1051,15 +1052,14 @@ public class MainWindow extends javax.swing.JFrame {
 //                    0, scenEvent.endSegment, scenEvent.endPeriod);
 //        }
 //</editor-fold>
-
         numPeriodChanged = true;
         selectPeriod(activePeriod);
     }
-    
+
     public void setATMParameters(ATMParameterSet atmParameterSet) {
         userParams.atm = atmParameterSet;
     }
-    
+
     public UserLevelParameterSet getUserLevelParameters() {
         return userParams;
     }
@@ -1324,7 +1324,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         ConfigIO.saveSeedListToConfig(seedList);
-        
+
         mainWindowStart.setUserLevelParameterSet(userParams);
         mainWindowStart.setVisible(true);
     }//GEN-LAST:event_formWindowClosing

@@ -13,64 +13,68 @@ import java.util.Arrays;
  * @author jltrask
  */
 public class UserLevelParameterSet {
+
     public ATMParameterSet atm;
-    
+
     //<editor-fold defaultstate="collapsed" desc="Scenario Event Paremters">
     //<editor-fold defaultstate="collapsed" desc="Incident Parameters">
     // GP
     public float[][] IncidentCAFs_GP;
     public float[][] IncidentDAFs_GP;
     public float[][] IncidentSAFs_GP;
-    
+
     // ML
     public float[][] IncidentCAFs_ML;
     public float[][] IncidentDAFs_ML;
     public float[][] IncidentSAFs_ML;
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Work Zone Parameters">
     // GP
     public float[][] WorkZoneCAFs_GP;
     public float[][] WorkZoneDAFs_GP;
     public float[][] WorkZoneSAFs_GP;
-    
+
     // ML
     //public float[][] WorkZoneCAFs_ML;
     //public float[][] WorkZoneDAFs_ML;
     //public float[][] WorkZoneSAFs_ML;
     //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Weather Parameters">
     // GP
     public float[] WeatherCAFs_GP;
     public float[] WeatherDAFs_GP;
     public float[] WeatherSAFs_GP;
-    
+
     // ML
     //public float[] WeatherCAFs_ML;
     //public float[] WeatherDAFs_ML;
     //public float[] WeatherSAFs_ML;
     //</editor-fold>
     //</editor-fold>
-    
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
-    
+
     public UserLevelParameterSet() {
         initArrays();
         useDefaults();
         atm = new ATMParameterSet();
         atm.useDefaults();
     }
-    
+
     public UserLevelParameterSet(Seed seed) {
         //initArrays();
-        setArraysBySeed(seed);
+        if (seed != null) {
+            setArraysBySeed(seed);
+        } else {
+            initArrays();
+            useDefaults();
+        }
         atm = new ATMParameterSet();
         atm.useDefaults();
-        
-    } 
-    
+
+    }
+
     public Object getHSRCapacity(String type) {
         switch (type) {
             default:
@@ -78,9 +82,13 @@ public class UserLevelParameterSet {
                 return atm.hsrCapacity;
         }
     }
-    
+
+    public void setSeed(Seed seed) {
+        setArraysBySeed(seed);
+    }
+
     private void initArrays() {
-        
+
         IncidentCAFs_GP = new float[5][7];
         IncidentDAFs_GP = new float[5][7];
         IncidentSAFs_GP = new float[5][7];
@@ -88,7 +96,7 @@ public class UserLevelParameterSet {
         IncidentCAFs_ML = new float[5][7];
         IncidentDAFs_ML = new float[5][7];
         IncidentSAFs_ML = new float[5][7];
-        
+
         WorkZoneCAFs_GP = new float[5][7];
         WorkZoneDAFs_GP = new float[5][7];
         WorkZoneSAFs_GP = new float[5][7];
@@ -96,7 +104,6 @@ public class UserLevelParameterSet {
         //WorkZoneCAFs_ML = new float[2][2];
         //WorkZoneDAFs_ML = new float[2][2];
         //WorkZoneSAFs_ML = new float[2][2];
-        
         WeatherCAFs_GP = new float[11];
         WeatherDAFs_GP = new float[11];
         WeatherSAFs_GP = new float[11];
@@ -105,7 +112,7 @@ public class UserLevelParameterSet {
         //WeatherDAFs_ML = new float[10];
         //WeatherSAFs_ML = new float[10];
     }
-    
+
     private void setArraysBySeed(Seed seed) {
         if (seed.getGPIncidentCAF() != null) {
             IncidentCAFs_GP = seed.getGPIncidentCAF();
@@ -113,43 +120,42 @@ public class UserLevelParameterSet {
             IncidentCAFs_GP = new float[5][7];
             useDefaultIncidentCAFs_GP();
         }
-        
+
         if (seed.getGPIncidentDAF() != null) {
             IncidentDAFs_GP = seed.getGPIncidentDAF();
         } else {
             IncidentDAFs_GP = new float[5][7];
             useDefaultIncidentDAFs_GP();
         }
-        
+
         if (seed.getGPIncidentSAF() != null) {
             IncidentSAFs_GP = seed.getGPIncidentSAF();
         } else {
             IncidentSAFs_GP = new float[5][7];
             useDefaultIncidentSAFs_GP();
         }
-        
+
         if (seed.getMLIncidentCAF() != null) {
             IncidentCAFs_ML = seed.getMLIncidentCAF();
         } else {
             IncidentCAFs_ML = new float[5][7];
-           useDefaultIncidentCAFs_ML();
+            useDefaultIncidentCAFs_ML();
         }
-        
+
         if (seed.getMLIncidentDAF() != null) {
             IncidentDAFs_ML = seed.getMLIncidentDAF();
         } else {
             IncidentDAFs_ML = new float[5][7];
             useDefaultIncidentDAFs_ML();
         }
-        
+
         if (seed.getMLIncidentSAF() != null) {
             IncidentSAFs_ML = seed.getMLIncidentSAF();
         } else {
             IncidentSAFs_ML = new float[5][7];
             useDefaultIncidentSAFs_ML();
         }
-        
-        
+
         // Work Zones
         if (seed.getWorkZoneCAFs() != null) {
             WorkZoneCAFs_GP = seed.getWorkZoneCAFs();
@@ -157,22 +163,21 @@ public class UserLevelParameterSet {
             WorkZoneCAFs_GP = new float[5][7];
             useDefaultWorkZoneCAFs_GP();
         }
-        
+
         if (seed.getWorkZoneDAFs() != null) {
             WorkZoneDAFs_GP = seed.getWorkZoneDAFs();
         } else {
             WorkZoneDAFs_GP = new float[5][7];
             useDefaultWorkZoneDAFs_GP();
         }
-        
+
         if (seed.getWorkZoneSAFs() != null) {
             WorkZoneSAFs_GP = seed.getWorkZoneSAFs();
         } else {
             WorkZoneSAFs_GP = new float[5][7];
             useDefaultWorkZoneSAFs_GP();
         }
-        
-        
+
         // Weather
         if (seed.getWeatherAdjustmentFactors() != null) {
             WeatherCAFs_GP = seed.getWeatherAdjustmentFactors()[0];
@@ -186,39 +191,35 @@ public class UserLevelParameterSet {
             WeatherSAFs_GP = new float[11];
             useDefaultWeatherSAFs(70);
         }
-        
-        
+
     }
-    
+
     private void useDefaults() {
-        
+
         useDefaultIncidentCAFs_GP();
         useDefaultIncidentDAFs_GP();
         useDefaultIncidentSAFs_GP();
-        
+
         useDefaultIncidentCAFs_ML();
         useDefaultIncidentDAFs_ML();
         useDefaultIncidentSAFs_ML();
-        
+
         useDefaultWorkZoneCAFs_GP();
         useDefaultWorkZoneDAFs_GP();
         useDefaultWorkZoneSAFs_GP();
-        
+
         //Arrays.fill(WorkZoneCAFs_ML,1.0f);
         //Arrays.fill(WorkZoneDAFs_ML,1.0f);
         //Arrays.fill(WorkZoneSAFs_ML,1.0f);
-        
         useDefaultWeatherCAFs();
         useDefaultWeatherDAFs();
         useDefaultWeatherSAFs(70);
-        
+
         //Arrays.fill(WeatherCAFs_ML,1.0f);
         //Arrays.fill(WeatherDAFs_ML,1.0f);
         //Arrays.fill(WeatherSAFs_ML,1.0f);
-        
-        
     }
-    
+
     /**
      *
      */
@@ -280,7 +281,7 @@ public class UserLevelParameterSet {
             }
         }
     }
-    
+
     /**
      *
      */
@@ -342,7 +343,7 @@ public class UserLevelParameterSet {
             }
         }
     }
-    
+
     /**
      *
      */
@@ -422,7 +423,7 @@ public class UserLevelParameterSet {
                 break;
         }
     }
-    
+
     /**
      *
      */
@@ -430,7 +431,7 @@ public class UserLevelParameterSet {
         // Setting default Demand Adjustment Factors
         Arrays.fill(WeatherDAFs_GP, 1.0f);
     }
-    
+
     /**
      *
      */
@@ -492,5 +493,5 @@ public class UserLevelParameterSet {
             }
         }
     }
-    
+
 }

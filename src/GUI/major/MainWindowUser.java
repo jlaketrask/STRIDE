@@ -61,7 +61,7 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
     private final UserLevelParameterSet userLevelParams;
-    
+
     private ATDMScenario activeATM;
     private final ATMUpdater atmUpdater;
     private final PeriodATM[] periodATM;
@@ -104,25 +104,24 @@ public class MainWindowUser extends MainWindow {
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
-        
+
         userLevelParams = userParams;
-        
+
         atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM, userLevelParams);
         if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
             // Adding blank scenario
             ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
             scenarioInfos.add(new ScenarioInfo());
             activeSeed.setRLScenarios(new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null, scenarioInfos);
-        } 
-        
+        }
+
         HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
         atmHolder.put(1, activeATM);
         activeSeed.addATDMSet(atmHolder);
-        
 
         completedRunsPeriodATM = new ArrayList();
         completedRunsATDMScen = new ArrayList();
-        
+
         // Preparing Window Components
         tableDisplaySegmentATM = userIOTableDisplay.getTableDisplaySegmentATM();
         setLocationRelativeTo(this.getRootPane()); //center starting position
@@ -136,6 +135,7 @@ public class MainWindowUser extends MainWindow {
         setVisible(true);
 
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
+        graphicDisplay.showIncidents(false);
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
 
         inOutCB.setSelectedIndex(1);
@@ -1095,11 +1095,11 @@ public class MainWindowUser extends MainWindow {
     private void resetATM() {
         //activePeriod = 0;
         //dssProgress = 0;
-        
+
         // Save periodATM and activeATDM
         completedRunsPeriodATM.add(periodATM.clone());
         completedRunsATDMScen.add(activeATM);
-        
+
         // Create new of each
         for (int per = 0; per < periodATM.length; per++) {
             periodATM[per] = new PeriodATM(activeSeed, per);

@@ -35,6 +35,8 @@ public class GraphicDisplay extends javax.swing.JPanel {
     private boolean isShowInput = false;
     private int highlightSegIndex;
 
+    private boolean showIncidents = true;
+
     private boolean paintLock = false;
 
     //draw parameters - base
@@ -317,12 +319,14 @@ public class GraphicDisplay extends javax.swing.JPanel {
                 }
 
                 //dawy incident lane closure for ML segment
-                g.setColor(findColor("INC"));
-                if (seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm) < 0) {
-                    g.fillRect(currX + 1,
-                            currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
-                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                            -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm));
+                if (showIncidents) {
+                    g.setColor(findColor("INC"));
+                    if (seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm) < 0) {
+                        g.fillRect(currX + 1,
+                                currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
+                                (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                                -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm));
+                    }
                 }
 
                 //draw separation
@@ -386,12 +390,14 @@ public class GraphicDisplay extends javax.swing.JPanel {
             }
 
             //dawy incident lane closure for GP segment
-            g.setColor(findColor("INC"));
-            if (seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm) < 0) {
-                g.fillRect(currX + 1,
-                        currY - heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, seg, period, scen, atdm),
-                        (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                        -heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm));
+            if (showIncidents) {
+                g.setColor(findColor("INC"));
+                if (seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm) < 0) {
+                    g.fillRect(currX + 1,
+                            currY - heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, seg, period, scen, atdm),
+                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                            -heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm));
+                }
             }
 
             //draw GP lanes
@@ -869,6 +875,15 @@ public class GraphicDisplay extends javax.swing.JPanel {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="setter and getters">
+    /**
+     * Sets whether or not incident lane closures are drawn.
+     *
+     * @param val
+     */
+    public void showIncidents(boolean val) {
+        this.showIncidents = val;
+    }
+
     /**
      * Setter for mainWindow connection
      *
