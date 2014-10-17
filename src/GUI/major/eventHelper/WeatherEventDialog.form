@@ -149,7 +149,7 @@
         <Component class="javax.swing.JComboBox" name="severityCB">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="11">
+              <StringArray count="12">
                 <StringItem index="0" value="&lt;Select Type&gt;"/>
                 <StringItem index="1" value="Medium Rain"/>
                 <StringItem index="2" value="Heavy Rain"/>
@@ -161,9 +161,13 @@
                 <StringItem index="8" value="Low Visibility"/>
                 <StringItem index="9" value="Very Low Visibility"/>
                 <StringItem index="10" value="Minimum Visibility"/>
+                <StringItem index="11" value="Other"/>
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="severityCBItemStateChanged"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
           <Properties>

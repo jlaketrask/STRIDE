@@ -178,6 +178,13 @@ public class UserLevelParameterSet {
             WeatherCAFs_GP = seed.getWeatherAdjustmentFactors()[0];
             WeatherDAFs_GP = seed.getWeatherAdjustmentFactors()[2];
             WeatherSAFs_GP = seed.getWeatherAdjustmentFactors()[1];
+        } else {
+            WeatherCAFs_GP = new float[11];
+            useDefaultWeatherCAFs();
+            WeatherDAFs_GP = new float[11];
+            useDefaultWeatherDAFs();
+            WeatherSAFs_GP = new float[11];
+            useDefaultWeatherSAFs(70);
         }
         
         

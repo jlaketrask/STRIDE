@@ -6,6 +6,7 @@
 package GUI.major.eventHelper;
 
 import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.UserLevelParameterSet;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 
@@ -17,6 +18,8 @@ public class WeatherEventDialog extends javax.swing.JDialog {
 
     private Seed seed;
 
+    private UserLevelParameterSet userParams;
+    
     private boolean status;
 
     /**
@@ -34,10 +37,24 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         this.seed = seed;
         resetPanel();
     }
+    
+    public void setUserParams(UserLevelParameterSet userParams) {
+        this.userParams = userParams;
+    }
 
     private void resetPanel() {
         startPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 0));
         endPeriodCB.setModel(ModelCreator.periodCBModelCreator(seed, 1));
+        
+        endPeriodCB.setEnabled(false);
+        startPeriodCB.setEnabled(false);
+        
+        cafTextField.setEnabled(false);
+        dafTextField.setEnabled(false);
+        safTextField.setEnabled(false);
+        
+        okButton.setEnabled(false);
+        
     }
 
     public ScenarioEvent getWeatherEvent() {
@@ -133,7 +150,12 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         jLabel1.setText("Weather Severity Type:");
         jPanel2.add(jLabel1);
 
-        severityCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Type>", "Medium Rain", "Heavy Rain", "Light Snow", "Light Medium Snow", "Medium Heavy Snow", "Heavy Snow", "Severe Cold", "Low Visibility", "Very Low Visibility", "Minimum Visibility" }));
+        severityCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Select Type>", "Medium Rain", "Heavy Rain", "Light Snow", "Light Medium Snow", "Medium Heavy Snow", "Heavy Snow", "Severe Cold", "Low Visibility", "Very Low Visibility", "Minimum Visibility", "Other" }));
+        severityCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                severityCBItemStateChanged(evt);
+            }
+        });
         jPanel2.add(severityCB);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -209,6 +231,31 @@ public class WeatherEventDialog extends javax.swing.JDialog {
         }
 
     }//GEN-LAST:event_startPeriodCBItemStateChanged
+
+    private void severityCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_severityCBItemStateChanged
+        if (severityCB.getSelectedIndex() == 0) {
+            endPeriodCB.setEnabled(false);
+            startPeriodCB.setEnabled(false);
+
+            cafTextField.setEnabled(false);
+            dafTextField.setEnabled(false);
+            safTextField.setEnabled(false);
+
+            okButton.setEnabled(false);
+        } else {
+            endPeriodCB.setEnabled(true);
+            startPeriodCB.setEnabled(true);
+
+            cafTextField.setEnabled(true);
+            cafTextField.setText(String.valueOf(userParams.WeatherCAFs_GP[severityCB.getSelectedIndex() - 1]));
+            dafTextField.setEnabled(true);
+            dafTextField.setText(String.valueOf(userParams.WeatherDAFs_GP[severityCB.getSelectedIndex() - 1]));
+            safTextField.setEnabled(true);
+            safTextField.setText(String.valueOf(userParams.WeatherSAFs_GP[severityCB.getSelectedIndex() - 1]));
+            
+            okButton.setEnabled(true);
+        }
+    }//GEN-LAST:event_severityCBItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField cafTextField;

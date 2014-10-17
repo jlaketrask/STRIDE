@@ -386,6 +386,7 @@ public class Toolbox extends javax.swing.JPanel {
     private void weatherEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weatherEventButtonActionPerformed
         WeatherEventDialog weDialog = new WeatherEventDialog(null, true);
         weDialog.setSeed(mainWindow.getActiveSeed());
+        weDialog.setUserParams(mainWindow.getUserLevelParameters());
         weDialog.setLocationRelativeTo(null);
         weDialog.setVisible(true);
         if (weDialog.getReturnStatus()) {
@@ -397,6 +398,7 @@ public class Toolbox extends javax.swing.JPanel {
 
     private void incidentEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incidentEventButtonActionPerformed
         IncidentEventDialog incDialog = new IncidentEventDialog(null, true);
+        incDialog.setUserParams(mainWindow.getUserLevelParameters());
         incDialog.setSeed(mainWindow.getActiveSeed());
         incDialog.setLocationRelativeTo(null);
         incDialog.setVisible(true);
