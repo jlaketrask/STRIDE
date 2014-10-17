@@ -1,6 +1,3 @@
-Add events:
-    Defaults for AFs when severity selected
-
 Selected Seed in Navigator doesn't hide scenario:
     New Navigator - List of events added, etc.?
     No navigator?

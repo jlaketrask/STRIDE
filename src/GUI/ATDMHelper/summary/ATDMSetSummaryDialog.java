@@ -78,6 +78,11 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
     
     private JFreeChart lineChartObjectTTIvTime;
     private JFreeChart lineChartObject;
+    
+    private int domainMax = 1;
+    
+    private static final String IDS_RESULT_TYPE_PERIOD = "IDS_RESULT_TYPE_PERIOD";
+    private static final String IDS_RESULT_TYPE_SEGMENT = "IDS_RESULT_TYPE_SEGMENT";
 
     /**
      * Creates new form ATDMSummaryDialog
@@ -113,7 +118,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         });
 
         addGeneralInfo();
-        addResultAndChart();
+        addResultAndChart(IDS_RESULT_TYPE_PERIOD);
     }
 
     private void addGeneralInfo() {
@@ -127,13 +132,18 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         endDateText.setText(seed.getRRPEndDate().toString());
     }
 
-    private void addResultAndChart() {
+    private void addResultAndChart(String resultType) {
         try {
 
             // <editor-fold defaultstate="collapsed" desc="EXTRACT DATA AND CALCULATE %">
-            ArrayList<Result> ATDMResults = new ArrayList<>();
-            ArrayList<Result> RLResults = new ArrayList<>();
+            //ArrayList<Result> ATDMResultsPeriod = new ArrayList<>();
+            //ArrayList<Result> ATDMResultsSegment = new ArrayList<>();
+            //ArrayList<Result> RLResultsPeriod = new ArrayList<>();
+            //ArrayList<Result> RLResultsSegment = new ArrayList<>();
 
+            ArrayList<Result> ATDMResults = new ArrayList<>();
+            ArrayList<Result> RLResults = new ArrayList();
+            
             float totalProb = 0;
             if (inSetOnly) {
                 //count total probability
@@ -146,31 +156,105 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
 
             // <editor-fold defaultstate="collapsed" desc="EXTRACT BEFORE ATDM (RL) RESULT">
             //calculate RL results
+            //float meanRL_period = 0;
+            //float ratingCountRL_period = 0;
+            //float VMT2CountRL_period = 0;
+            //float semiSTDRL_period = 0;
+            
+            //float meanRL_seg = 0;
+            //float ratingCountRL_seg = 0;
+            //float VMT2CountRL_seg = 0;
+            //float semiSTDRL_seg = 0;
+            
             float meanRL = 0;
             float ratingCountRL = 0;
             float VMT2CountRL = 0;
             float semiSTDRL = 0;
+            
+            // Define the data for the both charts
+            final XYSeries seriesTTIv_Time_ATM;
+            final XYSeries seriesTTIRL;
+            final XYSeries seriesTTIATDM;
+            final XYSeries seriesTTIvTime_RL;
+            String chart1TitleString;
+            String chart1DomainString;
+            String chart1RangeString;
+            String chart2TitleString;
+            String chart2DomainString;
+            String chart2RangeString;
+            switch (resultType) {
+                default:
+                case IDS_RESULT_TYPE_PERIOD:
+                    seriesTTIv_Time_ATM = new XYSeries("TTI - After");
+                    seriesTTIvTime_RL = new XYSeries("TTI - Before");
+                    seriesTTIRL = new XYSeries("TTI - Before");
+                    seriesTTIATDM = new XYSeries("TTI - After");
+                    chart1TitleString = "TTI Profile Accros Study Period";
+                    chart1DomainString = "Analysis Period (15 min.)";
+                    chart1RangeString =  "TTI";
+                    chart2TitleString = "Cumulative  Distribution Function";
+                    chart2DomainString = "TTI";
+                    chart2RangeString = "Percentage";
+                    break;
+                case IDS_RESULT_TYPE_SEGMENT:
+                    seriesTTIv_Time_ATM = new XYSeries("Travel Time - After");
+                    seriesTTIvTime_RL = new XYSeries("Travel Time - Before");
+                    seriesTTIRL = new XYSeries("Travel Time - Before");
+                    seriesTTIATDM = new XYSeries("Travel Time - After");
+                    chart1TitleString = "Travel Time Profile Accros All Segments";
+                    chart1DomainString = "Segment";
+                    chart1RangeString =  "Travel Time";
+                    chart2TitleString = "Cumulative  Distribution Function";
+                    chart2DomainString = "Travel Time";
+                    chart2RangeString = "Percentage";
+                    break;
+            }
 
             //extract data from seed, and modify probability to match per period
             if (inSetOnly) {
                 //for (int scen : seed.getATDMSets().get(atdmIndex).keySet()) {
                 int scen = 1;
-                    for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
-                        //float prob = seed.getValueFloat(CEConst.IDS_SCEN_PROB, 0, 0, scen, -1) / seed.getValueInt(CEConst.IDS_NUM_PERIOD) / totalProb;
-                        float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_PERIOD);
-                        float TTI = seed.getValueFloat(CEConst.IDS_P_TTI, 0, period, scen, -1);
-                        //System.out.println(period+" "+prob+" "+TTI);
-                        RLResults.add(new Result(prob, TTI));
-                        meanRL += TTI * prob;
-                        semiSTDRL += (TTI - 1) * (TTI - 1) * prob;
-                        if (TTI < 1.333333f) {
-                            ratingCountRL += prob;
+                //if (resultType.equalsIgnoreCase(IDS_RESULT_TYPE_PERIOD)) {
+                switch (resultType) {
+                    default:
+                    case IDS_RESULT_TYPE_PERIOD:
+                        domainMax = seed.getValueInt(CEConst.IDS_NUM_PERIOD) + 1;
+                        
+                        for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
+                            float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_PERIOD);
+                            float TTI = seed.getValueFloat(CEConst.IDS_P_ACTUAL_TIME, 0, period, scen, -1)/seed.getValueFloat(CEConst.IDS_P_FFS_TIME, 0, period, scen, -1);
+                            RLResults.add(new Result(prob, TTI));
+                            meanRL += TTI * prob;
+                            semiSTDRL += (TTI - 1) * (TTI - 1) * prob;
+                            //semiSTDRL += (TTI) * (TTI) * prob;
+                            if (TTI < 1.333333f) {
+                                ratingCountRL += prob;
+                            }
+                            if (TTI > 2) {
+                                VMT2CountRL += prob;
+                            }
                         }
-                        if (TTI > 2) {
-                            VMT2CountRL += prob;
+                        break;
+                    case IDS_RESULT_TYPE_SEGMENT:
+                        domainMax = seed.getValueInt(CEConst.IDS_NUM_SEGMENT) + 1;
+                        
+                        for (int segment = 0; segment < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
+                            //float prob = seed.getValueFloat(CEConst.IDS_SCEN_PROB, 0, 0, scen, -1) / seed.getValueInt(CEConst.IDS_NUM_PERIOD) / totalProb;
+                            float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
+                            float actualTravelTime = seed.getValueFloat(CEConst.IDS_S_ACTUAL_TIME, segment, 0, scen, -1);
+                            //System.out.println(period+" "+prob+" "+TTI);
+                            RLResults.add(new Result(prob, actualTravelTime));
+                            meanRL += actualTravelTime * prob;
+                            semiSTDRL += (actualTravelTime) * (actualTravelTime) * prob;
+                            if (actualTravelTime < 1.333333f) {
+                                ratingCountRL += prob;
+                            }
+                            if (actualTravelTime > 2) {
+                                VMT2CountRL += prob;
+                            }
                         }
-                    }
-                //}
+                        break;
+                }
             } else {
                 for (int scen = 1; scen <= seed.getValueInt(CEConst.IDS_NUM_SCEN); scen++) {
                     for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
@@ -190,7 +274,6 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             }
             
             // Extracting RL Results for TTI vs Time graph
-            final XYSeries seriesTTIvTime_RL = new XYSeries("TTI - Before");
             //float[] groupCountRL = new float[NUM_GROUP];
 
             int periodIdx = 1;
@@ -211,39 +294,41 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             semiSTDRL = (float) Math.sqrt(semiSTDRL);
             semiSTDTextBefore.setText(formatter2d.format(semiSTDRL));
 
-            float probCountRL = 0;
-            float miseryTotalRL = 0, miseryWeightRL = 0;
-            for (Result RLResult : RLResults) {
-                //find 50th %
-                if (probCountRL <= 0.5 && probCountRL + RLResult.prob >= 0.5) {
-                    p50TextBefore.setText(formatter2d.format(RLResult.TTI));
-                }
-                //find 80th %
-                if (probCountRL <= 0.8 && probCountRL + RLResult.prob >= 0.8) {
-                    p80TextBefore.setText(formatter2d.format(RLResult.TTI));
-                }
-                //find 95th %
-                if (probCountRL <= 0.95 && probCountRL + RLResult.prob >= 0.95) {
-                    p95TextBefore.setText(formatter2d.format(RLResult.TTI));
-                }
-
-                for (int i = 0; i < PERCENT_GROUP.length; i++) {
-                    if (probCountRL < PERCENT_GROUP[i] && probCountRL + RLResult.prob >= PERCENT_GROUP[i]) {
-                        TTI_Group_RL[i] = RLResult.TTI;
-                    }
-                }
-
-                probCountRL += RLResult.prob;
-
-                if (probCountRL >= 0.95) {
-                    miseryTotalRL += RLResult.TTI * RLResult.prob;
-                    miseryWeightRL += RLResult.prob;
-                }
-            }
-
-            miseryTextBefore.setText(formatter2d.format(miseryTotalRL / miseryWeightRL));
-            ratingTextBefore.setText(formatter2dp.format(ratingCountRL));
-            VMT2TextBefore.setText(formatter2dp.format(VMT2CountRL));
+            //<editor-fold defaultstate="collapsed" desc="Deprecated Bar Chart">
+//            float probCountRL = 0;
+//            float miseryTotalRL = 0, miseryWeightRL = 0;
+//            for (Result RLResult : RLResults) {
+//                //find 50th %
+//                if (probCountRL <= 0.5 && probCountRL + RLResult.prob >= 0.5) {
+//                    p50TextBefore.setText(formatter2d.format(RLResult.TTI));
+//                }
+//                //find 80th %
+//                if (probCountRL <= 0.8 && probCountRL + RLResult.prob >= 0.8) {
+//                    p80TextBefore.setText(formatter2d.format(RLResult.TTI));
+//                }
+//                //find 95th %
+//                if (probCountRL <= 0.95 && probCountRL + RLResult.prob >= 0.95) {
+//                    p95TextBefore.setText(formatter2d.format(RLResult.TTI));
+//                }
+//
+//                for (int i = 0; i < PERCENT_GROUP.length; i++) {
+//                    if (probCountRL < PERCENT_GROUP[i] && probCountRL + RLResult.prob >= PERCENT_GROUP[i]) {
+//                        TTI_Group_RL[i] = RLResult.TTI;
+//                    }
+//                }
+//
+//                probCountRL += RLResult.prob;
+//
+//                if (probCountRL >= 0.95) {
+//                    miseryTotalRL += RLResult.TTI * RLResult.prob;
+//                    miseryWeightRL += RLResult.prob;
+//                }
+//            }
+//
+//            miseryTextBefore.setText(formatter2d.format(miseryTotalRL / miseryWeightRL));
+//            ratingTextBefore.setText(formatter2dp.format(ratingCountRL));
+//            VMT2TextBefore.setText(formatter2dp.format(VMT2CountRL));
+//</editor-fold>
             // </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="EXTRACT AFTER ATDM RESULT">
@@ -257,21 +342,42 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             if (inSetOnly) {
                 //for (int scen : seed.getATDMSets().get(atdmIndex).keySet()) {
                 int scen  = 1;
-                    for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
-                        //float prob = seed.getValueFloat(CEConst.IDS_SCEN_PROB, 0, 0, scen, atdmIndex) / seed.getValueInt(CEConst.IDS_NUM_PERIOD) / totalProb;
-                        float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_PERIOD);
-                        float TTI = seed.getValueFloat(CEConst.IDS_P_TTI, 0, period, scen, atdmIndex);
-                        ATDMResults.add(new Result(prob, TTI));
-                        meanATDM += TTI * prob;
-                        semiSTDATDM += (TTI - 1) * (TTI - 1) * prob;
-                        if (TTI < 1.333333f) {
-                            ratingCountATDM += prob;
+                switch (resultType) {
+                    default:
+                    case IDS_RESULT_TYPE_PERIOD:
+                        for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
+                            float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_PERIOD);
+                            float TTI = seed.getValueFloat(CEConst.IDS_P_ACTUAL_TIME, 0, period, scen, atdmIndex)/seed.getValueFloat(CEConst.IDS_P_FFS_TIME, 0, period, scen, atdmIndex);
+                            ATDMResults.add(new Result(prob, TTI));
+                            meanATDM += TTI * prob;
+                            semiSTDATDM += (TTI - 1) * (TTI - 1) * prob;
+                            //semiSTDRL += (TTI) * (TTI) * prob;
+                            if (TTI < 1.333333f) {
+                                ratingCountATDM += prob;
+                            }
+                            if (TTI > 2) {
+                                VMT2CountATDM += prob;
+                            }
                         }
-                        if (TTI > 2) {
-                            VMT2CountATDM += prob;
+                        break;
+                    case IDS_RESULT_TYPE_SEGMENT:
+                        for (int segment = 0; segment < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
+                            //float prob = seed.getValueFloat(CEConst.IDS_SCEN_PROB, 0, 0, scen, -1) / seed.getValueInt(CEConst.IDS_NUM_PERIOD) / totalProb;
+                            float prob = 1.0f / seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
+                            float actualTravelTime = seed.getValueFloat(CEConst.IDS_S_ACTUAL_TIME, segment, 0, scen, atdmIndex);
+                            //System.out.println(period+" "+prob+" "+TTI);
+                            ATDMResults.add(new Result(prob, actualTravelTime));
+                            meanATDM += actualTravelTime * prob;
+                            semiSTDATDM += (actualTravelTime) * (actualTravelTime) * prob;
+                            if (actualTravelTime < 1.333333f) {
+                                ratingCountATDM += prob;
+                            }
+                            if (actualTravelTime > 2) {
+                                VMT2CountATDM += prob;
+                            }
                         }
-                    }
-                //}
+                        break;
+                }
             } else {
                 //System.out.println("HERE");
                 Integer[] tempSampleInt = seed.getATDMSets().get(atdmIndex).keySet().toArray(new Integer[0]);
@@ -320,7 +426,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             }
                      
             // Extracting ATM results for TTI vs Time plot
-            final XYSeries seriesTTIv_Time_ATM = new XYSeries("TTI - After");
+
 
             periodIdx = 1;
             for (Result result : ATDMResults) {
@@ -378,8 +484,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             // </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="ADD TWO CHARTS">
-            // Define the data for the both charts
-            final XYSeries seriesTTIRL = new XYSeries("TTI - Before");
+            
             //float[] groupCountRL = new float[NUM_GROUP];
 
             float count = 0;
@@ -390,8 +495,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                         NUM_GROUP - 1);
                 //groupCountRL[groupIndex] += result.prob;
             }
-
-            final XYSeries seriesTTIATDM = new XYSeries("TTI - After");
+       
             //float[] groupCountATDM = new float[NUM_GROUP];
 
             count = 0;
@@ -403,7 +507,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 //groupCountATDM[groupIndex] += result.prob;
             }
 
-//<editor-fold defaultstate="collapsed" desc="Deprecated Bar Chart">
+            //<editor-fold defaultstate="collapsed" desc="Deprecated Bar Chart">
             //create bar chart
 //            DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
 //            for (int i = 0; i < groupCountRL.length - 1; i++) {
@@ -438,19 +542,19 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             lineChartDatasetTime.addSeries(seriesTTIvTime_RL);
             lineChartDatasetTime.addSeries(seriesTTIv_Time_ATM);
             lineChartObjectTTIvTime = ChartFactory.createXYLineChart(
-                    "TTI Profile Accros Study Period", "Analysis Period (15 min.)", "TTI",
+                    chart1TitleString, chart1DomainString, chart1RangeString,
                     lineChartDatasetTime, PlotOrientation.VERTICAL, true, true, false);
             ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setRange(ttiMin, ttiMax);
-            ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,seed.getValueInt(CEConst.IDS_NUM_PERIOD)+1);
+            ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,domainMax);
             
             ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setAutoRangeMinimumSize((ttiMax-ttiMin));
             
             int UNITS;
-            if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 12) {
+            if (domainMax <= 12) {
                 UNITS = 1;
-            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 24) {
+            } else if (domainMax <= 24) {
                 UNITS = 2;
-            } else if (seed.getValueInt(CEConst.IDS_NUM_PERIOD) <= 48) {
+            } else if (domainMax <= 48) {
                 UNITS = 3;
             } else {
                 UNITS = 4;
@@ -471,7 +575,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
             lineChartDataset.addSeries(seriesTTIRL);
             lineChartDataset.addSeries(seriesTTIATDM);
             lineChartObject = ChartFactory.createXYLineChart(
-                    "Cumulative  Distribution Function", "TTI", "Percentage",
+                    chart2TitleString, chart2DomainString, chart2RangeString,
                     lineChartDataset, PlotOrientation.VERTICAL, true, true, false);
             ((XYPlot) lineChartObject.getPlot()).getDomainAxis().setRange(ttiMin, ttiMax);
             ((NumberAxis) ((XYPlot) lineChartObject.getPlot()).getRangeAxis()).setNumberFormatOverride(NumberFormat.getPercentInstance());
@@ -844,6 +948,11 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
         jLabel25.setText("Show by: ");
 
         ttiComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Period", "Segment" }));
+        ttiComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ttiComboBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout ttiPanelLayout = new javax.swing.GroupLayout(ttiPanel);
         ttiPanel.setLayout(ttiPanelLayout);
@@ -876,12 +985,13 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(facilityPanelAfter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(detailTTIButton)
-                    .addComponent(jButton1)
+                .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel25)
-                        .addComponent(ttiComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(ttiComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(ttiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(detailTTIButton)
+                        .addComponent(jButton1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ttiChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE))
         );
@@ -1017,11 +1127,20 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         ((XYPlot) lineChartObjectTTIvTime.getPlot()).getRangeAxis().setRange(ttiMin, ttiMax);
-        ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,seed.getValueInt(CEConst.IDS_NUM_PERIOD)+1);
+        ((XYPlot) lineChartObjectTTIvTime.getPlot()).getDomainAxis().setRange(0,domainMax);
         
         ((XYPlot) lineChartObject.getPlot()).getDomainAxis().setRange(ttiMin, ttiMax);
         ((XYPlot) lineChartObject.getPlot()).getRangeAxis().setRange(0.0f, 1.05);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void ttiComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ttiComboBoxActionPerformed
+        ttiChartPanel.removeAll();
+        if (ttiComboBox.getSelectedIndex() == 0) {
+            addResultAndChart(IDS_RESULT_TYPE_PERIOD);
+        } else {
+            addResultAndChart(IDS_RESULT_TYPE_SEGMENT);
+        }
+    }//GEN-LAST:event_ttiComboBoxActionPerformed
 
     private void showPercentileDetail() {
         JPanel detailPanel = new JPanel();
