@@ -73,9 +73,10 @@ public class ATMUpdater {
                     // Calculating new segment CAF using shoulder CAF
                     float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
-                    float avgCAF = (seedCAF + rlCAF) / 2.0f;
-                    float newCAF = ((numLanesSegment * avgCAF * atm.CAF().get(seg, currPeriod + 1)) + userParams.atm.hsrCapacity[Math.min(seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg, currPeriod) - 1, 4)]) / (numLanesSegment + 1);
-                    atm.CAF().set((newCAF / avgCAF), seg, currPeriod + 1);
+                    //float avgCAF = (seedCAF + rlCAF) / 2.0f;
+                    float combinedCAF = seedCAF * rlCAF;
+                    float newCAF = ((numLanesSegment * combinedCAF * atm.CAF().get(seg, currPeriod + 1)) + userParams.atm.hsrCapacity[Math.min(seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg, currPeriod) - 1, 4)]) / (numLanesSegment + 1);
+                    atm.CAF().set((newCAF / combinedCAF), seg, currPeriod + 1);
                 }
 
                 // Update next PeriodATM Instance
