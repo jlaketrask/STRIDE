@@ -39,7 +39,7 @@ public class ScenarioGenerator {
     /**
      *
      */
-        private Seed seed = null;
+    private Seed seed = null;
 
     /**
      *
@@ -870,7 +870,7 @@ public class ScenarioGenerator {
     //<editor-fold defaultstate="collapsed" desc="Incident Modeling">
     /**
      *
-     * @param monthChangeIdx names, for debugging
+     * @param monthChangeIdx 
      * @return
      */
     private int[][] createAndAssignListIncidentEventsGP(int[] monthChangeIdx) {
