@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package coreEngine.atdm.DataStruct;
 
 import java.io.Serializable;
@@ -22,32 +16,32 @@ public class ATDMStrategy implements Serializable, Cloneable {
     private String category;
 
     private float[] adjFactors;
-    
+
     private int incidentDurationReduction;
-    
+
     private static final long serialVersionUID = 24865713845L;
-    
-    private static final String[] categoriesString = {"Control Strategy","Advisory Strategy", "Treatment Strategy",
-                                               "Site Management & Traffic Control", "Detection & Verification",
-                                                "Quick Clearance & Recovery"};
-    
+
+    private static final String[] categoriesString = {"Control Strategy", "Advisory Strategy", "Treatment Strategy",
+        "Site Management & Traffic Control", "Detection & Verification",
+        "Quick Clearance & Recovery"};
+
     /**
      *
      * @param id
      * @param description
      */
     public ATDMStrategy(int id, String description) {
-        
+
         this.id = id;
         this.description = description;
         this.category = categoriesString[0];
-        
+
         this.adjFactors = new float[3];
         Arrays.fill(adjFactors, 1.0f);
-        incidentDurationReduction = 0; 
-        
+        incidentDurationReduction = 0;
+
     }
-    
+
     /**
      *
      * @param id
@@ -55,23 +49,22 @@ public class ATDMStrategy implements Serializable, Cloneable {
      * @param categoryType
      */
     public ATDMStrategy(int id, String description, int categoryType) {
-        
+
         this.id = id;
         this.description = description;
         this.category = categoriesString[categoryType];
-        
+
         this.adjFactors = new float[4];
         Arrays.fill(adjFactors, 1.0f);
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
-
     /**
      *
      * @return
      */
-        public String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -98,7 +91,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public float[] getAdjFactor() {
         return adjFactors;
     }
-    
+
     /**
      *
      * @param afIdx
@@ -115,19 +108,17 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public int getIncidentDurationReduction() {
         return incidentDurationReduction;
     }
-    
-    // </editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="Setters">
 
+    // </editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      *
      * @param description
      */
-        public void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      *
      * @param id
@@ -135,7 +126,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     /**
      *
      * @param category
@@ -143,7 +134,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setCategory(String category) {
         this.category = category;
     }
-    
+
     /**
      *
      * @param categoryIdx
@@ -151,7 +142,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setCategory(int categoryIdx) {
         this.category = categoriesString[categoryIdx];
     }
-    
+
     /**
      *
      * @param adjFactors
@@ -159,7 +150,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setAdjFactors(float[] adjFactors) {
         this.adjFactors = adjFactors;
     }
-    
+
     /**
      *
      * @param newVal
@@ -168,7 +159,7 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setAdjFactor(float newVal, int afIdx) {
         this.adjFactors[afIdx] = newVal;
     }
-    
+
     /**
      *
      * @param incidentDurationReduction
@@ -176,13 +167,11 @@ public class ATDMStrategy implements Serializable, Cloneable {
     public void setIncidentDurationReduction(int incidentDurationReduction) {
         this.incidentDurationReduction = incidentDurationReduction;
     }
-    
-//</editor-fold>
 
+//</editor-fold>
     @Override
     public ATDMStrategy clone() throws CloneNotSupportedException {
         return (ATDMStrategy) super.clone();
     }
-    
 
 }

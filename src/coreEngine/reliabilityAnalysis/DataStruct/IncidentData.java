@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package coreEngine.reliabilityAnalysis.DataStruct;
 
 import coreEngine.Seed;
@@ -481,12 +476,11 @@ public class IncidentData {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Setters">
-
     /**
      *
      * @param newVal
      */
-        public void setCrashRateRatio(float newVal) {
+    public void setCrashRateRatio(float newVal) {
         this.crashRateRatio = newVal;
     }
 

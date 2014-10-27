@@ -224,25 +224,6 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="MLTypeCheck">
-      <Properties>
-        <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="Managed Lane Type"/>
-      </Properties>
-      <Events>
-        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="MLTypeCheckItemStateChanged"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="MLTypeCB">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="2">
-            <StringItem index="0" value="HOV"/>
-            <StringItem index="1" value="HOT"/>
-          </StringArray>
-        </Property>
-      </Properties>
-    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="title" type="java.lang.String" value="Project Properties"/>

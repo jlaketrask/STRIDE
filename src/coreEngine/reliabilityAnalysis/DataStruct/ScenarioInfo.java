@@ -1218,7 +1218,7 @@ public class ScenarioInfo implements Serializable {
 
                         // Calculating new segment CAF using shoulder CAF
                         float rlCAF = seed.getRLCAF(group + 1, segment, period, CEConst.SEG_TYPE_GP); //To Lake: Maybe need to switch between GP and ML
-                        float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, segment, period);
+                        float seedCAF = seed.getValueFloat(CEConst.IDS_GP_USER_CAF, segment, period);
                         float newCAF = ((numLanesSegment * seedCAF * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF(numLanesSegment)) / (numLanesSegment + 1);
                         //System.out.println(newCAF);
                         tempATDMScenario.CAF().set((newCAF / rlCAF), segment, period);

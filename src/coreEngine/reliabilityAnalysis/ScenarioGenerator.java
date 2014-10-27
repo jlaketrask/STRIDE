@@ -1522,7 +1522,7 @@ public class ScenarioGenerator {
         }
 
         // Step 25 - Generate distribution of incident start times and location
-        float[] probSegLocation = new float[seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT)];
+        float[] probSegLocation = new float[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
         float totalVMTSumML = seed.getValueFloat(CEConst.IDS_ML_SP_VMTV); // Denotes sum of VMT over all segments, all periods
 
         // Generate probability of segment in which the incident occurs

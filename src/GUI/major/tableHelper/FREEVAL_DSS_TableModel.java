@@ -153,7 +153,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                     case ROW_RM_TYPE:
                         if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_USER) {
                                 return "User Specified";
-                            } else if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_ADAPTIVE) {
+                            } else if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_LINEAR) {
                                 return "Adaptive";
                             } else {
                                 return "None";
@@ -196,7 +196,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                                 //this.fireTableDataChanged();
                                 //parentTable.editCellAt(ROW_RM_IMPLEMENTATION_PERIODS, col);
                             } else if (((String) value).equalsIgnoreCase("Adaptive")) {
-                                periodATM[currPeriod].setRMType(PeriodATM.ID_RM_TYPE_ADAPTIVE, col);
+                                periodATM[currPeriod].setRMType(PeriodATM.ID_RM_TYPE_LINEAR, col);
                                 //parentTable.setColumnSelectionInterval(col, col);
                                 //parentTable.setRowSelectionInterval(ROW_RM_IMPLEMENTATION_PERIODS,ROW_RM_IMPLEMENTATION_PERIODS);
                                 this.fireTableCellUpdated(ROW_RM_IMPLEMENTATION_PERIODS, col);

@@ -147,7 +147,7 @@ public class FacilitySummary {
      * @param atdm ATDM set index
      */
     public FacilitySummary(Seed seed, int scen, int atdm) {
-        totalLength = seed.getValueFloat(CEConst.IDS_CB_TOTAL_LENGTH_MI);
+        totalLength = seed.getValueFloat(CEConst.IDS_TOTAL_LENGTH_MI);
         actualTravelTime = seed.getValueFloat(CEConst.IDS_CB_SP_ACTUAL_TIME, 0, 0, scen, atdm);
         VMTD = seed.getValueFloat(CEConst.IDS_CB_SP_VMTD, 0, 0, scen, atdm);
         VMTV = seed.getValueFloat(CEConst.IDS_CB_SP_VMTV, 0, 0, scen, atdm);

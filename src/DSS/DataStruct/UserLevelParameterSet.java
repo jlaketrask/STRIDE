@@ -59,7 +59,7 @@ public class UserLevelParameterSet {
         initArrays();
         useDefaults();
         atm = new ATMParameterSet();
-        atm.useDefaults();
+        //atm.useDefaults();
     }
 
     public UserLevelParameterSet(Seed seed) {
@@ -71,7 +71,7 @@ public class UserLevelParameterSet {
             useDefaults();
         }
         atm = new ATMParameterSet();
-        atm.useDefaults();
+        //atm.useDefaults();
 
     }
 

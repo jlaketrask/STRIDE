@@ -15,6 +15,8 @@ public class ATMParameterSet {
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
     
+    private final static float[] HSR_Capacities = new float[] {0.82f,0.88f,0.89f,1.0f};
+    
     public ATMParameterSet() {
         hsrCapacity = new float[5];
         useDefaults();
@@ -28,11 +30,11 @@ public class ATMParameterSet {
         }
     }
     
-    public void useDefaults() {
-        hsrCapacity[0] = 0.7f;
-        hsrCapacity[1] = 0.75f;
-        hsrCapacity[2] = 0.8f;
-        hsrCapacity[3] = 0.85f;
-        hsrCapacity[4] = 0.9f;
+    private void useDefaults() {
+        hsrCapacity[0] = HSR_Capacities[0];
+        hsrCapacity[1] = HSR_Capacities[1];
+        hsrCapacity[2] = HSR_Capacities[2];
+        hsrCapacity[3] = HSR_Capacities[3];
+        hsrCapacity[4] = HSR_Capacities[3];
     }
 }

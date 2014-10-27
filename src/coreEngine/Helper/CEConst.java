@@ -7,7 +7,7 @@ package coreEngine.Helper;
  */
 public class CEConst {
 
-    // <editor-fold defaultstate="collapsed" desc="SEGMENT PARAMETER CONSTANTS">
+    // <editor-fold defaultstate="collapsed" desc="PARAMETER CONSTANTS">
     //constant int for terrain type
     /**
      * Terrain Type Level
@@ -148,6 +148,78 @@ public class CEConst {
      */
     public static final String STR_RAMP_SIDE_RIGHT = "Right";
 
+    //constants for ramp metering
+    /**
+     * Ramp metering type - None
+     */
+    public final static int IDS_RAMP_METERING_TYPE_NONE = 0;
+
+    /**
+     * Ramp metering type - Fix
+     */
+    public final static int IDS_RAMP_METERING_TYPE_FIX = 1;
+
+    /**
+     * Ramp metering type - Linear
+     */
+    public final static int IDS_RAMP_METERING_TYPE_LINEAR = 2;
+
+    /**
+     * Ramp metering type - Fuzzy
+     */
+    public final static int IDS_RAMP_METERING_TYPE_FUZZY = 3;
+
+    /**
+     * Ramp metering type - None
+     */
+    public final static String STR_RAMP_METERING_TYPE_NONE = "None";
+
+    /**
+     * Ramp metering type - Fix
+     */
+    public final static String STR_RAMP_METERING_TYPE_FIX = "Fix";
+
+    /**
+     * Ramp metering type - Linear
+     */
+    public final static String STR_RAMP_METERING_TYPE_LINEAR = "Linear";
+
+    /**
+     * Ramp metering type - Fuzzy
+     */
+    public final static String STR_RAMP_METERING_TYPE_FUZZY = "Fuzzy";
+
+    //constants for managed lanes
+    /**
+     * Marking
+     */
+    public final static int ML_SEPARATION_MARKING = 0;
+
+    /**
+     * Buffer
+     */
+    public final static int ML_SEPARATION_BUFFER = 1;
+
+    /**
+     * Barrier
+     */
+    public final static int ML_SEPARATION_BARRIER = 2;
+
+    /**
+     * Marking
+     */
+    public final static String STR_ML_SEPARATION_MARKING = "Marking";
+
+    /**
+     * Buffer
+     */
+    public final static String STR_ML_SEPARATION_BUFFER = "Buffer";
+
+    /**
+     * Barrier
+     */
+    public final static String STR_ML_SEPARATION_BARRIER = "Barrier";
+
     //constant for calculation status
     /**
      * Calculation Status for Under Saturated Calculation
@@ -194,9 +266,34 @@ public class CEConst {
     public static final int FAIL = 1;
     // </editor-fold>
 
-    //constant identifier Strings for universal setter and getter
-    // <editor-fold defaultstate="collapsed" desc="GENERAL AND GP SEGMENT - identifier constant strings">
-    //Seed infomration
+    // <editor-fold defaultstate="collapsed" desc="SPECIAL OUTPUT">
+    /**
+     * String "N/A"
+     */
+    public final static String IDS_NA = "N/A";
+
+    /**
+     * Blank String " "
+     */
+    public final static String IDS_BLANK = " ";
+
+    /**
+     * Dash String " "
+     */
+    public final static String IDS_DASH = "*";
+
+    /**
+     * Error String "ERROR"
+     */
+    public final static String IDS_ERROR = "ERROR";
+
+    /**
+     * Analysis period heading identifier
+     */
+    public final static String IDS_ANALYSIS_PERIOD_HEADING = "IDS_ANALYSIS_PERIOD_HEADING";
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="GENERAL INFORMATION - identifier constant strings">
     /**
      * Seed File Name
      */
@@ -216,56 +313,6 @@ public class CEConst {
      * Length of Analysis Period
      */
     public final static String IDS_PERIOD_TIME = "IDS_PERIOD_TIME";
-
-    /**
-     * Number of Scenarios
-     */
-    public final static String IDS_NUM_SCEN = "IDS_NUM_SCEN";
-
-    /**
-     * Name of a Scenario
-     */
-    public final static String IDS_SCEN_NAME = "IDS_SCEN_NAME";
-
-    /**
-     * Detail of a Scenario
-     */
-    public final static String IDS_SCEN_DETAIL = "IDS_SCEN_DETAIL";
-
-    /**
-     * Name of a ATDM
-     */
-    public final static String IDS_ATDM_NAME = "IDS_ATDM_NAME";
-
-    /**
-     * Detail of a ATDM
-     */
-    public final static String IDS_ATDM_DETAIL = "IDS_ATDM_DETAIL";
-
-    /**
-     * Number of ATDM in One Scenario
-     */
-    public final static String IDS_ATDM_NUM_EACH_RL_SCEN = "IDS_ATDM_NUM";
-
-    /**
-     * Number of ATDM Sets in One Seed
-     */
-    public final static String IDS_ATDM_SET_NUM = "IDS_ATDM_SET_NUM";
-
-    /**
-     * Number of Scenarios in Each ATDM Set
-     */
-    public final static String IDS_ATDM_SCEN_IN_EACH_SET = "IDS_ATDM_SCEN_IN_EACH_SET";
-
-    /**
-     * Status of a Scenario
-     */
-    public final static String IDS_SCENARIO_STATUS = "IDS_SCENARIO_STATUS";
-
-    /**
-     * Probability of a Scenario
-     */
-    public final static String IDS_SCEN_PROB = "IDS_SCEN_PROB";
 
     /**
      * Number of Segments
@@ -309,6 +356,223 @@ public class CEConst {
      */
     public final static String IDS_TOTAL_LENGTH_MI = "IDS_TOTAL_LENGTH_MI";
 
+    /**
+     * Free flow speed known identifier
+     */
+    public final static String IDS_FFS_KNOWN = "IDS_FFS_KNOWN";
+
+    /**
+     * Adaptive ramp metering used identifier
+     */
+    public final static String IDS_ADAPTIVE_RM_USED = "IDS_ADAPTIVE_RM_USED";
+
+    /**
+     * Managed lane used identifier
+     */
+    public final static String IDS_MANAGED_LANE_USED = "IDS_MANAGED_LANE_USED";
+
+    /**
+     * Seed demand date identifier
+     */
+    public final static String IDS_SEED_DEMAND_DATE = "IDS_SEED_DEMAND_DATE";
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="RELIABILITY ANALYSIS - identifier constant strings">
+    /**
+     * Number of Scenarios
+     */
+    public final static String IDS_NUM_SCEN = "IDS_NUM_SCEN";
+
+    /**
+     * Name of a Scenario
+     */
+    public final static String IDS_SCEN_NAME = "IDS_SCEN_NAME";
+
+    /**
+     * Detail of a Scenario
+     */
+    public final static String IDS_SCEN_DETAIL = "IDS_SCEN_DETAIL";
+
+    /**
+     * Status of a Scenario
+     */
+    public final static String IDS_SCENARIO_STATUS = "IDS_SCENARIO_STATUS";
+
+    /**
+     * Probability of a Scenario
+     */
+    public final static String IDS_SCEN_PROB = "IDS_SCEN_PROB";
+
+    /**
+     * Reliability Analysis Scenario CAF for GP segments
+     */
+    public final static String IDS_GP_RL_CAF = "IDS_GP_RL_CAF";
+
+    /**
+     * Reliability Analysis Scenario OAF for GP segments
+     */
+    public final static String IDS_GP_RL_OAF = "IDS_GP_RL_OAF";
+
+    /**
+     * Reliability Analysis Scenario DAF for GP segments
+     */
+    public final static String IDS_GP_RL_DAF = "IDS_GP_RL_DAF";
+
+    /**
+     * Reliability Analysis Scenario SAF for GP segments
+     */
+    public final static String IDS_GP_RL_SAF = "IDS_GP_RL_SAF";
+
+    /**
+     * Reliability Analysis Scenario LAF for GP segments
+     */
+    public final static String IDS_GP_RL_LAFI = "IDS_GP_RL_LAFI";
+
+    /**
+     * Reliability Analysis Scenario LAF for GP segments
+     */
+    public final static String IDS_GP_RL_LAFWZ = "IDS_GP_RL_LAFWZ";
+
+    /**
+     * Reliability Analysis Scenario CAF for ML segments
+     */
+    public final static String IDS_ML_RL_CAF = "IDS_ML_RL_CAF";
+
+    /**
+     * Reliability Analysis Scenario OAF for ML segments
+     */
+    public final static String IDS_ML_RL_OAF = "IDS_ML_RL_OAF";
+
+    /**
+     * Reliability Analysis Scenario DAF for ML segments
+     */
+    public final static String IDS_ML_RL_DAF = "IDS_ML_RL_DAF";
+
+    /**
+     * Reliability Analysis Scenario SAF for ML segments
+     */
+    public final static String IDS_ML_RL_SAF = "IDS_ML_RL_SAF";
+
+    /**
+     * Reliability Analysis Scenario LAF for ML segments
+     */
+    public final static String IDS_ML_RL_LAF = "IDS_ML_RL_LAF";
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="ATDM ANALYSIS - identifier constant strings">
+    /**
+     * Name of a ATDM
+     */
+    public final static String IDS_ATDM_NAME = "IDS_ATDM_NAME";
+
+    /**
+     * Detail of a ATDM
+     */
+    public final static String IDS_ATDM_DETAIL = "IDS_ATDM_DETAIL";
+
+    /**
+     * Number of ATDM in One Scenario
+     */
+    public final static String IDS_ATDM_NUM_EACH_RL_SCEN = "IDS_ATDM_NUM";
+
+    /**
+     * Number of ATDM Sets in One Seed
+     */
+    public final static String IDS_ATDM_SET_NUM = "IDS_ATDM_SET_NUM";
+
+    /**
+     * Number of Scenarios in Each ATDM Set
+     */
+    public final static String IDS_ATDM_SCEN_IN_EACH_SET = "IDS_ATDM_SCEN_IN_EACH_SET";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_WEATHER = "IDS_ATDM_STRAT_TYPE_WEATHER";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_DEMAND = "IDS_ATDM_STRAT_TYPE_DEMAND";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_INCIDENT = "IDS_ATDM_STRAT_TYPE_INCIDENT";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_WORKZONE = "IDS_ATDM_STRAT_TYPE_WORKZONE";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_RAMP_METERING = "IDS_ATDM_STRAT_TYPE_RAMP_METERING";
+
+    /**
+     * ATDM parameters identifier
+     */
+    public final static String IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING = "IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING";
+
+    /**
+     * ATDM Analysis Scenario CAF for GP segments
+     */
+    public final static String IDS_GP_ATDM_CAF = "IDS_ATDM_CAF_GP";
+
+    /**
+     * ATDM Analysis Scenario OAF for GP segments
+     */
+    public final static String IDS_GP_ATDM_OAF = "IDS_ATDM_OAF_GP";
+
+    /**
+     * ATDM Analysis Scenario DAF for GP segments
+     */
+    public final static String IDS_GP_ATDM_DAF = "IDS_ATDM_DAF_GP";
+
+    /**
+     * ATDM Analysis Scenario SAF for GP segments
+     */
+    public final static String IDS_GP_ATDM_SAF = "IDS_ATDM_SAF_GP";
+
+    /**
+     * ATDM Analysis Scenario LAF for GP segments
+     */
+    public final static String IDS_GP_ATDM_LAF = "IDS_ATDM_LAF_GP";
+
+    /**
+     * ATDM Analysis Scenario Ramp Metering Rate for GP segments
+     */
+    public final static String IDS_GP_ATDM_RM = "IDS_ATDM_RM_GP";
+
+    /**
+     * ATDM Analysis Scenario CAF for ML segments
+     */
+    public final static String IDS_ML_ATDM_CAF = "IDS_ATDM_CAF_ML";
+
+    /**
+     * ATDM Analysis Scenario OAF for ML segments
+     */
+    public final static String IDS_ML_ATDM_OAF = "IDS_ATDM_OAF_ML";
+
+    /**
+     * ATDM Analysis Scenario DAF for ML segments
+     */
+    public final static String IDS_ML_ATDM_DAF = "IDS_ATDM_DAF_ML";
+
+    /**
+     * ATDM Analysis Scenario SAF for ML segments
+     */
+    public final static String IDS_ML_ATDM_SAF = "IDS_ATDM_SAF_ML";
+
+    /**
+     * ATDM Analysis Scenario LAF for ML segments
+     */
+    public final static String IDS_ML_ATDM_LAF = "IDS_ATDM_LAF_ML";
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="GENERAL PURPOSE SEGMENT - identifier constant strings">
+    //Seed infomration
     // Basic Segment Variable Column Text
     /**
      * Segment Type
@@ -393,113 +657,23 @@ public class CEConst {
     /**
      * Seed/User CAF for GP segments
      */
-    public final static String IDS_U_CAF_GP = "IDS_U_CAF_GP";
+    public final static String IDS_GP_USER_CAF = "IDS_GP_USER_CAF";
 
     /**
      * Seed/User OAF for GP segments
      */
-    public final static String IDS_U_OAF_GP = "IDS_U_OAF_GP";
+    public final static String IDS_GP_USER_OAF = "IDS_GP_USER_OAF";
 
     /**
      * Seed/User DAF for GP segments
      */
-    public final static String IDS_U_DAF_GP = "IDS_U_DAF_GP";
+    public final static String IDS_GP_USER_DAF = "IDS_GP_USER_DAF";
 
     /**
      * Seed/User SAF for GP segments
      */
-    public final static String IDS_U_SAF_GP = "IDS_U_SAF_GP";
+    public final static String IDS_GP_USER_SAF = "IDS_GP_USER_SAF";
 
-    /**
-     * Reliability Analysis Scenario CAF for GP segments
-     */
-    public final static String IDS_RL_CAF_GP = "IDS_RL_CAF_GP";
-
-    /**
-     * Reliability Analysis Scenario OAF for GP segments
-     */
-    public final static String IDS_RL_OAF_GP = "IDS_RL_OAF_GP";
-
-    /**
-     * Reliability Analysis Scenario DAF for GP segments
-     */
-    public final static String IDS_RL_DAF_GP = "IDS_RL_DAF_GP";
-
-    /**
-     * Reliability Analysis Scenario SAF for GP segments
-     */
-    public final static String IDS_RL_SAF_GP = "IDS_RL_SAF_GP";
-
-    /**
-     * Reliability Analysis Scenario LAF for GP segments
-     */
-    public final static String IDS_RL_LAFI_GP = "IDS_RL_LAFI_GP";
-
-    /**
-     * Reliability Analysis Scenario LAF for GP segments
-     */
-    public final static String IDS_RL_LAFWZ_GP = "IDS_RL_LAFWZ_GP";
-
-    /**
-     * ATDM Analysis Scenario CAF for GP segments
-     */
-    public final static String IDS_ATDM_CAF_GP = "IDS_ATDM_CAF_GP";
-
-    /**
-     * ATDM Analysis Scenario OAF for GP segments
-     */
-    public final static String IDS_ATDM_OAF_GP = "IDS_ATDM_OAF_GP";
-
-    /**
-     * ATDM Analysis Scenario DAF for GP segments
-     */
-    public final static String IDS_ATDM_DAF_GP = "IDS_ATDM_DAF_GP";
-
-    /**
-     * ATDM Analysis Scenario SAF for GP segments
-     */
-    public final static String IDS_ATDM_SAF_GP = "IDS_ATDM_SAF_GP";
-
-    /**
-     * ATDM Analysis Scenario LAF for GP segments
-     */
-    public final static String IDS_ATDM_LAF_GP = "IDS_ATDM_LAF_GP";
-
-    /**
-     * ATDM Analysis Scenario Ramp Metering Rate for GP segments
-     */
-    public final static String IDS_ATDM_RM_GP = "IDS_ATDM_RM_GP";
-
-    /**
-     * ATDM Analysis Scenario CAF for ML segments
-     */
-    public final static String IDS_ATDM_CAF_ML = "IDS_ATDM_CAF_ML";
-
-    /**
-     * ATDM Analysis Scenario OAF for ML segments
-     */
-    public final static String IDS_ATDM_OAF_ML = "IDS_ATDM_OAF_ML";
-
-    /**
-     * ATDM Analysis Scenario DAF for ML segments
-     */
-    public final static String IDS_ATDM_DAF_ML = "IDS_ATDM_DAF_ML";
-
-    /**
-     * ATDM Analysis Scenario SAF for ML segments
-     */
-    public final static String IDS_ATDM_SAF_ML = "IDS_ATDM_SAF_ML";
-
-    /**
-     * ATDM Analysis Scenario LAF for ML segments
-     */
-    public final static String IDS_ATDM_LAF_ML = "IDS_ATDM_LAF_ML";
-
-    /**
-     * ATDM Analysis Scenario Ramp Metering Rate for ML segments (not in use
-     * now)
-     */
-    //public final static String IDS_ATDM_RM_ML = "IDS_ATDM_RM_ML";
     /**
      * Acceleration/Deceleration Lane Length in Feet
      */
@@ -602,6 +776,38 @@ public class CEConst {
      * Ramp to Ramp Demand in veh
      */
     public final static String IDS_RAMP_TO_RAMP_DEMAND_VEH = "IDS_RAMP_TO_RAMP_DEMAND_VEH";
+
+    /**
+     * User defined ramp metering type
+     */
+    public final static String IDS_RAMP_METERING_TYPE = "IDS_RAMP_METERING_TYPE";
+
+    /**
+     * ATDM ramp metering type
+     */
+    public final static String IDS_ATDM_RAMP_METERING_TYPE = "IDS_RAMP_METERING_TYPE";
+
+    //Cross Weave Parameters
+    /**
+     * Whether The Segment Has Cross Weave Effect
+     */
+    public final static String IDS_HAS_CROSS_WEAVE = "IDS_HAS_CROSS_WEAVE";
+
+    /**
+     * Managed Lane Cross Weave Minium Lane Change
+     */
+    public final static String IDS_CROSS_WEAVE_LC_MIN = "IDS_CROSS_WEAVE_LC_MIN";
+
+    /**
+     * Managed Lane Cross Weave Volume
+     */
+    public final static String IDS_CROSS_WEAVE_VOLUME = "IDS_CROSS_WEAVE_VOLUME";
+
+    /**
+     * Cross Weave Capacity Adjustment Factor (Apply on GP when ML is used and
+     * has cross weave effect)
+     */
+    public final static String IDS_CROSS_WEAVE_CAF = "IDS_CROSS_WEAVE_CAF";
 
     // Basic Segment Output Column Text
     /**
@@ -780,27 +986,6 @@ public class CEConst {
      */
     public final static String IDS_ON_RAMP_DELAY = "IDS_ON_RAMP_DELAY";
 
-    // Field Not Applicable Text
-    /**
-     * String "N/A"
-     */
-    public final static String IDS_NA = "N/A";
-
-    /**
-     * Blank String " "
-     */
-    public final static String IDS_BLANK = " ";
-
-    /**
-     * Dash String " "
-     */
-    public final static String IDS_DASH = "*";
-
-    /**
-     * Error String "ERROR"
-     */
-    public final static String IDS_ERROR = "ERROR";
-
     // Facility Summary Output Text
     /**
      * Period Summary
@@ -872,10 +1057,6 @@ public class CEConst {
      */
     public final static String IDS_P_TOTAL_DENSITY_PC = "IDS_P_TOTAL_DENSITY_PC";
 
-    /**
-     * Period Summary
-     */
-    //public final static String IDS_P_INFLUENCED_DENSITY_PC = "IDS_P_INFLUENCED_DENSITY_PC";
     /**
      * Period Summary
      */
@@ -1022,77 +1203,12 @@ public class CEConst {
     public final static String IDS_SP_MAX_VC = "IDS_SP_MAC_VC";
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="MANAGED LANE - identifier constant strings">
-    /**
-     * Number of Managed Lane Segments
-     */
-    public final static String IDS_ML_NUM_SEGMENT = "IDS_ML_NUM_SEGMENT";
-
-    /**
-     * Total Length of the Facility in Mile (?)
-     */
-    public final static String IDS_ML_TOTAL_LENGTH_MI = "IDS_ML_TOTAL_LENGTH_MI";
-
+    // <editor-fold defaultstate="collapsed" desc="MANAGED LANES SEGMENT - identifier constant strings">
     // Basic Segment Variable Column Text
     /**
      * Segment Type
      */
     public final static String IDS_ML_SEGMENT_TYPE = "IDS_ML_SEGMENT_TYPE";
-
-    /**
-     * HOV
-     */
-    public final static int ML_METHOD_HOV = 0;
-
-    /**
-     * HOT
-     */
-    public final static int ML_METHOD_HOT = 1;
-
-    /**
-     * HOV
-     */
-    public final static String STR_ML_METHOD_HOV = "HOV";
-
-    /**
-     * HOT
-     */
-    public final static String STR_ML_METHOD_HOT = "HOT";
-
-    /**
-     * Managed Lane Method Type (HOV/HOT)
-     */
-    public final static String IDS_ML_METHOD_TYPE = "IDS_ML_METHOD_TYPE";
-
-    /**
-     * Marking
-     */
-    public final static int ML_SEPARATION_MARKING = 0;
-
-    /**
-     * Buffer
-     */
-    public final static int ML_SEPARATION_BUFFER = 1;
-
-    /**
-     * Barrier
-     */
-    public final static int ML_SEPARATION_BARRIER = 2;
-
-    /**
-     * Marking
-     */
-    public final static String STR_ML_SEPARATION_MARKING = "Marking";
-
-    /**
-     * Buffer
-     */
-    public final static String STR_ML_SEPARATION_BUFFER = "Buffer";
-
-    /**
-     * Barrier
-     */
-    public final static String STR_ML_SEPARATION_BARRIER = "Barrier";
 
     /**
      * Segment Separation Type
@@ -1137,72 +1253,22 @@ public class CEConst {
     /**
      * Seed/User CAF
      */
-    public final static String IDS_ML_UCAF = "IDS_ML_UCAF";
+    public final static String IDS_ML_USER_CAF = "IDS_ML_USER_CAF";
 
     /**
      * Seed/User OAF
      */
-    public final static String IDS_ML_UOAF = "IDS_ML_UOAF";
+    public final static String IDS_ML_USER_OAF = "IDS_ML_USER_OAF";
 
     /**
      * Seed/User DAF
      */
-    public final static String IDS_ML_UDAF = "IDS_ML_UDAF";
+    public final static String IDS_ML_USER_DAF = "IDS_ML_USER_DAF";
 
     /**
      * Seed/User SAF
      */
-    public final static String IDS_ML_USAF = "IDS_ML_USAF";
-
-    /**
-     * Reliability Analysis Scenario CAF
-     */
-    public final static String IDS_ML_RLSCAF = "IDS_ML_RLSCAF";
-
-    /**
-     * Reliability Analysis Scenario OAF
-     */
-    public final static String IDS_ML_RLSOAF = "IDS_ML_RLSOAF";
-
-    /**
-     * Reliability Analysis Scenario DAF
-     */
-    public final static String IDS_ML_RLSDAF = "IDS_ML_RLSDAF";
-
-    /**
-     * Reliability Analysis Scenario SAF
-     */
-    public final static String IDS_ML_RLSSAF = "IDS_ML_RLSSAF";
-
-    /**
-     * Reliability Analysis Scenario LAF
-     */
-    public final static String IDS_ML_RLSLAF = "IDS_ML_RLSLAF";
-
-    /**
-     * ATDM Analysis Scenario CAF
-     */
-    public final static String IDS_ML_ATDMSCAF = "IDS_ML_ATDMSCAF";
-
-    /**
-     * ATDM Analysis Scenario OAF
-     */
-    public final static String IDS_ML_ATDMSOAF = "IDS_ML_ATDMSOAF";
-
-    /**
-     * ATDM Analysis Scenario DAF
-     */
-    public final static String IDS_ML_ATDMSDAF = "IDS_ML_ATDMSDAF";
-
-    /**
-     * ATDM Analysis Scenario SAF
-     */
-    public final static String IDS_ML_ATDMSSAF = "IDS_ML_ATDMSSAF";
-
-    /**
-     * ATDM Analysis Scenario LAF
-     */
-    public final static String IDS_ML_ATDMSLAF = "IDS_ML_ATDMSLAF";
+    public final static String IDS_ML_USER_SAF = "IDS_ML_USER_SAF";
 
     /**
      * Acceleration/Deceleration Lane Length in Feet
@@ -1316,28 +1382,6 @@ public class CEConst {
      * Maximum Lane Change between GP and ML
      */
     public final static String IDS_ML_MAX_LANE_CHANGE_ML = "IDS_ML_MAX_LANE_CHANGE_ML";
-
-    //Cross Weave Parameters //TODO need to check
-    /**
-     * Whether Managed Lane Has Cross Weave Effect
-     */
-    public final static String IDS_ML_HAS_CROSS_WEAVE = "IDS_ML_HAS_CROSS_WEAVE";
-
-    /**
-     * Managed Lane Cross Weave Minium Lane Change
-     */
-    public final static String IDS_ML_CROSS_WEAVE_LC_MIN = "IDS_ML_CROSS_WEAVE_LC_MIN";
-
-    /**
-     * Managed Lane Cross Weave Volume
-     */
-    public final static String IDS_ML_CROSS_WEAVE_VOLUME = "IDS_ML_CROSS_WEAVE_VOLUME";
-
-    /**
-     * Cross Weave Capacity Adjustment Factor (Apply on GP when ML is used and
-     * has cross weave effect)
-     */
-    public final static String IDS_ML_CROSS_WEAVE_CAF = "IDS_ML_CROSS_WEAVE_CAF";
 
     // Basic Segment Output Column Text
     /**
@@ -1737,357 +1781,7 @@ public class CEConst {
     public final static String IDS_ML_SP_MAX_VC = "IDS_ML_SP_MAC_VC";
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Combined - identifier constant strings">
-    /**
-     * Number of Managed Lane Segments
-     */
-    public final static String IDS_CB_NUM_SEGMENT = "IDS_CB_NUM_SEGMENT";
-
-    /**
-     * Mainline Number of Lanes
-     */
-    public final static String IDS_CB_NUM_LANES = "IDS_CB_NUM_LANES";
-
-    /**
-     * Total Length of the Facility in Mile (?)
-     */
-    public final static String IDS_CB_TOTAL_LENGTH_MI = "IDS_CB_TOTAL_LENGTH_MI";
-
-    /**
-     * Segment Length in Feet
-     */
-    public final static String IDS_CB_SEGMENT_LENGTH_FT = "IDS_CB_SEGMENT_LENGTH_FT";
-
-    /**
-     * Segment Length in Mile
-     */
-    public final static String IDS_CB_SEGMENT_LENGTH_MI = "IDS_CB_SEGMENT_LENGTH_MI";
-
-    /**
-     * Mainline Free Flow Speed
-     */
-    public final static String IDS_CB_FREE_FLOW_SPEED = "IDS_CB_FREE_FLOW_SPEED";
-
-    /**
-     * Mainline Demand in veh
-     */
-    public final static String IDS_CB_DEMAND_VEH = "IDS_CB_DEMAND_VEH";
-
-    /**
-     * Mainline/On Ramp/Off Ramp Truck Percentage
-     */
-    public final static String IDS_CB_TRUCK_PERCENTAGE = "IDS_CB_TRUCK_P";
-
-    /**
-     * Mainline/On Ramp/Off Ramp RV Percentage
-     */
-    public final static String IDS_CB_RV_PERCENTAGE = "IDS_CB_RV_P";
-
-    /**
-     * Seed/User CAF
-     */
-    public final static String IDS_CB_UCAF = "IDS_CB_UCAF";
-
-    /**
-     * Seed/User OAF
-     */
-    public final static String IDS_CB_UOAF = "IDS_CB_UOAF";
-
-    /**
-     * Seed/User DAF
-     */
-    public final static String IDS_CB_UDAF = "IDS_CB_UDAF";
-
-    /**
-     * Seed/User SAF
-     */
-    public final static String IDS_CB_USAF = "IDS_CB_USAF";
-
-    /**
-     * Acceleration/Deceleration Lane Length in Feet
-     */
-    public final static String IDS_CB_ACC_DEC_LANE_LENGTH = "IDS_CB_ACC_DEC_LANE_LENGTH";
-
-    // On Ramp Variable Column Text
-    /**
-     * On Ramp Side
-     */
-    public final static String IDS_CB_ON_RAMP_SIDE = "IDS_CB_ON_RAMP_SIDE";
-
-    /**
-     * On Ramp Number of Lanes
-     */
-    public final static String IDS_CB_NUM_ON_RAMP_LANES = "IDS_CB_NUM_ON_RAMP_LANES";
-
-    /**
-     * On Ramp Demand in veh
-     */
-    public final static String IDS_CB_ON_RAMP_DEMAND_VEH = "IDS_CB_ON_RAMP_DEMAND_VEH";
-
-    /**
-     * On Ramp Free Flow Speed
-     */
-    public final static String IDS_CB_ON_RAMP_FREE_FLOW_SPEED = "IDS_CB_ON_RAMP_FREE_FLOW_SPEED";
-
-    /**
-     * On Ramp Truck Percentage
-     */
-    public final static String IDS_CB_ON_RAMP_TRUCK_PERCENTAGE = "IDS_CB_ON_RAMP_TRUCK_PERCENTAGE";
-
-    /**
-     * On Ramp RV Percentage
-     */
-    public final static String IDS_CB_ON_RAMP_RV_PERCENTAGE = "IDS_CB_ON_RAMP_RV_PERCENTAGE";
-
-    /**
-     * On Ramp Metering Rate
-     */
-    public final static String IDS_CB_ON_RAMP_METERING_RATE = "IDS_CB_ON_RAMP_METERING_RATE";
-
-    // Off Ramp Variable Column Text
-    /**
-     * Off Ramp Side
-     */
-    public final static String IDS_CB_OFF_RAMP_SIDE = "IDS_CB_OFFRS";
-
-    /**
-     * Off Ramp Number of Lanes
-     */
-    public final static String IDS_CB_NUM_OFF_RAMP_LANES = "IDS_CB_NUM_OFF_RAMP_LANES";
-
-    /**
-     * Off Ramp Demand in veh
-     */
-    public final static String IDS_CB_OFF_RAMP_DEMAND_VEH = "IDS_CB_OFF_RAMP_DEMAND_VEH";
-
-    /**
-     * Off Ramp Free Flow Speed
-     */
-    public final static String IDS_CB_OFF_RAMP_FREE_FLOW_SPEED = "IDS_CB_OFF_RAMP_FREE_FLOW_SPEED";
-
-    /**
-     * Off Ramp Truck Percentage
-     */
-    public final static String IDS_CB_OFF_RAMP_TRUCK_PERCENTAGE = "IDS_CB_OFF_RAMP_TRUCK_PERCENTAGE";
-
-    /**
-     * Off Ramp RV Percentage
-     */
-    public final static String IDS_CB_OFF_RAMP_RV_PERCENTAGE = "IDS_CB_OFF_RAMP_RV_PERCENTAGE";
-
-    // Weaving Segment Variable Column Text
-    /**
-     * Length Short / Weaving Length in Feet
-     */
-    public final static String IDS_CB_LENGTH_SHORT = "IDS_CB_LENGTH_SHORT";
-
-    /**
-     * Minimum Lane Change From On Ramp to Mainline
-     */
-    public final static String IDS_CB_MIN_LANE_CHANGE_ONR_TO_FRWY = "IDS_CB_MAINCOTF";
-
-    /**
-     * Minimum Lane Change From Mainline to Off Ramp
-     */
-    public final static String IDS_CB_MIN_LANE_CHANGE_FRWY_TO_OFR = "IDS_CB_MAINCFTO";
-
-    /**
-     * Minimum Lane Change From On Ramp to Off Ramp
-     */
-    public final static String IDS_CB_MIN_LANE_CHANGE_ONR_TO_OFR = "IDS_CB_MAINCOTO";
-
-    /**
-     * Number of Lanes Weaving
-     */
-    public final static String IDS_CB_NUM_LANES_WEAVING = "IDS_CB_NLW";
-
-    /**
-     * Ramp to Ramp Demand in veh
-     */
-    public final static String IDS_CB_RAMP_TO_RAMP_DEMAND_VEH = "IDS_CB_RAMP_TO_RAMP_DEMAND_VEH";
-
-    /**
-     * Minimum Lane Change between GP and ML
-     */
-    public final static String IDS_CB_MIN_LANE_CHANGE_ML = "IDS_CB_MIN_LANE_CHANGE_ML";
-
-    /**
-     * Maximum Lane Change between GP and ML
-     */
-    public final static String IDS_CB_MAX_LANE_CHANGE_ML = "IDS_CB_MAX_LANE_CHANGE_ML";
-
-    // Basic Segment Output Column Text
-    /**
-     * Segment Type Used
-     */
-    public final static String IDS_CB_TYPE_USED = "IDS_CB_TYPE_USED";
-
-    /**
-     * Output Speed in mph
-     */
-    public final static String IDS_CB_SPEED = "IDS_CB_SPEED";
-
-    /**
-     * Output Density in veh/mi/ln
-     */
-    public final static String IDS_CB_TOTAL_DENSITY_VEH = "IDS_CB_TOTAL_DENSITY_VEH";
-
-    /**
-     * Output Density in pc/mi/ln
-     */
-    public final static String IDS_CB_TOTAL_DENSITY_PC = "IDS_CB_TOTAL_DENSITY_PC";
-
-    /**
-     * Output Influenced Area Density pc/mi/ln
-     */
-    public final static String IDS_CB_INFLUENCED_DENSITY_PC = "IDS_CB_INFLUENCED_DENSITY_PC";
-
-    /**
-     * Output Adjusted Mainline Demand in vph
-     */
-    public final static String IDS_CB_ADJUSTED_MAIN_DEMAND = "IDS_CB_ADJUSTED_DEMAND";
-
-    /**
-     * Output Mainline Capacity in vph
-     */
-    public final static String IDS_CB_MAIN_CAPACITY = "IDS_CB_CAPACITY";
-
-    /**
-     * Output Mainline Volume Served
-     */
-    public final static String IDS_CB_MAIN_VOLUME_SERVED = "IDS_CB_MAIN_VOLUME_SERVED";
-
-    /**
-     * Output Demand/Capacity Ratio
-     */
-    public final static String IDS_CB_DC = "IDS_CB_DC";
-
-    /**
-     * Output Volume/Capacity Ratio
-     */
-    public final static String IDS_CB_VC = "IDS_CB_VC";
-
-    /**
-     * Output Density Based LOS
-     */
-    public final static String IDS_CB_DENSITY_BASED_LOS = "IDS_CB_DENSITY_BASED_LOS";
-
-    /**
-     * Output Demand Based LOS
-     */
-    public final static String IDS_CB_DEMAND_BASED_LOS = "IDS_CB_DEMAND_BASED_LOS";
-
-    /**
-     * Output Queue Length In Feet
-     */
-    public final static String IDS_CB_QUEUE_LENGTH = "IDS_CB_QUEUE_LENGTH";
-
-    /**
-     * Output Queue Percentage
-     */
-    public final static String IDS_CB_QUEUE_PERCENTAGE = "IDS_CB_QUEUE_PERCENTAGE";
-
-    /**
-     * Output On Ramp Queue In Number Of Vehicles
-     */
-    public final static String IDS_CB_ON_QUEUE_VEH = "IDS_CB_ON_QUEUE_VEH";
-
-    /**
-     * Output Actual Travel Time in Minute
-     */
-    public final static String IDS_CB_ACTUAL_TIME = "IDS_CB_ACTUAL_TIME";
-
-    /**
-     * Output Free Flow Speed Travel Time in Minute
-     */
-    public final static String IDS_CB_FFS_TIME = "IDS_CB_FFS_TIME";
-
-    /**
-     * Output Mainline Delay in Minute
-     */
-    public final static String IDS_CB_MAINLINE_DELAY = "IDS_CB_MAINLINE_DELAY";
-
-    /**
-     * Output System Delay in Minute
-     */
-    public final static String IDS_CB_SYSTEM_DELAY = "IDS_CB_SYSTEM_DELAY";
-
-    /**
-     * Output VMTD
-     */
-    public final static String IDS_CB_VMTD = "IDS_CB_VMTD";
-
-    /**
-     * Output VMTV
-     */
-    public final static String IDS_CB_VMTV = "IDS_CB_VMTV";
-
-    /**
-     * Output PMTD
-     */
-    public final static String IDS_CB_PMTD = "IDS_CB_PMTD";
-
-    /**
-     * Output PMTV
-     */
-    public final static String IDS_CB_PMTV = "IDS_CB_PMTV";
-
-    /**
-     * Output VHT
-     */
-    public final static String IDS_CB_VHT = "IDS_CB_VHT";
-
-    /**
-     * Output VHD
-     */
-    public final static String IDS_CB_VHD = "IDS_CB_VHD";
-
-    /**
-     * Output Space Mean Speed
-     */
-    public final static String IDS_CB_SPACE_MEAN_SPEED = "IDS_CB_SPACE_MEAN_SPEED";
-
-    /**
-     * Output Travel Time Index
-     */
-    public final static String IDS_CB_TRAVEL_TIME_INDEX = "IDS_CB_TRAVEL_TIME_INDEX";
-
-    // Special Output Column Text
-    /**
-     * Output On/Off Ramp Capacity in vph
-     */
-    public final static String IDS_CB_ON_RAMP_CAPACITY = "IDS_CB_ON_RAMP_CAPACITY";
-
-    /**
-     * Output Adjusted On Ramp Demand in vph
-     */
-    public final static String IDS_CB_ADJUSTED_ON_RAMP_DEMAND = "IDS_CB_ADJUSTED_ON_RAMP_DEMAND";
-
-    /**
-     * Output On Ramp Volume Served in vph
-     */
-    public final static String IDS_CB_ON_RAMP_VOLUME_SERVED = "IDS_CB_ON_RAMP_VOLUME_SERVED";
-
-    /**
-     * Output Off Ramp Capacity in vph
-     */
-    public final static String IDS_CB_OFF_RAMP_CAPACITY = "IDS_CB_OFF_RAMP_CAPACITY";
-
-    /**
-     * Output Adjusted Off Ramp Demand in vph
-     */
-    public final static String IDS_CB_ADJUSTED_OFF_RAMP_DEMAND = "IDS_CB_ADJUSTED_OFF_RAMP_DEMAND";
-
-    /**
-     * Output Off Ramp Volume Served in vph
-     */
-    public final static String IDS_CB_OFF_RAMP_VOLUME_SERVED = "IDS_CB_OFF_RAMP_VOLUME_SERVED";
-
-    /**
-     * Output On Ramp Delay in Minute
-     */
-    public final static String IDS_CB_ON_RAMP_DELAY = "IDS_CB_ON_RAMP_DELAY";
-
+    // <editor-fold defaultstate="collapsed" desc="COMBINED REPORT - identifier constant strings">
     // Facility Summary Output Text
     /**
      * Period Summary
@@ -2159,10 +1853,6 @@ public class CEConst {
      */
     public final static String IDS_CB_P_TOTAL_DENSITY_PC = "IDS_CB_P_TOTAL_DENSITY_PC";
 
-    /**
-     * Period Summary
-     */
-    //public final static String IDS_CB_P_INFLUENCED_DENSITY_PC = "IDS_CB_P_INFLUENCED_DENSITY_PC";
     /**
      * Period Summary
      */
@@ -2308,113 +1998,4 @@ public class CEConst {
      */
     public final static String IDS_CB_SP_MAX_VC = "IDS_CB_SP_MAC_VC";
     // </editor-fold>
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_WEATHER = "IDS_ATDM_STRAT_TYPE_WEATHER";
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_DEMAND = "IDS_ATDM_STRAT_TYPE_DEMAND";
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_INCIDENT = "IDS_ATDM_STRAT_TYPE_INCIDENT";
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_WORKZONE = "IDS_ATDM_STRAT_TYPE_WORKZONE";
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_RAMP_METERING = "IDS_ATDM_STRAT_TYPE_RAMP_METERING";
-
-    /**
-     * ATDM parameters identifier
-     */
-    public final static String IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING = "IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING";
-
-    /**
-     * Free flow speed known identifier
-     */
-    public final static String IDS_FFS_KNOWN = "IDS_FFS_KNOWN";
-
-    /**
-     * Ramp metering used identifier
-     */
-    //public final static String IDS_RM_USED = "IDS_RM_USED";
-    /**
-     * Adaptive ramp metering used identifier
-     */
-    public final static String IDS_ADAPTIVE_RM_USED = "IDS_ADAPTIVE_RM_USED";
-
-    /**
-     * Managed lane used identifier
-     */
-    public final static String IDS_MANAGED_LANE_USED = "IDS_MANAGED_LANE_USED";
-
-    /**
-     * Seed demand date identifier
-     */
-    public final static String IDS_SEED_DEMAND_DATE = "IDS_SEED_DEMAND_DATE";
-
-    /**
-     * Analysis period heading identifier
-     */
-    public final static String IDS_ANALYSIS_PERIOD_HEADING = "IDS_ANALYSIS_PERIOD_HEADING";
-
-    /**
-     * User defined ramp metering type
-     */
-    public final static String IDS_RAMP_METERING_TYPE = "IDS_RAMP_METERING_TYPE";
-
-    /**
-     * ATDM ramp metering type
-     */
-    public final static String IDS_ATDM_RAMP_METERING_TYPE = "IDS_RAMP_METERING_TYPE";
-
-    /**
-     * Ramp metering type - None
-     */
-    public final static int IDS_RAMP_METERING_TYPE_NONE = 0;
-
-    /**
-     * Ramp metering type - Fix
-     */
-    public final static int IDS_RAMP_METERING_TYPE_FIX = 1;
-
-    /**
-     * Ramp metering type - Linear
-     */
-    public final static int IDS_RAMP_METERING_TYPE_LINEAR = 2;
-
-    /**
-     * Ramp metering type - Fuzzy
-     */
-    public final static int IDS_RAMP_METERING_TYPE_FUZZY = 3;
-
-    /**
-     * Ramp metering type - None
-     */
-    public final static String STR_RAMP_METERING_TYPE_NONE = "None";
-
-    /**
-     * Ramp metering type - Fix
-     */
-    public final static String STR_RAMP_METERING_TYPE_FIX = "Fix";
-
-    /**
-     * Ramp metering type - Linear
-     */
-    public final static String STR_RAMP_METERING_TYPE_LINEAR = "Linear";
-
-    /**
-     * Ramp metering type - Fuzzy
-     */
-    public final static String STR_RAMP_METERING_TYPE_FUZZY = "Fuzzy";
 }

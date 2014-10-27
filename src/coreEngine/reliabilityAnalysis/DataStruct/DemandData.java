@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package coreEngine.reliabilityAnalysis.DataStruct;
 
 import coreEngine.Helper.CEConst;
@@ -47,7 +42,6 @@ public class DemandData {
 
     /**
      *
-     * @param type
      * @param type
      */
     public DemandData(int type) {
@@ -163,9 +157,10 @@ public class DemandData {
     public int getStartDay() {
         return this.startDay;
     }
-    
+
     /**
      * Returns a CEDate instance of the Reliability Reporting Period start date.
+     *
      * @return Start date of the Reliability Reporting Period
      */
     public CEDate getStartDate() {
@@ -187,9 +182,10 @@ public class DemandData {
     public int getEndDay() {
         return this.endDay;
     }
-    
+
     /**
      * Returns a CEDate instance of the Reliability Reporting Period end date.
+     *
      * @return End date of the Reliability Reporting Period
      */
     public CEDate getEndDate() {

@@ -1,6 +1,6 @@
 /**
  * contains some helper classes to perform evaluation of a freeway, including
- * under saturated method, over saturated method, and reliability analysis for
- * general purpose segments.
+ * constants, date, time, ASCII file adapter, CSV file writer, array creation,
+ * facility summary, and some other utility functions.
  */
 package coreEngine.Helper;

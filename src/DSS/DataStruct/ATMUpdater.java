@@ -51,8 +51,16 @@ public class ATMUpdater {
             // Ramp Metering Check
             if (currATM.getRMUsed(seg)) {
                 // Assigning Ramp Metering
-                atm.RM().set(currATM.getRMRate(seg), seg, currPeriod + 1);
-                atm.setRampMetering(true);
+                if (currATM.getRMType(seg) == PeriodATM.ID_RM_TYPE_USER) {
+                    // User Specified
+                    atm.RM().set(currATM.getRMRate(seg), seg, currPeriod + 1);
+                    atm.setRampMetering(true);
+                } else {
+                    // Use adaptive
+                    System.out.println("Using adaptive.");
+                    seed.setValue(CEConst.IDS_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_LINEAR, seg, currPeriod+1);
+                }
+                
                 if (currATM.getRMDuration(seg) > 1) {
                     // Updating next PeriodATM instance
                     nextATM.setRMType(currATM.getRMType(seg), seg);

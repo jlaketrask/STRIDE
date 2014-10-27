@@ -41,7 +41,8 @@ public class PeriodATM {
     public static final String ID_RAMP_METERING_TYPE = "ID_RAMP_METERING_TYPE";
     public static final int ID_RM_TYPE_NONE = 0;
     public static final int ID_RM_TYPE_USER = 1;
-    public static final int ID_RM_TYPE_ADAPTIVE = 2;
+    public static final int ID_RM_TYPE_LINEAR = 2;
+    public static final int ID_RM_TYPE_FUZZY = 3;
     public static final String ID_RAMP_METERING_RATE = "ID_RAMP_METERING";
     public static final String ID_HSR_DURATION = "ID_HSR_DURATION";
     public static final String ID_HSR_USED = "ID_HSR_USED";
@@ -190,7 +191,7 @@ public class PeriodATM {
     
     public void setRMType(int value, int seg) {
         rampMeteringType[seg] = value;
-        if (value == ID_RM_TYPE_USER || value == ID_RM_TYPE_ADAPTIVE) {
+        if (value == ID_RM_TYPE_USER || value == ID_RM_TYPE_LINEAR || value == ID_RM_TYPE_FUZZY) {
             setRMUsed(true, seg);
         } else {
             setRMUsed(false, seg);

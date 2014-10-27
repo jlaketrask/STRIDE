@@ -316,11 +316,6 @@ public class ASCIISeedFileAdapter {
     /**
      * Item ID constant
      */
-    private final static String ID_ML_METHOD_TYPE = "202";
-
-    /**
-     * Item ID constant
-     */
     private final static String ID_ML_SEPARATION_TYPE = "203";
 
     /**
@@ -956,7 +951,6 @@ public class ASCIISeedFileAdapter {
         // <editor-fold defaultstate="collapsed" desc="ML HEADER">
         // Basic Segment Variable Column Text
         idToHeaderMap.put(ID_ML_SEGMENT_TYPE, STR_ML_SEGMENT_TYPE);
-        idToHeaderMap.put(ID_ML_METHOD_TYPE, STR_ML_METHOD_TYPE);
         idToHeaderMap.put(ID_ML_SEPARATION_TYPE, STR_ML_SEPARATION_TYPE);
 
         idToHeaderMap.put(ID_ML_NUM_LANES, STR_ML_NUM_LANES);
@@ -1032,10 +1026,10 @@ public class ASCIISeedFileAdapter {
         itemListGP.add(new Item(ID_TRUCK_PERCENTAGE, CEConst.IDS_TRUCK_PERCENTAGE, TIME_DEPENDENT, FLOAT));
         itemListGP.add(new Item(ID_RV_PERCENTAGE, CEConst.IDS_RV_PERCENTAGE, TIME_DEPENDENT, FLOAT));
 
-        itemListGP.add(new Item(ID_U_CAF, CEConst.IDS_U_CAF_GP, TIME_DEPENDENT, FLOAT));
-        itemListGP.add(new Item(ID_U_OAF, CEConst.IDS_U_OAF_GP, TIME_DEPENDENT, FLOAT));
-        itemListGP.add(new Item(ID_U_DAF, CEConst.IDS_U_DAF_GP, TIME_DEPENDENT, FLOAT));
-        itemListGP.add(new Item(ID_U_SAF, CEConst.IDS_U_SAF_GP, TIME_DEPENDENT, FLOAT));
+        itemListGP.add(new Item(ID_U_CAF, CEConst.IDS_GP_USER_CAF, TIME_DEPENDENT, FLOAT));
+        itemListGP.add(new Item(ID_U_OAF, CEConst.IDS_GP_USER_OAF, TIME_DEPENDENT, FLOAT));
+        itemListGP.add(new Item(ID_U_DAF, CEConst.IDS_GP_USER_DAF, TIME_DEPENDENT, FLOAT));
+        itemListGP.add(new Item(ID_U_SAF, CEConst.IDS_GP_USER_SAF, TIME_DEPENDENT, FLOAT));
 
         itemListGP.add(new Item(ID_ACC_DEC_LANE_LENGTH, CEConst.IDS_ACC_DEC_LANE_LENGTH, TIME_INDEPENDENT, INTEGER));
         itemListGP.add(new Item(ID_ON_RAMP_SIDE, CEConst.IDS_ON_RAMP_SIDE, TIME_INDEPENDENT, OTHER));
@@ -1065,17 +1059,16 @@ public class ASCIISeedFileAdapter {
     private void buildMLList() {
         //ML Segment Input
         itemListML.add(new Item(ID_ML_SEGMENT_TYPE, CEConst.IDS_ML_SEGMENT_TYPE, TIME_INDEPENDENT, OTHER));
-        itemListML.add(new Item(ID_ML_METHOD_TYPE, CEConst.IDS_ML_METHOD_TYPE, TIME_INDEPENDENT, OTHER));
         itemListML.add(new Item(ID_ML_SEPARATION_TYPE, CEConst.IDS_ML_SEPARATION_TYPE, TIME_INDEPENDENT, OTHER));
         itemListML.add(new Item(ID_ML_NUM_LANES, CEConst.IDS_ML_NUM_LANES, TIME_DEPENDENT, INTEGER));
         itemListML.add(new Item(ID_ML_FREE_FLOW_SPEED, CEConst.IDS_ML_FREE_FLOW_SPEED, TIME_DEPENDENT, INTEGER));
         itemListML.add(new Item(ID_ML_DEMAND_VEH, CEConst.IDS_ML_DEMAND_VEH, TIME_DEPENDENT, INTEGER));
         itemListML.add(new Item(ID_ML_TRUCK_PERCENTAGE, CEConst.IDS_ML_TRUCK_PERCENTAGE, TIME_DEPENDENT, FLOAT));
         itemListML.add(new Item(ID_ML_RV_PERCENTAGE, CEConst.IDS_ML_RV_PERCENTAGE, TIME_DEPENDENT, FLOAT));
-        itemListML.add(new Item(ID_ML_UCAF, CEConst.IDS_ML_UCAF, TIME_DEPENDENT, FLOAT));
-        itemListML.add(new Item(ID_ML_UOAF, CEConst.IDS_ML_UOAF, TIME_DEPENDENT, FLOAT));
-        itemListML.add(new Item(ID_ML_UDAF, CEConst.IDS_ML_UDAF, TIME_DEPENDENT, FLOAT));
-        itemListML.add(new Item(ID_ML_USAF, CEConst.IDS_ML_USAF, TIME_DEPENDENT, FLOAT));
+        itemListML.add(new Item(ID_ML_UCAF, CEConst.IDS_ML_USER_CAF, TIME_DEPENDENT, FLOAT));
+        itemListML.add(new Item(ID_ML_UOAF, CEConst.IDS_ML_USER_OAF, TIME_DEPENDENT, FLOAT));
+        itemListML.add(new Item(ID_ML_UDAF, CEConst.IDS_ML_USER_DAF, TIME_DEPENDENT, FLOAT));
+        itemListML.add(new Item(ID_ML_USAF, CEConst.IDS_ML_USER_SAF, TIME_DEPENDENT, FLOAT));
 
         itemListML.add(new Item(ID_ML_ACC_DEC_LANE_LENGTH, CEConst.IDS_ML_ACC_DEC_LANE_LENGTH, TIME_INDEPENDENT, INTEGER));
         itemListML.add(new Item(ID_ML_ON_RAMP_SIDE, CEConst.IDS_ML_ON_RAMP_SIDE, TIME_INDEPENDENT, OTHER));
@@ -1097,9 +1090,9 @@ public class ASCIISeedFileAdapter {
 
         itemListML.add(new Item(ID_ML_LC_MIN, CEConst.IDS_ML_MIN_LANE_CHANGE_ML, TIME_INDEPENDENT, INTEGER));
         itemListML.add(new Item(ID_ML_LC_MAX, CEConst.IDS_ML_MAX_LANE_CHANGE_ML, TIME_INDEPENDENT, INTEGER));
-        itemListML.add(new Item(ID_ML_HAS_CROSS_WEAVE, CEConst.IDS_ML_HAS_CROSS_WEAVE, TIME_INDEPENDENT, BOOLEAN));
-        itemListML.add(new Item(ID_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_ML_CROSS_WEAVE_LC_MIN, TIME_INDEPENDENT, INTEGER));
-        itemListML.add(new Item(ID_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_ML_CROSS_WEAVE_VOLUME, TIME_DEPENDENT, INTEGER));
+        itemListML.add(new Item(ID_ML_HAS_CROSS_WEAVE, CEConst.IDS_HAS_CROSS_WEAVE, TIME_INDEPENDENT, BOOLEAN));
+        itemListML.add(new Item(ID_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_CROSS_WEAVE_LC_MIN, TIME_INDEPENDENT, INTEGER));
+        itemListML.add(new Item(ID_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_CROSS_WEAVE_VOLUME, TIME_DEPENDENT, INTEGER));
     }
 
     // <editor-fold defaultstate="collapsed" desc="Import Functions">

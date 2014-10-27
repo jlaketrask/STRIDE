@@ -201,27 +201,28 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
     private class ItemSetting {
 
         /**
-         *
+         * Name of the setting item
          */
-        public String name;
+        public final String name;
 
         /**
-         *
+         * Period list model used for this item
          */
-        public DefaultListModel periodModel;
+        public final DefaultListModel periodModel;
 
         /**
-         *
+         * Segment list model used for this item
          */
-        public DefaultListModel segmentModel;
+        public final DefaultListModel segmentModel;
 
         /**
+         * Constructor
          *
-         * @param name
-         * @param periodModel
-         * @param segmentModel
+         * @param name Name of the setting item
+         * @param periodModel Period list model used for this item
+         * @param segmentModel Segment list model used for this item
          */
-        public ItemSetting(String name, DefaultListModel periodModel, DefaultListModel segmentModel) {//, ArrayList<Integer> segmentList) {
+        public ItemSetting(String name, DefaultListModel periodModel, DefaultListModel segmentModel) {
             this.name = name;
             this.periodModel = periodModel;
             this.segmentModel = segmentModel;
@@ -325,7 +326,7 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
         }
 
         if (seed.isManagedLaneUsed()) {
-            for (int segIndex = 0; segIndex < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); segIndex++) {
+            for (int segIndex = 0; segIndex < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segIndex++) {
                 segmentModel_all_ML.addElement(segIndex + 1);
 
                 switch (seed.getValueInt(CEConst.IDS_ML_SEGMENT_TYPE, segIndex)) {
@@ -928,19 +929,19 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
                 break;
 
             case STR_CAF:
-                seed.setValue(CEConst.IDS_U_CAF_GP, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_GP_USER_CAF, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_OAF:
-                seed.setValue(CEConst.IDS_U_OAF_GP, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_GP_USER_OAF, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_DAF:
-                seed.setValue(CEConst.IDS_U_DAF_GP, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_GP_USER_DAF, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_FFSAF:
-                seed.setValue(CEConst.IDS_U_SAF_GP, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_GP_USER_SAF, Float.parseFloat(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ACC_DEC_LANE_LENGTH:
@@ -1027,19 +1028,19 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
                 break;
 
             case STR_ML_CAF:
-                seed.setValue(CEConst.IDS_ML_UCAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_ML_USER_CAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_OAF:
-                seed.setValue(CEConst.IDS_ML_UOAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_ML_USER_OAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_DAF:
-                seed.setValue(CEConst.IDS_ML_UDAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_ML_USER_DAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_FFSAF:
-                seed.setValue(CEConst.IDS_ML_USAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_ML_USER_SAF, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_ACC_DEC_LANE_LENGTH:
@@ -1103,15 +1104,15 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
                 break;
 
             case STR_ML_HAS_CW:
-                seed.setValue(CEConst.IDS_ML_HAS_CROSS_WEAVE, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_HAS_CROSS_WEAVE, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_CW_LC_MIN:
-                seed.setValue(CEConst.IDS_ML_CROSS_WEAVE_LC_MIN, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_CROSS_WEAVE_LC_MIN, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_ML_CW_VOLUME:
-                seed.setValue(CEConst.IDS_ML_CROSS_WEAVE_VOLUME, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_CROSS_WEAVE_VOLUME, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             default:

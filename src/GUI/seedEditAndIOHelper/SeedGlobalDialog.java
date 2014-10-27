@@ -41,9 +41,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             = new String[]{CEConst.STR_ML_SEPARATION_MARKING, CEConst.STR_ML_SEPARATION_BUFFER,
                 CEConst.STR_ML_SEPARATION_BARRIER};
 
-    private static final String[] methodNames
-            = new String[]{CEConst.STR_ML_METHOD_HOV, CEConst.STR_ML_METHOD_HOT};
-
     private boolean inputCheckPassed = true;
 
     private final boolean isNewSeed;
@@ -55,8 +52,8 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
     /**
      * Creates new form NewOkCancelDialog
      *
-     * @param seed
-     * @param mainWindow
+     * @param seed Seed instance
+     * @param mainWindow MainWindow instance
      */
     public SeedGlobalDialog(Seed seed, MainWindow mainWindow) {
         super(mainWindow, true);
@@ -68,7 +65,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         this.setLocationRelativeTo(this.getRootPane());
         terrainComboBox.setModel(new DefaultComboBoxModel(terrainNames));
         separationCB.setModel(new DefaultComboBoxModel(separationNames));
-        MLTypeCB.setModel(new DefaultComboBoxModel(methodNames));
 
         //default visbility
         laneWidthText.setVisible(false);
@@ -149,7 +145,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         truckText.setText("");
 
         separationCheck.setSelected(false);
-        MLTypeCheck.setSelected(false);
         numOfMLLanesCheck.setSelected(false);
         numOfMLLanesText.setText("");
         MLFFSCheck.setSelected(false);
@@ -220,8 +215,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         checkButton = new javax.swing.JButton();
-        MLTypeCheck = new javax.swing.JCheckBox();
-        MLTypeCB = new javax.swing.JComboBox();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         generalJPanel = new javax.swing.JPanel();
@@ -448,16 +441,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
                 checkButtonActionPerformed(evt);
             }
         });
-
-        MLTypeCheck.setSelected(true);
-        MLTypeCheck.setText("Managed Lane Type");
-        MLTypeCheck.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                MLTypeCheckItemStateChanged(evt);
-            }
-        });
-
-        MLTypeCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HOV", "HOT" }));
 
         setTitle("Project Properties");
         setResizable(false);
@@ -1018,10 +1001,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         separationCB.setVisible(separationCheck.isSelected());
     }//GEN-LAST:event_separationCheckItemStateChanged
 
-    private void MLTypeCheckItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_MLTypeCheckItemStateChanged
-        MLTypeCB.setVisible(MLTypeCheck.isSelected());
-    }//GEN-LAST:event_MLTypeCheckItemStateChanged
-
     private void numOfMLLanesCheckItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_numOfMLLanesCheckItemStateChanged
         numOfMLLanesText.setVisible(numOfMLLanesCheck.isSelected());
     }//GEN-LAST:event_numOfMLLanesCheckItemStateChanged
@@ -1240,7 +1219,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
                 || truckCheck.isSelected()
                 || RVCheck.isSelected()
                 || separationCheck.isSelected()
-                || MLTypeCheck.isSelected()
                 || numOfMLLanesCheck.isSelected()
                 || MLFFSCheck.isSelected()
                 || numOfMLRampLanesCheck.isSelected()
@@ -1387,29 +1365,14 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
                     separation = CEConst.ML_SEPARATION_MARKING;
                     break;
             }
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 seed.setValue(CEConst.IDS_ML_SEPARATION_TYPE, separation, seg);
-            }
-        }
-
-        if (manageLaneCheck.isSelected() && MLTypeCheck.isSelected()) {
-            int terrain;
-            switch ((String) MLTypeCB.getSelectedItem()) {
-                case CEConst.STR_ML_METHOD_HOT:
-                    terrain = CEConst.ML_METHOD_HOT;
-                    break;
-                default:
-                    terrain = CEConst.ML_METHOD_HOV;
-                    break;
-            }
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
-                seed.setValue(CEConst.IDS_ML_METHOD_TYPE, terrain, seg);
             }
         }
 
         if (manageLaneCheck.isSelected() && numOfMLLanesCheck.isSelected()) {
             int num = Integer.parseInt(numOfMLLanesText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_NUM_LANES, num, seg, period);
                 }
@@ -1418,7 +1381,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && MLFFSCheck.isSelected()) {
             int num = Integer.parseInt(MLFFSText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_FREE_FLOW_SPEED, num, seg, period);
                 }
@@ -1427,7 +1390,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && numOfMLRampLanesCheck.isSelected()) {
             int num = Integer.parseInt(numOfMLRampLanesText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_NUM_ON_RAMP_LANES, num, seg, period);
                     seed.setValue(CEConst.IDS_ML_NUM_OFF_RAMP_LANES, num, seg, period);
@@ -1437,7 +1400,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && rampMLFFSCheck.isSelected()) {
             int num = Integer.parseInt(rampMLFFSText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_ON_RAMP_FREE_FLOW_SPEED, num, seg, period);
                     seed.setValue(CEConst.IDS_ML_OFF_RAMP_FREE_FLOW_SPEED, num, seg, period);
@@ -1447,7 +1410,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && accDecLengthMLCheck.isSelected()) {
             int num = Integer.parseInt(accDecLengthMLText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_ACC_DEC_LANE_LENGTH, num, seg, period);
                 }
@@ -1456,7 +1419,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && truckMLCheck.isSelected()) {
             int num = Integer.parseInt(truckMLText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_TRUCK_PERCENTAGE, num, seg, period);
                 }
@@ -1465,7 +1428,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
 
         if (manageLaneCheck.isSelected() && RVMLCheck.isSelected()) {
             int num = Integer.parseInt(RVMLText.getText());
-            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+            for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
                     seed.setValue(CEConst.IDS_ML_RV_PERCENTAGE, num, seg, period);
                 }
@@ -1632,8 +1595,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
     private javax.swing.JTextField ETText;
     private javax.swing.JCheckBox MLFFSCheck;
     private javax.swing.JTextField MLFFSText;
-    private javax.swing.JComboBox MLTypeCB;
-    private javax.swing.JCheckBox MLTypeCheck;
     private javax.swing.JCheckBox RVCheck;
     private javax.swing.JCheckBox RVMLCheck;
     private javax.swing.JTextField RVMLText;

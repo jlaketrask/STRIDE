@@ -54,6 +54,7 @@ public class MainWindow extends javax.swing.JFrame {
     private int activeScen = 0;
     private int activePeriod = 0;
     private int activeATDM = -1;
+    private boolean isShowingOutput = false;
     private boolean isShowingInput = true;
     private boolean numPeriodChanged = false;
     private boolean isOutputEnabled = true;
@@ -420,11 +421,8 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void showInput() {
         isShowingInput = true;
+        isShowingOutput = false;
         tableDisplay.showInput();
-        graphicDisplay.showInput();
-        //tabPanel.setSelectedComponent(singleScenSplitPanel);
-        showInputButton.setSelected(true);
-        showOutputButton.setSelected(false);
         inOutCB.setSelectedIndex(0);
     }
 
@@ -433,11 +431,8 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void showOutput() {
         isShowingInput = false;
-        //toolbox.showOutput();
+        isShowingOutput = true;
         tableDisplay.showOutput();
-        graphicDisplay.showOutput();
-        showInputButton.setSelected(false);
-        showOutputButton.setSelected(true);
         inOutCB.setSelectedIndex(1);
     }
 

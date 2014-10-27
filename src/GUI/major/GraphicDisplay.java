@@ -29,65 +29,101 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
     //input data
     private Seed seed;
-    private int scen;
-    private int period;
-    private int atdm;
-    private boolean isShowInput = false;
-    private int highlightSegIndex;
 
-    private boolean showIncidents = true;
+    private int scen;
+
+    private int period;
+
+    private int atdm;
+
+    private boolean isShowInput = false;
+
+    private int highlightSegIndex;
 
     private boolean paintLock = false;
 
-    //draw parameters - base
+    //draw parameters - base - generally in pixel
     private final static int HOR_EDGE = 20;
+
     private final static int VER_EDGE = 20;
+
     private final static int HEIGHT_PER_LANE = 15;
+
     private final static int GPML_SPACE = 5;
+
     private final static int WORK_ZONE_SHADE_SPACE = 7;
+
     private final static int WIDTH_PER_MILE = 150;
+
     private final static int SEPARATION_EXTENTION = 5;
+
     private final static int WIDTH_PER_RAMP = 15;
+
     private final static int DIAMOND_HEIGHT = 10;
+
     private final static int DIAMOND_WIDTH = 15;
+
     private final static int DIAMOND_SPACE = 30;
+
     private final static int ARROW_LENGTH = 20;
+
     private final static int ARROW_SIZE = 8;
+
     private final static int ZOOM_MAX = 500;
+
     private final static int ZOOM_MIN = 20;
 
     private final static float TILT_SCALE = 0.707f;
 
     //draw parameters - scaled
     private int horEdge;
+
     private int verEdge;
+
     private int heightPerLane;
+
     private int GPMLSpace;
+
     private int workZoneShadeSpace;
+
     private int widthPerMile;
+
     private int separationExtention;
+
     private int widthPerRamp;
+
     private int diamondHeight;
+
     private int diamondWidth;
+
     private int diamondSpace;
+
     private int arrowLength;
+
     private int arrowSize;
 
     private int zoomFactor = 0;
+
     private ArrayList<GraphicColorSetting> graphicColorSettings;
 
     //other parameters TBC
     private final static BasicStroke LANE_SOLID = new BasicStroke(2.0f);
+
     private final static BasicStroke DIAMOND_SOLID = new BasicStroke(2.0f);
+
     private final static BasicStroke SEGMENT_DIVIDE_DASH = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f);
     //private final static BasicStroke SEPARATION_BARRIER_SOLID = new BasicStroke(3.0f);
     //private final static BasicStroke SEPARATION_BUFFER_DASH = new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{5.0f, 10.0f}, 5.0f);
+
     private final static BasicStroke GP_ML_ACCESS_DASH = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 5.0f);
 
     //auto calculated parameters
     private int drawHeight;
+
     private int drawWidth;
+
     private int maxNumOfLanes = 0;
+
     private int maxNumOfMLLanes = 0;
     // </editor-fold>
 
@@ -112,6 +148,9 @@ public class GraphicDisplay extends javax.swing.JPanel {
         atdm = -1;
     }
 
+    /**
+     * Reset the color scheme to default
+     */
     public final void setDefaultColorScheme() {
         this.graphicColorSettings = new ArrayList<>();
 
@@ -136,48 +175,12 @@ public class GraphicDisplay extends javax.swing.JPanel {
         graphicColorSettings.add(new GraphicColorSetting("F", "Level of Service: F", new Color(1f, 0f, 0f)));
     }
 
-    public final void setZoom(int zoomFactor) {
-        if (this.zoomFactor != zoomFactor) {
-            this.zoomFactor = Math.min(Math.max(ZOOM_MIN, zoomFactor), ZOOM_MAX);
-            horEdge = (int) (HOR_EDGE * this.zoomFactor / 100f);
-            verEdge = (int) (VER_EDGE * this.zoomFactor / 100f);
-            heightPerLane = (int) (HEIGHT_PER_LANE * this.zoomFactor / 100f);
-            GPMLSpace = (int) (GPML_SPACE * this.zoomFactor / 100f);
-            workZoneShadeSpace = (int) (WORK_ZONE_SHADE_SPACE * this.zoomFactor / 100f);
-            widthPerMile = (int) (WIDTH_PER_MILE * this.zoomFactor / 100f);
-            separationExtention = (int) (SEPARATION_EXTENTION * this.zoomFactor / 100f);
-            widthPerRamp = (int) (WIDTH_PER_RAMP * this.zoomFactor / 100f);
-            diamondHeight = (int) (DIAMOND_HEIGHT * this.zoomFactor / 100f);
-            diamondWidth = (int) (DIAMOND_WIDTH * this.zoomFactor / 100f);
-            diamondSpace = (int) (DIAMOND_SPACE * this.zoomFactor / 100f);
-            arrowLength = (int) (ARROW_LENGTH * this.zoomFactor / 100f);
-            arrowSize = (int) (ARROW_SIZE * this.zoomFactor / 100f);
-            calculateDrawSize();
-            repaint();
-        }
-    }
-
-    /**
-     * Show input
-     */
-    public void showInput() {
-        //isShowInput = true;
-        repaint();
-    }
-
-    /**
-     * Show output
-     */
-    public void showOutput() {
-        //isShowInput = false;
-        repaint();
-    }
-
     /**
      * Show data for a particular seed, scenario and period
      *
      * @param seed seed to be displayed
      * @param scen index of scenario to be displayed
+     * @param atdm index of ATDM set to be displayed
      * @param period index of period to be displayed
      */
     public void selectSeedScenATDMPeriod(Seed seed, int scen, int atdm, int period) {
@@ -224,6 +227,9 @@ public class GraphicDisplay extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Refresh the graphic display
+     */
     public void update() {
         calculateDrawSize();
         repaint();
@@ -245,7 +251,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
             if (seed.isManagedLaneUsed()) {
                 maxNumOfMLLanes = 0;
-                for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT); seg++) {
+                for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                     maxNumOfMLLanes = Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm), maxNumOfMLLanes);
                 }
                 maxNumOfLanes += maxNumOfMLLanes;
@@ -318,15 +324,13 @@ public class GraphicDisplay extends javax.swing.JPanel {
                     drawMLOutput(g, currX, currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane, seg);
                 }
 
-                //dawy incident lane closure for ML segment
-                if (showIncidents) {
-                    g.setColor(findColor("INC"));
-                    if (seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm) < 0) {
-                        g.fillRect(currX + 1,
-                                currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
-                                (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                                -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RLSLAF, seg, period, scen, atdm));
-                    }
+                //draw incident lane closure for ML segment
+                g.setColor(findColor("INC"));
+                if (seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm) < 0) {
+                    g.fillRect(currX + 1,
+                            currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
+                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                            -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm));
                 }
 
                 //draw separation
@@ -381,23 +385,21 @@ public class GraphicDisplay extends javax.swing.JPanel {
             }
 
             //dawy work zone lane closure
-            if (seed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, seg, period, scen, atdm) < 0) {
+            if (seed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, seg, period, scen, atdm) < 0) {
                 fillWorkZone(g,
                         currX + 1,
                         currY,
                         (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                        -heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, seg, period, scen, atdm));
+                        -heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, seg, period, scen, atdm));
             }
 
             //dawy incident lane closure for GP segment
-            if (showIncidents) {
-                g.setColor(findColor("INC"));
-                if (seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm) < 0) {
-                    g.fillRect(currX + 1,
-                            currY - heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, seg, period, scen, atdm),
-                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                            -heightPerLane * seed.getValueInt(CEConst.IDS_RL_LAFI_GP, seg, period, scen, atdm));
-                }
+            g.setColor(findColor("INC"));
+            if (seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm) < 0) {
+                g.fillRect(currX + 1,
+                        currY - heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, seg, period, scen, atdm),
+                        (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                        -heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm));
             }
 
             //draw GP lanes
@@ -722,7 +724,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
         //separation
         g.setStroke(SEGMENT_DIVIDE_DASH);
-        if (seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT) - 1) {
+        if (seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1) {
             g.drawLine(x + (int) (seed.getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile),
                     y - separationExtention - heightPerLane * Math.max(0,
                             seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg + 1, period, scen, atdm) - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm)),
@@ -744,7 +746,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
         //separation
         g.setStroke(SEGMENT_DIVIDE_DASH);
-        if (seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT) - 1) {
+        if (seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1) {
             g.drawLine(x + (int) (seed.getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile),
                     y - separationExtention - heightPerLane * Math.max(0,
                             seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg + 1, period, scen, atdm) - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm)),
@@ -770,7 +772,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
         //separation
         g.setStroke(SEGMENT_DIVIDE_DASH);
-        if (seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT) - 1) {
+        if (seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1) {
             g.drawLine(x + (int) (seed.getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile),
                     y - separationExtention - heightPerLane * Math.max(0,
                             seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg + 1, period, scen, atdm) - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm)),
@@ -799,7 +801,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
         //separation
         g.setStroke(SEGMENT_DIVIDE_DASH);
-        if (seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT) - 1) {
+        if (seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1) {
             g.drawLine(x + (int) (seed.getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile),
                     y - separationExtention - heightPerLane * Math.max(0,
                             seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg + 1, period, scen, atdm) - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm)),
@@ -830,7 +832,7 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
         //separation
         g.setStroke(SEGMENT_DIVIDE_DASH);
-        if (seg < seed.getValueInt(CEConst.IDS_ML_NUM_SEGMENT) - 1) {
+        if (seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1) {
             g.drawLine(x + (int) (seed.getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile),
                     y - separationExtention - heightPerLane * Math.max(0,
                             seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg + 1, period, scen, atdm) - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period, scen, atdm)),
@@ -875,15 +877,6 @@ public class GraphicDisplay extends javax.swing.JPanel {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="setter and getters">
-    /**
-     * Sets whether or not incident lane closures are drawn.
-     *
-     * @param val
-     */
-    public void showIncidents(boolean val) {
-        this.showIncidents = val;
-    }
-
     /**
      * Setter for mainWindow connection
      *
@@ -1049,8 +1042,39 @@ public class GraphicDisplay extends javax.swing.JPanel {
         this.GPMLSpace = GPMLSpace;
     }
 
+    /**
+     * Get zoom factor
+     *
+     * @return zoom factor (%)
+     */
     public int getZoomFactor() {
         return zoomFactor;
+    }
+
+    /**
+     * Set zoom factor of the graphic display
+     *
+     * @param zoomFactor new zoom factor (%)
+     */
+    public final void setZoom(int zoomFactor) {
+        if (this.zoomFactor != zoomFactor) {
+            this.zoomFactor = Math.min(Math.max(ZOOM_MIN, zoomFactor), ZOOM_MAX);
+            horEdge = (int) (HOR_EDGE * this.zoomFactor / 100f);
+            verEdge = (int) (VER_EDGE * this.zoomFactor / 100f);
+            heightPerLane = (int) (HEIGHT_PER_LANE * this.zoomFactor / 100f);
+            GPMLSpace = (int) (GPML_SPACE * this.zoomFactor / 100f);
+            workZoneShadeSpace = (int) (WORK_ZONE_SHADE_SPACE * this.zoomFactor / 100f);
+            widthPerMile = (int) (WIDTH_PER_MILE * this.zoomFactor / 100f);
+            separationExtention = (int) (SEPARATION_EXTENTION * this.zoomFactor / 100f);
+            widthPerRamp = (int) (WIDTH_PER_RAMP * this.zoomFactor / 100f);
+            diamondHeight = (int) (DIAMOND_HEIGHT * this.zoomFactor / 100f);
+            diamondWidth = (int) (DIAMOND_WIDTH * this.zoomFactor / 100f);
+            diamondSpace = (int) (DIAMOND_SPACE * this.zoomFactor / 100f);
+            arrowLength = (int) (ARROW_LENGTH * this.zoomFactor / 100f);
+            arrowSize = (int) (ARROW_SIZE * this.zoomFactor / 100f);
+            calculateDrawSize();
+            repaint();
+        }
     }
     // </editor-fold>
 

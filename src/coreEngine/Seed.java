@@ -2469,15 +2469,15 @@ public class Seed implements Serializable {
                     GPSegments.get(seg).inRRDemand_veh.set(period, Integer.parseInt(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_HAS_CROSS_WEAVE:
+                case CEConst.IDS_HAS_CROSS_WEAVE:
                     MLSegments.get(seg).inGPHasCrossWeave = Boolean.parseBoolean(value.toString());
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
+                case CEConst.IDS_CROSS_WEAVE_LC_MIN:
                     MLSegments.get(seg).inGPCrossWeaveLCMin = Integer.parseInt(value.toString());
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_CROSS_WEAVE_VOLUME:
                     MLSegments.get(seg).inGPCrossWeaveVolume.set(period, Integer.parseInt(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
@@ -2515,135 +2515,135 @@ public class Seed implements Serializable {
                     GPSegments.get(seg).inMainlineRV.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_U_CAF_GP:
+                case CEConst.IDS_GP_USER_CAF:
                     GPSegments.get(seg).inUCAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_U_OAF_GP:
+                case CEConst.IDS_GP_USER_OAF:
                     GPSegments.get(seg).inUOAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_U_DAF_GP:
+                case CEConst.IDS_GP_USER_DAF:
                     GPSegments.get(seg).inUDAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_U_SAF_GP:
+                case CEConst.IDS_GP_USER_SAF:
                     GPSegments.get(seg).inUSAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_RL_CAF_GP:
+                case CEConst.IDS_GP_RL_CAF:
                     if (scen > 0) {
                         RL_Scenarios_GP.CAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_RL_OAF_GP:
+                case CEConst.IDS_GP_RL_OAF:
                     if (scen > 0) {
                         RL_Scenarios_GP.OAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_RL_DAF_GP:
+                case CEConst.IDS_GP_RL_DAF:
                     if (scen > 0) {
                         RL_Scenarios_GP.DAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_RL_SAF_GP:
+                case CEConst.IDS_GP_RL_SAF:
                     if (scen > 0) {
                         RL_Scenarios_GP.SAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_RL_LAFI_GP:
+                case CEConst.IDS_GP_RL_LAFI:
                     if (scen > 0) {
                         RL_Scenarios_GP.LAFI().set(-Math.abs(Integer.parseInt(value.toString())), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_RL_LAFWZ_GP:
+                case CEConst.IDS_GP_RL_LAFWZ:
                     if (scen > 0) {
                         RL_Scenarios_GP.LAFWZ().set(-Math.abs(Integer.parseInt(value.toString())), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ATDM_CAF_GP:
+                case CEConst.IDS_GP_ATDM_CAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].CAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_SAF_GP:
+                case CEConst.IDS_GP_ATDM_SAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].SAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_OAF_GP:
+                case CEConst.IDS_GP_ATDM_OAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].OAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_DAF_GP:
+                case CEConst.IDS_GP_ATDM_DAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].DAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_LAF_GP:
+                case CEConst.IDS_GP_ATDM_LAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].LAF().set(Integer.parseInt(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_RM_GP:
+                case CEConst.IDS_GP_ATDM_RM:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[0].RM().set(Integer.parseInt(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_CAF_ML:
+                case CEConst.IDS_ML_ATDM_CAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[1].CAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_SAF_ML:
+                case CEConst.IDS_ML_ATDM_SAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[1].SAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_OAF_ML:
+                case CEConst.IDS_ML_ATDM_OAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[1].OAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_DAF_ML:
+                case CEConst.IDS_ML_ATDM_DAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[1].DAF().set(Float.parseFloat(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_LAF_ML:
+                case CEConst.IDS_ML_ATDM_LAF:
                     if (atdm >= 0) {
                         ATDMSets.get(atdm).get(scen)[1].LAF().set(Integer.parseInt(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
@@ -2782,51 +2782,51 @@ public class Seed implements Serializable {
                     MLSegments.get(seg).inMainlineRV.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_UCAF:
+                case CEConst.IDS_ML_USER_CAF:
                     MLSegments.get(seg).inUCAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_UOAF:
+                case CEConst.IDS_ML_USER_OAF:
                     MLSegments.get(seg).inUOAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_UDAF:
+                case CEConst.IDS_ML_USER_DAF:
                     MLSegments.get(seg).inUDAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_USAF:
+                case CEConst.IDS_ML_USER_SAF:
                     MLSegments.get(seg).inUSAF.set(period, Float.parseFloat(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ML_RLSCAF:
+                case CEConst.IDS_ML_RL_CAF:
                     if (scen > 0) {
                         RL_Scenarios_ML.CAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ML_RLSOAF:
+                case CEConst.IDS_ML_RL_OAF:
                     if (scen > 0) {
                         RL_Scenarios_ML.OAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ML_RLSDAF:
+                case CEConst.IDS_ML_RL_DAF:
                     if (scen > 0) {
                         RL_Scenarios_ML.DAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ML_RLSSAF:
+                case CEConst.IDS_ML_RL_SAF:
                     if (scen > 0) {
                         RL_Scenarios_ML.SAF().set(Float.parseFloat(value.toString()), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ML_RLSLAF:
+                case CEConst.IDS_ML_RL_LAF:
                     if (scen > 0) {
                         RL_Scenarios_ML.LAFI().set(-Math.abs(Integer.parseInt(value.toString())), scen - 1, seg, period);
                         RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_INPUT_ONLY;
@@ -2922,8 +2922,6 @@ public class Seed implements Serializable {
                     return ATDMSets == null || ATDMSets.get(atdm) == null ? 0 : ATDMSets.get(atdm).size();
                 case CEConst.IDS_ATDM_SET_NUM:
                     return ATDMSets == null ? 0 : ATDMSets.size();
-                case CEConst.IDS_CB_NUM_SEGMENT:
-                    return Math.max(getValueInt(CEConst.IDS_NUM_SEGMENT), getValueInt(CEConst.IDS_ML_NUM_SEGMENT));
                 case CEConst.IDS_NUM_SEGMENT:
                     return GPSegments == null ? 0 : GPSegments.size();
                 case CEConst.IDS_CAPACITY_ALPHA:
@@ -2986,20 +2984,18 @@ public class Seed implements Serializable {
                     return GPSegments.get(seg).scenType[period];
                 case CEConst.IDS_SCENARIO_STATUS:
                     return RL_ScenarioInfo.get(scen).statusRL;
-                case CEConst.IDS_RL_LAFI_GP:
+                case CEConst.IDS_GP_RL_LAFI:
                     return getRLLAFI(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_RL_LAFWZ_GP:
+                case CEConst.IDS_GP_RL_LAFWZ:
                     return getRLLAFWZ(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ML_RLSLAF:
+                case CEConst.IDS_ML_RL_LAF:
                     return getRLLAFI(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_LAF_GP:
+                case CEConst.IDS_GP_ATDM_LAF:
                     return getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_RM_GP:
+                case CEConst.IDS_GP_ATDM_RM:
                     return getATDMRM(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
 
                 //maganged lane parameters
-                case CEConst.IDS_ML_NUM_SEGMENT:
-                    return MLSegments.size();
                 case CEConst.IDS_ML_SEGMENT_TYPE:
                     return MLSegments.get(seg).inType;
                 case CEConst.IDS_ML_SEPARATION_TYPE:
@@ -3010,7 +3006,7 @@ public class Seed implements Serializable {
                     return MLSegments.get(seg).inMainlineNumLanes.get(period);
                 case CEConst.IDS_ML_DEMAND_VEH:
                     return MLSegments.get(seg).inMainlineDemand_veh.get(period);
-                case CEConst.IDS_ATDM_LAF_ML:
+                case CEConst.IDS_ML_ATDM_LAF:
                     return getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_ML_FREE_FLOW_SPEED:
                     return MLSegments.get(seg).inMainlineFFS.get(period);
@@ -3046,9 +3042,9 @@ public class Seed implements Serializable {
                     return MLSegments.get(seg).inNWL;
                 case CEConst.IDS_ML_RAMP_TO_RAMP_DEMAND_VEH:
                     return MLSegments.get(seg).inRRDemand_veh.get(period);
-                case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
+                case CEConst.IDS_CROSS_WEAVE_LC_MIN:
                     return MLSegments.get(seg).inGPCrossWeaveLCMin;
-                case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_CROSS_WEAVE_VOLUME:
                     return MLSegments.get(seg).inGPCrossWeaveVolume.get(period);
                 case CEConst.IDS_ML_TYPE_USED:
                     checkInBuffer(scen, atdm);
@@ -3068,18 +3064,18 @@ public class Seed implements Serializable {
                 case CEConst.IDS_DRIVER_POP_FACTOR:
                 case CEConst.IDS_TRUCK_PERCENTAGE:
                 case CEConst.IDS_RV_PERCENTAGE:
-                case CEConst.IDS_U_CAF_GP:
-                case CEConst.IDS_U_OAF_GP:
-                case CEConst.IDS_U_DAF_GP:
-                case CEConst.IDS_U_SAF_GP:
-                case CEConst.IDS_RL_CAF_GP:
-                case CEConst.IDS_RL_OAF_GP:
-                case CEConst.IDS_RL_DAF_GP:
-                case CEConst.IDS_RL_SAF_GP:
-                case CEConst.IDS_ATDM_CAF_GP:
-                case CEConst.IDS_ATDM_OAF_GP:
-                case CEConst.IDS_ATDM_DAF_GP:
-                case CEConst.IDS_ATDM_SAF_GP:
+                case CEConst.IDS_GP_USER_CAF:
+                case CEConst.IDS_GP_USER_OAF:
+                case CEConst.IDS_GP_USER_DAF:
+                case CEConst.IDS_GP_USER_SAF:
+                case CEConst.IDS_GP_RL_CAF:
+                case CEConst.IDS_GP_RL_OAF:
+                case CEConst.IDS_GP_RL_DAF:
+                case CEConst.IDS_GP_RL_SAF:
+                case CEConst.IDS_GP_ATDM_CAF:
+                case CEConst.IDS_GP_ATDM_OAF:
+                case CEConst.IDS_GP_ATDM_DAF:
+                case CEConst.IDS_GP_ATDM_SAF:
                 case CEConst.IDS_SPEED:
                 case CEConst.IDS_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_TOTAL_DENSITY_PC:
@@ -3153,13 +3149,12 @@ public class Seed implements Serializable {
 
                 //Managed Lane Parameters
                 case CEConst.IDS_ML_SEGMENT_LENGTH_MI:
-                case CEConst.IDS_ML_TOTAL_LENGTH_MI:
                 case CEConst.IDS_ML_TRUCK_PERCENTAGE:
                 case CEConst.IDS_ML_RV_PERCENTAGE:
-                case CEConst.IDS_ML_UCAF:
-                case CEConst.IDS_ML_UOAF:
-                case CEConst.IDS_ML_UDAF:
-                case CEConst.IDS_ML_USAF:
+                case CEConst.IDS_ML_USER_CAF:
+                case CEConst.IDS_ML_USER_OAF:
+                case CEConst.IDS_ML_USER_DAF:
+                case CEConst.IDS_ML_USER_SAF:
                 case CEConst.IDS_ML_SPEED:
                 case CEConst.IDS_ML_SPACE_MEAN_SPEED:
                 case CEConst.IDS_ML_TOTAL_DENSITY_VEH:
@@ -3228,43 +3223,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_SP_MAX_VC:
 
                 //Combined Parameters
-                case CEConst.IDS_CB_SEGMENT_LENGTH_MI:
-                case CEConst.IDS_CB_TOTAL_LENGTH_MI:
-                case CEConst.IDS_CB_TRUCK_PERCENTAGE:
-                case CEConst.IDS_CB_RV_PERCENTAGE:
-                case CEConst.IDS_CB_UCAF:
-                case CEConst.IDS_CB_UOAF:
-                case CEConst.IDS_CB_UDAF:
-                case CEConst.IDS_CB_USAF:
-                case CEConst.IDS_CB_SPEED:
-                case CEConst.IDS_CB_SPACE_MEAN_SPEED:
-                case CEConst.IDS_CB_TOTAL_DENSITY_VEH:
-                case CEConst.IDS_CB_TOTAL_DENSITY_PC:
-                case CEConst.IDS_CB_INFLUENCED_DENSITY_PC:
-                case CEConst.IDS_CB_ADJUSTED_MAIN_DEMAND:
-                case CEConst.IDS_CB_MAIN_CAPACITY:
-                case CEConst.IDS_CB_MAIN_VOLUME_SERVED:
-                case CEConst.IDS_CB_ADJUSTED_ON_RAMP_DEMAND:
-                case CEConst.IDS_CB_ON_RAMP_CAPACITY:
-                case CEConst.IDS_CB_ON_RAMP_VOLUME_SERVED:
-                case CEConst.IDS_CB_ADJUSTED_OFF_RAMP_DEMAND:
-                case CEConst.IDS_CB_OFF_RAMP_CAPACITY:
-                case CEConst.IDS_CB_OFF_RAMP_VOLUME_SERVED:
-                case CEConst.IDS_CB_DC:
-                case CEConst.IDS_CB_VC:
-                case CEConst.IDS_CB_QUEUE_LENGTH:
-                case CEConst.IDS_CB_QUEUE_PERCENTAGE:
-                case CEConst.IDS_CB_ON_QUEUE_VEH:
-                case CEConst.IDS_CB_ACTUAL_TIME:
-                case CEConst.IDS_CB_FFS_TIME:
-                case CEConst.IDS_CB_MAINLINE_DELAY:
-                case CEConst.IDS_CB_ON_RAMP_DELAY:
-                case CEConst.IDS_CB_SYSTEM_DELAY:
-                case CEConst.IDS_CB_VMTD:
-                case CEConst.IDS_CB_VMTV:
-                case CEConst.IDS_CB_VHT:
-                case CEConst.IDS_CB_VHD:
-                case CEConst.IDS_CB_TRAVEL_TIME_INDEX:
                 case CEConst.IDS_CB_P_ACTUAL_TIME:
                 case CEConst.IDS_CB_P_FFS_TIME:
                 case CEConst.IDS_CB_P_MAIN_DELAY:
@@ -3310,8 +3268,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_PMTD:
                 case CEConst.IDS_ML_PMTV:
                 case CEConst.IDS_ML_PMTD:
-                case CEConst.IDS_CB_PMTV:
-                case CEConst.IDS_CB_PMTD:
                 case CEConst.IDS_P_PMTD:
                 case CEConst.IDS_P_PMTV:
                 case CEConst.IDS_ML_P_PMTD:
@@ -3433,31 +3389,31 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ON_RAMP_RV_PERCENTAGE:
                 case CEConst.IDS_OFF_RAMP_RV_PERCENTAGE:
                     return GPSegments.get(seg).inMainlineRV.get(period);
-                case CEConst.IDS_U_CAF_GP:
+                case CEConst.IDS_GP_USER_CAF:
                     return GPSegments.get(seg).inUCAF.get(period);
-                case CEConst.IDS_U_OAF_GP:
+                case CEConst.IDS_GP_USER_OAF:
                     return GPSegments.get(seg).inUOAF.get(period);
-                case CEConst.IDS_U_DAF_GP:
+                case CEConst.IDS_GP_USER_DAF:
                     return GPSegments.get(seg).inUDAF.get(period);
-                case CEConst.IDS_U_SAF_GP:
+                case CEConst.IDS_GP_USER_SAF:
                     return GPSegments.get(seg).inUSAF.get(period);
-                case CEConst.IDS_RL_CAF_GP:
+                case CEConst.IDS_GP_RL_CAF:
                     return getRLCAF(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_RL_OAF_GP:
+                case CEConst.IDS_GP_RL_OAF:
                     return getRLOAF(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_RL_DAF_GP:
+                case CEConst.IDS_GP_RL_DAF:
                     return getRLDAF(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_RL_SAF_GP:
+                case CEConst.IDS_GP_RL_SAF:
                     return getRLSAF(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_CAF_GP:
+                case CEConst.IDS_GP_ATDM_CAF:
                     return getATDMCAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_OAF_GP:
+                case CEConst.IDS_GP_ATDM_OAF:
                     return getATDMOAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_DAF_GP:
+                case CEConst.IDS_GP_ATDM_DAF:
                     return getATDMDAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_SAF_GP:
+                case CEConst.IDS_GP_ATDM_SAF:
                     return getATDMSAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                case CEConst.IDS_CROSS_WEAVE_CAF:
                     return GPSegments.get(seg).inCrossCAF[period];
                 case CEConst.IDS_SPEED:
                 case CEConst.IDS_SPACE_MEAN_SPEED:
@@ -3631,39 +3587,33 @@ public class Seed implements Serializable {
                 //Managed Lane Parameters
                 case CEConst.IDS_ML_SEGMENT_LENGTH_MI:
                     return getValueInt(CEConst.IDS_ML_SEGMENT_LENGTH_FT, seg) / 5280f;
-                case CEConst.IDS_ML_TOTAL_LENGTH_MI:
-                    length = 0;
-                    for (GPMLSegment segment : MLSegments) {
-                        length += segment.inSegLength_ft;
-                    }
-                    return length / 5280f;
                 case CEConst.IDS_ML_TRUCK_PERCENTAGE:
                     return MLSegments.get(seg).inMainlineTruck.get(period);
                 case CEConst.IDS_ML_RV_PERCENTAGE:
                     return MLSegments.get(seg).inMainlineRV.get(period);
-                case CEConst.IDS_ML_UCAF:
+                case CEConst.IDS_ML_USER_CAF:
                     return MLSegments.get(seg).inUCAF.get(period);
-                case CEConst.IDS_ML_UOAF:
+                case CEConst.IDS_ML_USER_OAF:
                     return MLSegments.get(seg).inUOAF.get(period);
-                case CEConst.IDS_ML_UDAF:
+                case CEConst.IDS_ML_USER_DAF:
                     return MLSegments.get(seg).inUDAF.get(period);
-                case CEConst.IDS_ML_USAF:
+                case CEConst.IDS_ML_USER_SAF:
                     return MLSegments.get(seg).inUSAF.get(period);
-                case CEConst.IDS_ML_RLSCAF:
+                case CEConst.IDS_ML_RL_CAF:
                     return getRLCAF(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ML_RLSOAF:
+                case CEConst.IDS_ML_RL_OAF:
                     return getRLOAF(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ML_RLSDAF:
+                case CEConst.IDS_ML_RL_DAF:
                     return getRLDAF(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ML_RLSSAF:
+                case CEConst.IDS_ML_RL_SAF:
                     return getRLSAF(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_CAF_ML:
+                case CEConst.IDS_ML_ATDM_CAF:
                     return getATDMCAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_OAF_ML:
+                case CEConst.IDS_ML_ATDM_OAF:
                     return getATDMOAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_DAF_ML:
+                case CEConst.IDS_ML_ATDM_DAF:
                     return getATDMDAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_SAF_ML:
+                case CEConst.IDS_ML_ATDM_SAF:
                     return getATDMSAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_ML_SPEED:
                 case CEConst.IDS_ML_SPACE_MEAN_SPEED:
@@ -3831,11 +3781,6 @@ public class Seed implements Serializable {
                     return spOutMLMaxVC.get(new ScenATDM(scen, atdm).toString());
 
                 //Combined Parameters
-                case CEConst.IDS_CB_SEGMENT_LENGTH_MI:
-                    return Math.max(getValueFloat(CEConst.IDS_SEGMENT_LENGTH_MI, seg), getValueFloat(CEConst.IDS_ML_SEGMENT_LENGTH_MI, seg));
-                case CEConst.IDS_CB_TOTAL_LENGTH_MI:
-                    return Math.max(getValueFloat(CEConst.IDS_TOTAL_LENGTH_MI, seg), getValueFloat(CEConst.IDS_ML_TOTAL_LENGTH_MI, seg));
-
                 case CEConst.IDS_CB_P_ACTUAL_TIME:
                     return (getValueFloat(CEConst.IDS_P_ACTUAL_TIME, seg, period, scen, atdm) * getValueFloat(CEConst.IDS_P_VMTV, seg, period, scen, atdm)
                             + getValueFloat(CEConst.IDS_ML_P_ACTUAL_TIME, seg, period, scen, atdm) * getValueFloat(CEConst.IDS_ML_P_VMTV, seg, period, scen, atdm))
@@ -3957,8 +3902,6 @@ public class Seed implements Serializable {
                     return getValueFloat(CEConst.IDS_VMTV, seg, period, scen, atdm) * inGPOccupancy;
                 case CEConst.IDS_ML_PMTV:
                     return getValueFloat(CEConst.IDS_ML_VMTV, seg, period, scen, atdm) * inMLOccupancy;
-                case CEConst.IDS_CB_PMTV:
-                    return getValueFloat(CEConst.IDS_VMTV, seg, period, scen, atdm) * inGPOccupancy + getValueFloat(CEConst.IDS_ML_VMTV, seg, period, scen, atdm) * inMLOccupancy;
 
                 case CEConst.IDS_P_PMTV:
                     return getValueFloat(CEConst.IDS_P_VMTV, seg, period, scen, atdm) * inGPOccupancy;
@@ -3985,8 +3928,6 @@ public class Seed implements Serializable {
                     return getValueFloat(CEConst.IDS_VMTD, seg, period, scen, atdm) * inGPOccupancy;
                 case CEConst.IDS_ML_PMTD:
                     return getValueFloat(CEConst.IDS_ML_VMTD, seg, period, scen, atdm) * inMLOccupancy;
-                case CEConst.IDS_CB_PMTD:
-                    return getValueFloat(CEConst.IDS_VMTD, seg, period, scen, atdm) * inGPOccupancy + getValueFloat(CEConst.IDS_ML_VMTD, seg, period, scen, atdm) * inMLOccupancy;
 
                 case CEConst.IDS_P_PMTD:
                     return getValueFloat(CEConst.IDS_P_VMTD, seg, period, scen, atdm) * inGPOccupancy;
@@ -4042,16 +3983,13 @@ public class Seed implements Serializable {
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
                 case CEConst.IDS_TYPE_USED:
                 case CEConst.IDS_SCENARIO_STATUS:
-                case CEConst.IDS_RL_LAFI_GP:
-                case CEConst.IDS_RL_LAFWZ_GP:
-                case CEConst.IDS_ATDM_LAF_GP:
-                case CEConst.IDS_ATDM_RM_GP:
+                case CEConst.IDS_GP_RL_LAFI:
+                case CEConst.IDS_GP_RL_LAFWZ:
+                case CEConst.IDS_GP_ATDM_LAF:
+                case CEConst.IDS_GP_ATDM_RM:
 
                 //maganged lane parameters
-                case CEConst.IDS_CB_NUM_SEGMENT:
-                case CEConst.IDS_ML_NUM_SEGMENT:
                 case CEConst.IDS_ML_SEGMENT_TYPE:
-                case CEConst.IDS_ML_METHOD_TYPE:
                 case CEConst.IDS_ML_SEPARATION_TYPE:
                 case CEConst.IDS_ML_SEGMENT_LENGTH_FT:
                 case CEConst.IDS_ML_NUM_LANES:
@@ -4073,8 +4011,8 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_MIN_LANE_CHANGE_ONR_TO_OFR:
                 case CEConst.IDS_ML_NUM_LANES_WEAVING:
                 case CEConst.IDS_ML_RAMP_TO_RAMP_DEMAND_VEH:
-                case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_CROSS_WEAVE_LC_MIN:
+                case CEConst.IDS_CROSS_WEAVE_VOLUME:
                 case CEConst.IDS_ML_TYPE_USED:
                 case CEConst.IDS_ML_MIN_LANE_CHANGE_ML:
                 case CEConst.IDS_ML_MAX_LANE_CHANGE_ML:
@@ -4284,9 +4222,9 @@ public class Seed implements Serializable {
                     }
                     break;
 
-                case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
-                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                case CEConst.IDS_CROSS_WEAVE_LC_MIN:
+                case CEConst.IDS_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_CROSS_WEAVE_CAF:
                     if (!MLSegments.get(seg).inGPHasCrossWeave) {
                         return CEConst.IDS_NA;
                     }
@@ -4317,7 +4255,7 @@ public class Seed implements Serializable {
                     return inEndTime.toString();
                 case CEConst.IDS_SEED_DEMAND_DATE:
                     return RL_SeedFileDate.toString();
-                case CEConst.IDS_ML_HAS_CROSS_WEAVE:
+                case CEConst.IDS_HAS_CROSS_WEAVE:
                     return Boolean.toString(MLSegments.get(seg).inGPHasCrossWeave);
 
                 case CEConst.IDS_ANALYSIS_PERIOD_HEADING:
@@ -4372,23 +4310,20 @@ public class Seed implements Serializable {
                 case CEConst.IDS_MIN_LANE_CHANGE_ONR_TO_OFR:
                 case CEConst.IDS_NUM_LANES_WEAVING:
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
-                case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_CROSS_WEAVE_LC_MIN:
+                case CEConst.IDS_CROSS_WEAVE_VOLUME:
                 case CEConst.IDS_RAMP_METERING_TYPE:
 
                 case CEConst.IDS_TYPE_USED:
                 case CEConst.IDS_SCENARIO_STATUS:
-                case CEConst.IDS_RL_LAFI_GP:
-                case CEConst.IDS_RL_LAFWZ_GP:
-                case CEConst.IDS_ATDM_LAF_GP:
-                case CEConst.IDS_ATDM_LAF_ML:
-                case CEConst.IDS_ATDM_RM_GP:
+                case CEConst.IDS_GP_RL_LAFI:
+                case CEConst.IDS_GP_RL_LAFWZ:
+                case CEConst.IDS_GP_ATDM_LAF:
+                case CEConst.IDS_ML_ATDM_LAF:
+                case CEConst.IDS_GP_ATDM_RM:
                 case CEConst.IDS_CAPACITY_ALPHA:
 
-                case CEConst.IDS_CB_NUM_SEGMENT:
-                case CEConst.IDS_ML_NUM_SEGMENT:
                 case CEConst.IDS_ML_SEGMENT_TYPE:
-                case CEConst.IDS_ML_METHOD_TYPE:
                 case CEConst.IDS_ML_SEPARATION_TYPE:
                 case CEConst.IDS_ML_SEGMENT_LENGTH_FT:
                 case CEConst.IDS_ML_NUM_LANES:
@@ -4411,7 +4346,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_NUM_LANES_WEAVING:
                 case CEConst.IDS_ML_RAMP_TO_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ML_TYPE_USED:
-                case CEConst.IDS_ML_RLSLAF:
+                case CEConst.IDS_ML_RL_LAF:
                 case CEConst.IDS_ML_MIN_LANE_CHANGE_ML:
                 case CEConst.IDS_ML_MAX_LANE_CHANGE_ML:
                     return Integer.toString(getValueInt(ID, seg, period, scen, atdm));
@@ -4426,19 +4361,19 @@ public class Seed implements Serializable {
                 case CEConst.IDS_DRIVER_POP_FACTOR:
                 case CEConst.IDS_TRUCK_PERCENTAGE:
                 case CEConst.IDS_RV_PERCENTAGE:
-                case CEConst.IDS_U_CAF_GP:
-                case CEConst.IDS_U_OAF_GP:
-                case CEConst.IDS_U_DAF_GP:
-                case CEConst.IDS_U_SAF_GP:
-                case CEConst.IDS_RL_CAF_GP:
-                case CEConst.IDS_RL_OAF_GP:
-                case CEConst.IDS_RL_DAF_GP:
-                case CEConst.IDS_RL_SAF_GP:
-                case CEConst.IDS_ATDM_CAF_GP:
-                case CEConst.IDS_ATDM_OAF_GP:
-                case CEConst.IDS_ATDM_DAF_GP:
-                case CEConst.IDS_ATDM_SAF_GP:
-                case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                case CEConst.IDS_GP_USER_CAF:
+                case CEConst.IDS_GP_USER_OAF:
+                case CEConst.IDS_GP_USER_DAF:
+                case CEConst.IDS_GP_USER_SAF:
+                case CEConst.IDS_GP_RL_CAF:
+                case CEConst.IDS_GP_RL_OAF:
+                case CEConst.IDS_GP_RL_DAF:
+                case CEConst.IDS_GP_RL_SAF:
+                case CEConst.IDS_GP_ATDM_CAF:
+                case CEConst.IDS_GP_ATDM_OAF:
+                case CEConst.IDS_GP_ATDM_DAF:
+                case CEConst.IDS_GP_ATDM_SAF:
+                case CEConst.IDS_CROSS_WEAVE_CAF:
                 case CEConst.IDS_ON_RAMP_TRUCK_PERCENTAGE:
                 case CEConst.IDS_ON_RAMP_RV_PERCENTAGE:
                 case CEConst.IDS_OFF_RAMP_TRUCK_PERCENTAGE:
@@ -4517,21 +4452,20 @@ public class Seed implements Serializable {
 
                 //Managed Lane Parameters
                 case CEConst.IDS_ML_SEGMENT_LENGTH_MI:
-                case CEConst.IDS_ML_TOTAL_LENGTH_MI:
                 case CEConst.IDS_ML_TRUCK_PERCENTAGE:
                 case CEConst.IDS_ML_RV_PERCENTAGE:
-                case CEConst.IDS_ML_UCAF:
-                case CEConst.IDS_ML_UOAF:
-                case CEConst.IDS_ML_UDAF:
-                case CEConst.IDS_ML_USAF:
-                case CEConst.IDS_ML_RLSCAF:
-                case CEConst.IDS_ML_RLSOAF:
-                case CEConst.IDS_ML_RLSDAF:
-                case CEConst.IDS_ML_RLSSAF:
-                case CEConst.IDS_ATDM_CAF_ML:
-                case CEConst.IDS_ATDM_OAF_ML:
-                case CEConst.IDS_ATDM_DAF_ML:
-                case CEConst.IDS_ATDM_SAF_ML:
+                case CEConst.IDS_ML_USER_CAF:
+                case CEConst.IDS_ML_USER_OAF:
+                case CEConst.IDS_ML_USER_DAF:
+                case CEConst.IDS_ML_USER_SAF:
+                case CEConst.IDS_ML_RL_CAF:
+                case CEConst.IDS_ML_RL_OAF:
+                case CEConst.IDS_ML_RL_DAF:
+                case CEConst.IDS_ML_RL_SAF:
+                case CEConst.IDS_ML_ATDM_CAF:
+                case CEConst.IDS_ML_ATDM_OAF:
+                case CEConst.IDS_ML_ATDM_DAF:
+                case CEConst.IDS_ML_ATDM_SAF:
                 case CEConst.IDS_ML_SPEED:
                 case CEConst.IDS_ML_SPACE_MEAN_SPEED:
                 case CEConst.IDS_ML_TOTAL_DENSITY_VEH:
@@ -4602,43 +4536,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_SP_MAX_VC:
 
                 //Combined Parameters
-                case CEConst.IDS_CB_SEGMENT_LENGTH_MI:
-                case CEConst.IDS_CB_TOTAL_LENGTH_MI:
-                case CEConst.IDS_CB_TRUCK_PERCENTAGE:
-                case CEConst.IDS_CB_RV_PERCENTAGE:
-                case CEConst.IDS_CB_UCAF:
-                case CEConst.IDS_CB_UOAF:
-                case CEConst.IDS_CB_UDAF:
-                case CEConst.IDS_CB_USAF:
-                case CEConst.IDS_CB_SPEED:
-                case CEConst.IDS_CB_SPACE_MEAN_SPEED:
-                case CEConst.IDS_CB_TOTAL_DENSITY_VEH:
-                case CEConst.IDS_CB_TOTAL_DENSITY_PC:
-                case CEConst.IDS_CB_INFLUENCED_DENSITY_PC:
-                case CEConst.IDS_CB_ADJUSTED_MAIN_DEMAND:
-                case CEConst.IDS_CB_MAIN_CAPACITY:
-                case CEConst.IDS_CB_MAIN_VOLUME_SERVED:
-                case CEConst.IDS_CB_ADJUSTED_ON_RAMP_DEMAND:
-                case CEConst.IDS_CB_ON_RAMP_CAPACITY:
-                case CEConst.IDS_CB_ON_RAMP_VOLUME_SERVED:
-                case CEConst.IDS_CB_ADJUSTED_OFF_RAMP_DEMAND:
-                case CEConst.IDS_CB_OFF_RAMP_CAPACITY:
-                case CEConst.IDS_CB_OFF_RAMP_VOLUME_SERVED:
-                case CEConst.IDS_CB_DC:
-                case CEConst.IDS_CB_VC:
-                case CEConst.IDS_CB_QUEUE_LENGTH:
-                case CEConst.IDS_CB_QUEUE_PERCENTAGE:
-                case CEConst.IDS_CB_ON_QUEUE_VEH:
-                case CEConst.IDS_CB_ACTUAL_TIME:
-                case CEConst.IDS_CB_FFS_TIME:
-                case CEConst.IDS_CB_MAINLINE_DELAY:
-                case CEConst.IDS_CB_ON_RAMP_DELAY:
-                case CEConst.IDS_CB_SYSTEM_DELAY:
-                case CEConst.IDS_CB_VMTD:
-                case CEConst.IDS_CB_VMTV:
-                case CEConst.IDS_CB_VHT:
-                case CEConst.IDS_CB_VHD:
-                case CEConst.IDS_CB_TRAVEL_TIME_INDEX:
                 case CEConst.IDS_CB_P_ACTUAL_TIME:
                 case CEConst.IDS_CB_P_FFS_TIME:
                 case CEConst.IDS_CB_P_MAIN_DELAY:
@@ -4684,8 +4581,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_PMTD:
                 case CEConst.IDS_ML_PMTV:
                 case CEConst.IDS_ML_PMTD:
-                case CEConst.IDS_CB_PMTV:
-                case CEConst.IDS_CB_PMTD:
                 case CEConst.IDS_P_PMTD:
                 case CEConst.IDS_P_PMTV:
                 case CEConst.IDS_ML_P_PMTD:
@@ -5357,7 +5252,7 @@ public class Seed implements Serializable {
     /**
      * Setter for ML crash ration
      *
-     * @param incidentCrashRatio
+     * @param incidentCrashRatio incident crash ratio
      */
     public void setMLIncidentCrashRatio(float incidentCrashRatio) {
         this.RL_IncidentCrashRatio_ML = incidentCrashRatio;

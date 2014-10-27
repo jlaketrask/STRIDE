@@ -147,8 +147,8 @@ public class MainWindowUser extends MainWindow {
         //activeScen = 1;
         activeATDM = 0;
 
-        showInputButton.setVisible(false);
-        showOutputButton.setVisible(false);
+        //showInputButton.setVisible(false);
+        //showOutputButton.setVisible(false);
     }
 
     /**

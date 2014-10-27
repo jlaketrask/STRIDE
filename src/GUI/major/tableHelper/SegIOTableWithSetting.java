@@ -129,8 +129,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     return tableSegTypeEditor;
                 case CEConst.IDS_ML_SEPARATION_TYPE:
                     return tableSeparationTypeEditor;
-                case CEConst.IDS_ML_METHOD_TYPE:
-                    return tableMLMethodTypeEditor;
                 case CEConst.IDS_ON_RAMP_SIDE:
                     if (segTypeGP == CEConst.SEG_TYPE_ONR || segTypeGP == CEConst.SEG_TYPE_W) {
                         return tableRampSideEditor;
@@ -159,7 +157,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     return tableTerrainEditor;
                 case CEConst.IDS_RAMP_METERING_TYPE:
                     return tableRampMeteringTypeEditor;
-                case CEConst.IDS_ML_HAS_CROSS_WEAVE:
+                case CEConst.IDS_HAS_CROSS_WEAVE:
                     return tableCheckBoxEditor;
                 default:
                     return defaultCellEditor;
@@ -194,8 +192,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     return tableSegTypeRenderer;
                 case CEConst.IDS_ML_SEPARATION_TYPE:
                     return tableSeparationTypeRenderer;
-                case CEConst.IDS_ML_METHOD_TYPE:
-                    return tableMLMethodTypeRenderer;
                 case CEConst.IDS_ON_RAMP_SIDE:
                     if (segTypeGP == CEConst.SEG_TYPE_ONR || segTypeGP == CEConst.SEG_TYPE_W) {
                         return tableRampSideRenderer;
@@ -224,7 +220,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     return tableTerrainRenderer;
                 case CEConst.IDS_RAMP_METERING_TYPE:
                     return tableRampMeteringTypeRenderer;
-                case CEConst.IDS_ML_HAS_CROSS_WEAVE:
+                case CEConst.IDS_HAS_CROSS_WEAVE:
                     return tableCheckBoxRenderer;
                 default:
                     return tableNumAndStringRenderer;
@@ -323,7 +319,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      *
      * @param seed seed to be displayed
      * @param scen index of scenario to be displayed
-     * @param atdm
+     * @param atdm index of ATDM set to be displayed
      * @param period index of period to be displayed
      */
     public void selectSeedScenPeriod(Seed seed, int scen, int atdm, int period) {
@@ -335,7 +331,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     }
 
     /**
-     *
+     * Configure display to show general purpose segments only
      */
     public void showGPOnly() {
         showGP = true;
@@ -344,7 +340,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     }
 
     /**
-     *
+     * Configure display to show managed lanes segments only
      */
     public void showMLOnly() {
         showGP = false;
@@ -353,7 +349,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     }
 
     /**
-     *
+     * Configure display to show both general purpose and managed lanes segments
      */
     public void showGPML() {
         showGP = true;
@@ -427,44 +423,44 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         setting.showInInput = seed.isFreeFlowSpeedKnown();
                         setting.showInOutput = setting.showInOutput && seed.isFreeFlowSpeedKnown();
                         break;
-                    case CEConst.IDS_RL_CAF_GP:
-                    case CEConst.IDS_RL_OAF_GP:
-                    case CEConst.IDS_RL_DAF_GP:
-                    case CEConst.IDS_RL_SAF_GP:
-                    case CEConst.IDS_RL_LAFI_GP:
-                    case CEConst.IDS_RL_LAFWZ_GP:
-                    case CEConst.IDS_ML_RLSCAF:
-                    case CEConst.IDS_ML_RLSOAF:
-                    case CEConst.IDS_ML_RLSDAF:
-                    case CEConst.IDS_ML_RLSSAF:
-                    case CEConst.IDS_ML_RLSLAF:
+                    case CEConst.IDS_GP_RL_CAF:
+                    case CEConst.IDS_GP_RL_OAF:
+                    case CEConst.IDS_GP_RL_DAF:
+                    case CEConst.IDS_GP_RL_SAF:
+                    case CEConst.IDS_GP_RL_LAFI:
+                    case CEConst.IDS_GP_RL_LAFWZ:
+                    case CEConst.IDS_ML_RL_CAF:
+                    case CEConst.IDS_ML_RL_OAF:
+                    case CEConst.IDS_ML_RL_DAF:
+                    case CEConst.IDS_ML_RL_SAF:
+                    case CEConst.IDS_ML_RL_LAF:
                         //auto hide rows depending on whether it is default scenario or generated RL or ATDM scenario
                         setting.showInInput = scen != 0;
                         setting.showInOutput = setting.showInOutput && scen != 0;
                         break;
-                    case CEConst.IDS_ATDM_CAF_GP:
-                    case CEConst.IDS_ATDM_OAF_GP:
-                    case CEConst.IDS_ATDM_DAF_GP:
-                    case CEConst.IDS_ATDM_SAF_GP:
-                    case CEConst.IDS_ATDM_LAF_GP:
-                    case CEConst.IDS_ATDM_RM_GP:
-                    case CEConst.IDS_ATDM_CAF_ML:
-                    case CEConst.IDS_ATDM_OAF_ML:
-                    case CEConst.IDS_ATDM_DAF_ML:
-                    case CEConst.IDS_ATDM_SAF_ML:
-                    case CEConst.IDS_ATDM_LAF_ML:
+                    case CEConst.IDS_GP_ATDM_CAF:
+                    case CEConst.IDS_GP_ATDM_OAF:
+                    case CEConst.IDS_GP_ATDM_DAF:
+                    case CEConst.IDS_GP_ATDM_SAF:
+                    case CEConst.IDS_GP_ATDM_LAF:
+                    case CEConst.IDS_GP_ATDM_RM:
+                    case CEConst.IDS_ML_ATDM_CAF:
+                    case CEConst.IDS_ML_ATDM_OAF:
+                    case CEConst.IDS_ML_ATDM_DAF:
+                    case CEConst.IDS_ML_ATDM_SAF:
+                    case CEConst.IDS_ML_ATDM_LAF:
                         //auto hide rows depending on whether it is ATDM or not
                         setting.showInInput = atdm >= 0;
                         setting.showInOutput = setting.showInOutput && atdm >= 0;
                         break;
-                    case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
-                    case CEConst.IDS_ML_HAS_CROSS_WEAVE:
-                    case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
+                    case CEConst.IDS_CROSS_WEAVE_VOLUME:
+                    case CEConst.IDS_HAS_CROSS_WEAVE:
+                    case CEConst.IDS_CROSS_WEAVE_LC_MIN:
                         //auto hide rows depending on whether managed lanes are used
                         setting.showInInput = seed.isManagedLaneUsed();
                         setting.showInOutput = false;
                         break;
-                    case CEConst.IDS_ML_CROSS_WEAVE_CAF:
+                    case CEConst.IDS_CROSS_WEAVE_CAF:
                         //auto hide rows depending on whether managed lanes are used
                         setting.showInInput = false;
                         setting.showInOutput = seed.isManagedLaneUsed();
@@ -706,22 +702,22 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_DEMAND_VEH, CEConst.IDS_MAIN_DEMAND_VEH, true, false, COLOR_GP_TIME_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_TRUCK_PERCENTAGE, CEConst.IDS_TRUCK_PERCENTAGE, true, false, COLOR_GP_TIME_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_RV_PERCENTAGE, CEConst.IDS_RV_PERCENTAGE, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_U_CAF, CEConst.IDS_U_CAF_GP, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_U_OAF, CEConst.IDS_U_OAF_GP, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_U_DAF, CEConst.IDS_U_DAF_GP, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_U_SAF, CEConst.IDS_U_SAF_GP, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_OAF, CEConst.IDS_RL_OAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_DAF, CEConst.IDS_RL_DAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_CAF, CEConst.IDS_RL_CAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_SAF, CEConst.IDS_RL_SAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_LAFI, CEConst.IDS_RL_LAFI_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_RL_LAFWZ, CEConst.IDS_RL_LAFWZ_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_OAF, CEConst.IDS_ATDM_OAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_DAF, CEConst.IDS_ATDM_DAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_CAF, CEConst.IDS_ATDM_CAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_SAF, CEConst.IDS_ATDM_SAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_LAF, CEConst.IDS_ATDM_LAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_RM, CEConst.IDS_ATDM_RM_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_U_CAF, CEConst.IDS_GP_USER_CAF, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_U_OAF, CEConst.IDS_GP_USER_OAF, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_U_DAF, CEConst.IDS_GP_USER_DAF, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_U_SAF, CEConst.IDS_GP_USER_SAF, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_OAF, CEConst.IDS_GP_RL_OAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_DAF, CEConst.IDS_GP_RL_DAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_CAF, CEConst.IDS_GP_RL_CAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_SAF, CEConst.IDS_GP_RL_SAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_LAFI, CEConst.IDS_GP_RL_LAFI, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_RL_LAFWZ, CEConst.IDS_GP_RL_LAFWZ, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_OAF, CEConst.IDS_GP_ATDM_OAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_DAF, CEConst.IDS_GP_ATDM_DAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_CAF, CEConst.IDS_GP_ATDM_CAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_SAF, CEConst.IDS_GP_ATDM_SAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_LAF, CEConst.IDS_GP_ATDM_LAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_RM, CEConst.IDS_GP_ATDM_RM, true, false, COLOR_GP_SCENARIO_2, true, false, true));
 
         //special input data
         settings.add(new TableCellSetting(STR_ACC_DEC_LANE_LENGTH, CEConst.IDS_ACC_DEC_LANE_LENGTH, true, false, COLOR_GP_FIX_INPUT, true, false, true));
@@ -745,9 +741,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_NUM_LANES_WEAVING, CEConst.IDS_NUM_LANES_WEAVING, true, false, COLOR_GP_FIX_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_RAMP_TO_RAMP_DEMAND_VEH, CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH, true, false, COLOR_GP_TIME_INPUT, true, false, true));
 
-        settings.add(new TableCellSetting(STR_ML_HAS_CROSS_WEAVE, CEConst.IDS_ML_HAS_CROSS_WEAVE, true, false, COLOR_GP_FIX_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_ML_CROSS_WEAVE_LC_MIN, true, false, COLOR_GP_FIX_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_ML_CROSS_WEAVE_VOLUME, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ML_HAS_CROSS_WEAVE, CEConst.IDS_HAS_CROSS_WEAVE, true, false, COLOR_GP_FIX_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_LC_MIN, CEConst.IDS_CROSS_WEAVE_LC_MIN, true, false, COLOR_GP_FIX_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_VOLUME, CEConst.IDS_CROSS_WEAVE_VOLUME, true, false, COLOR_GP_TIME_INPUT, true, false, true));
 
         //basic and special output data
         settings.add(new TableCellSetting(STR_TYPE_USED, CEConst.IDS_TYPE_USED, false, true, COLOR_GP_OUTPUT, true, false, false));
@@ -756,7 +752,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_TOTAL_DENSITY_PC, CEConst.IDS_TOTAL_DENSITY_PC, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_INFLUENCED_DENSITY_PC, CEConst.IDS_INFLUENCED_DENSITY_PC, false, true, COLOR_GP_OUTPUT, true, false, false));
 
-        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_CAF, CEConst.IDS_ML_CROSS_WEAVE_CAF, false, true, COLOR_GP_OUTPUT, true, false, false));
+        settings.add(new TableCellSetting(STR_ML_CROSS_WEAVE_CAF, CEConst.IDS_CROSS_WEAVE_CAF, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_CAPACITY, CEConst.IDS_MAIN_CAPACITY, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_ADJUSTED_DEMAND, CEConst.IDS_ADJUSTED_MAIN_DEMAND, false, true, COLOR_GP_OUTPUT, true, false, false));
         settings.add(new TableCellSetting(STR_DC, CEConst.IDS_DC, false, true, COLOR_GP_OUTPUT, true, false, false));
@@ -805,21 +801,21 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_ML_DEMAND_VEH, CEConst.IDS_ML_DEMAND_VEH, true, false, COLOR_ML_TIME_INPUT, false, true, true));
         settings.add(new TableCellSetting(STR_ML_TRUCK_PERCENTAGE, CEConst.IDS_ML_TRUCK_PERCENTAGE, true, false, COLOR_ML_TIME_INPUT, false, true, true));
         settings.add(new TableCellSetting(STR_ML_RV_PERCENTAGE, CEConst.IDS_ML_RV_PERCENTAGE, true, false, COLOR_ML_TIME_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_UCAF, CEConst.IDS_ML_UCAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_UOAF, CEConst.IDS_ML_UOAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_UDAF, CEConst.IDS_ML_UDAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_USAF, CEConst.IDS_ML_USAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_SOAF, CEConst.IDS_ML_RLSOAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_SDAF, CEConst.IDS_ML_RLSDAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_SCAF, CEConst.IDS_ML_RLSCAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_SSAF, CEConst.IDS_ML_RLSSAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_SLAF, CEConst.IDS_ML_RLSLAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_UCAF, CEConst.IDS_ML_USER_CAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_UOAF, CEConst.IDS_ML_USER_OAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_UDAF, CEConst.IDS_ML_USER_DAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_USAF, CEConst.IDS_ML_USER_SAF, true, false, COLOR_ML_TIME_INPUT, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_SOAF, CEConst.IDS_ML_RL_OAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_SDAF, CEConst.IDS_ML_RL_DAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_SCAF, CEConst.IDS_ML_RL_CAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_SSAF, CEConst.IDS_ML_RL_SAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_SLAF, CEConst.IDS_ML_RL_LAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
 
-        settings.add(new TableCellSetting(STR_ML_ATDM_OAF, CEConst.IDS_ATDM_OAF_ML, true, false, COLOR_ML_SCENARIO_1, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_ATDM_DAF, CEConst.IDS_ATDM_DAF_ML, true, false, COLOR_ML_SCENARIO_1, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_ATDM_CAF, CEConst.IDS_ATDM_CAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_ATDM_SAF, CEConst.IDS_ATDM_SAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
-        settings.add(new TableCellSetting(STR_ML_ATDM_LAF, CEConst.IDS_ATDM_LAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_OAF, CEConst.IDS_ML_ATDM_OAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_DAF, CEConst.IDS_ML_ATDM_DAF, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_CAF, CEConst.IDS_ML_ATDM_CAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_SAF, CEConst.IDS_ML_ATDM_SAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_LAF, CEConst.IDS_ML_ATDM_LAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
 
         settings.add(new TableCellSetting(STR_ML_ACC_DEC_LANE_LENGTH, CEConst.IDS_ML_ACC_DEC_LANE_LENGTH, true, false, COLOR_ML_FIX_INPUT, false, true, true));
 
@@ -1300,8 +1296,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private final TableSeparationTypeRenderer tableSeparationTypeRenderer = new TableSeparationTypeRenderer();
 
-    private final TableMLMethodTypeRenderer tableMLMethodTypeRenderer = new TableMLMethodTypeRenderer();
-
     private final JTextField textFieldForCellEditor = new JTextField();
 
     private final DefaultCellEditor defaultCellEditor = new DefaultCellEditor(textFieldForCellEditor);
@@ -1318,17 +1312,16 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private final TableSeparationTypeEditor tableSeparationTypeEditor = new TableSeparationTypeEditor();
 
-    private final TableMLMethodTypeEditor tableMLMethodTypeEditor = new TableMLMethodTypeEditor();
-
     private class TableFirstColumnRenderer extends DefaultTableCellRenderer {
 
         SegIOTableWithSetting wrapper;
 
         /**
+         * Constructor
          *
-         * @param wrapper
+         * @param wrapper instance that gives table data and information
          */
-        public TableFirstColumnRenderer(SegIOTableWithSetting wrapper) {
+        TableFirstColumnRenderer(SegIOTableWithSetting wrapper) {
             super();
             this.wrapper = wrapper;
         }
@@ -1355,10 +1348,11 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         SegIOTableWithSetting wrapper;
 
         /**
+         * Constructor
          *
-         * @param wrapper
+         * @param wrapper instance that gives table data and information
          */
-        public TableNumAndStringRenderer(SegIOTableWithSetting wrapper) {
+        TableNumAndStringRenderer(SegIOTableWithSetting wrapper) {
             super();
             this.wrapper = wrapper;
         }
@@ -1404,8 +1398,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         case CEConst.IDS_ML_MIN_LANE_CHANGE_FRWY_TO_OFR:
                         case CEConst.IDS_ML_MIN_LANE_CHANGE_ONR_TO_OFR:
                         case CEConst.IDS_ML_NUM_LANES_WEAVING:
-                        case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
-                        case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                        case CEConst.IDS_CROSS_WEAVE_LC_MIN:
+                        case CEConst.IDS_CROSS_WEAVE_VOLUME:
                         case CEConst.IDS_ML_MIN_LANE_CHANGE_ML:
                         case CEConst.IDS_ML_MAX_LANE_CHANGE_ML:
                             this.setBackground(setting.bgColor);
@@ -1552,9 +1546,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     private class TableRampSideRenderer extends DefaultTableCellRenderer {
 
         /**
-         *
+         * Constructor
          */
-        public TableRampSideRenderer() {
+        TableRampSideRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
         }
@@ -1633,14 +1627,15 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         }
 
         /**
-         *
+         * Change to general purpose segments only (no access segment)
          */
         public void switchToGPOnly() {
             segTypeCombox = SEG_TYPE_GP_DEFAULT;
         }
 
         /**
-         *
+         * Change to both general purpose and managed lanes segments (access
+         * segment included)
          */
         public void switchToGPAndML() {
             segTypeCombox = SEG_TYPE_GP_ML_ACS;
@@ -1650,9 +1645,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     private class TableSegTypeRenderer extends DefaultTableCellRenderer {
 
         /**
-         *
+         * Constructor
          */
-        public TableSegTypeRenderer() {
+        TableSegTypeRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
         }
@@ -1740,9 +1735,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     private class TableTerrainRenderer extends DefaultTableCellRenderer {
 
         /**
-         *
+         * Constructor
          */
-        public TableTerrainRenderer() {
+        TableTerrainRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
         }
@@ -1852,10 +1847,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         }
     }
 
-    /**
-     *
-     */
-    public class TableCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
+    private class TableCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
         TableCheckBoxRenderer() {
             setHorizontalAlignment(JLabel.CENTER);
@@ -1934,9 +1926,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     private class TableSeparationTypeRenderer extends DefaultTableCellRenderer {
 
         /**
-         *
+         * Constructor
          */
-        public TableSeparationTypeRenderer() {
+        TableSeparationTypeRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
         }
@@ -1953,64 +1945,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         break;
                     case CEConst.ML_SEPARATION_BARRIER:
                         setText(CEConst.STR_ML_SEPARATION_BARRIER);
-                        break;
-                    default:
-                        setText("ST Error: " + value.toString());
-                }
-            } catch (NumberFormatException e) {
-                setText("ST Error: " + value.toString());
-            }
-        }
-    }
-
-    private class TableMLMethodTypeEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private final JComboBox MLMethodCombox = new JComboBox(new String[]{CEConst.STR_ML_METHOD_HOV, CEConst.STR_ML_METHOD_HOT});
-
-        @Override
-        public Object getCellEditorValue() {
-            switch (MLMethodCombox.getSelectedIndex()) {
-                case 1:
-                    return CEConst.ML_METHOD_HOT;
-                default:
-                    return CEConst.ML_METHOD_HOV;
-            }
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            switch (Integer.parseInt(value.toString())) {
-                case CEConst.ML_METHOD_HOT:
-                    MLMethodCombox.setSelectedIndex(1);
-                    break;
-                default:
-                    MLMethodCombox.setSelectedIndex(0);
-                    break;
-            }
-
-            return MLMethodCombox;
-        }
-    }
-
-    private class TableMLMethodTypeRenderer extends DefaultTableCellRenderer {
-
-        /**
-         *
-         */
-        public TableMLMethodTypeRenderer() {
-            super();
-            this.setHorizontalAlignment(JLabel.CENTER);
-        }
-
-        @Override
-        public void setValue(Object value) {
-            try {
-                switch (Integer.parseInt(value.toString())) {
-                    case CEConst.ML_METHOD_HOV:
-                        setText(CEConst.STR_ML_METHOD_HOV);
-                        break;
-                    case CEConst.ML_METHOD_HOT:
-                        setText(CEConst.STR_ML_METHOD_HOT);
                         break;
                     default:
                         setText("ST Error: " + value.toString());
