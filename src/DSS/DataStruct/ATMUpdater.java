@@ -58,9 +58,9 @@ public class ATMUpdater {
                 } else {
                     // Use adaptive
                     System.out.println("Using adaptive.");
-                    seed.setValue(CEConst.IDS_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_LINEAR, seg, currPeriod+1);
+                    seed.setValue(CEConst.IDS_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_LINEAR, seg, currPeriod + 1);
                 }
-                
+
                 if (currATM.getRMDuration(seg) > 1) {
                     // Updating next PeriodATM instance
                     nextATM.setRMType(currATM.getRMType(seg), seg);
@@ -78,8 +78,8 @@ public class ATMUpdater {
                 if (currATM.getHSRUsed(seg)) {
                     atm.LAF().add(1, seg, currPeriod + 1); // Adding lane
 
-                    // Calculating new segment CAF using shoulder CAF
-                    float seedCAF = seed.getValueFloat(CEConst.IDS_U_CAF_GP, seg, currPeriod + 1);
+                    // Calculating new segment CAF using shoulder CAF 
+                    float seedCAF = seed.getValueFloat(CEConst.IDS_GP_USER_CAF, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
                     //float avgCAF = (seedCAF + rlCAF) / 2.0f;
                     float combinedCAF = seedCAF * rlCAF;

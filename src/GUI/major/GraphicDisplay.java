@@ -125,6 +125,8 @@ public class GraphicDisplay extends javax.swing.JPanel {
     private int maxNumOfLanes = 0;
 
     private int maxNumOfMLLanes = 0;
+
+    private boolean showIncidents = true;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="constructor and display control functions">
@@ -325,12 +327,14 @@ public class GraphicDisplay extends javax.swing.JPanel {
                 }
 
                 //draw incident lane closure for ML segment
-                g.setColor(findColor("INC"));
-                if (seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm) < 0) {
-                    g.fillRect(currX + 1,
-                            currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
-                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                            -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm));
+                if (showIncidents) {
+                    g.setColor(findColor("INC"));
+                    if (seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm) < 0) {
+                        g.fillRect(currX + 1,
+                                currY + (maxNumOfMLLanes - seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, period)) * heightPerLane,
+                                (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                                -heightPerLane * seed.getValueInt(CEConst.IDS_ML_RL_LAF, seg, period, scen, atdm));
+                    }
                 }
 
                 //draw separation
@@ -394,12 +398,14 @@ public class GraphicDisplay extends javax.swing.JPanel {
             }
 
             //dawy incident lane closure for GP segment
-            g.setColor(findColor("INC"));
-            if (seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm) < 0) {
-                g.fillRect(currX + 1,
-                        currY - heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, seg, period, scen, atdm),
-                        (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
-                        -heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm));
+            if (showIncidents) {
+                g.setColor(findColor("INC"));
+                if (seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm) < 0) {
+                    g.fillRect(currX + 1,
+                            currY - heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, seg, period, scen, atdm),
+                            (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
+                            -heightPerLane * seed.getValueInt(CEConst.IDS_GP_RL_LAFI, seg, period, scen, atdm));
+                }
             }
 
             //draw GP lanes
@@ -1077,6 +1083,10 @@ public class GraphicDisplay extends javax.swing.JPanel {
         }
     }
     // </editor-fold>
+
+    public void showIncidents(boolean showIncidents) {
+        this.showIncidents = showIncidents;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

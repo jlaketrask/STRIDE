@@ -1024,26 +1024,26 @@ public class MainWindow extends javax.swing.JFrame {
         for (int period = scenEvent.startPeriod; period <= scenEvent.endPeriod; period++) {
             for (int segment = scenEvent.startSegment; segment <= scenEvent.endSegment; segment++) {
 
-                activeSeed.setValue(CEConst.IDS_RL_CAF_GP,
-                        scenEvent.caf * activeSeed.getValueFloat(CEConst.IDS_RL_CAF_GP, segment, period, 1, -1),
+                activeSeed.setValue(CEConst.IDS_GP_RL_CAF,
+                        scenEvent.caf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_CAF, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_DAF_GP,
-                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_RL_DAF_GP, segment, period, 1, -1),
+                activeSeed.setValue(CEConst.IDS_GP_RL_DAF,
+                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_DAF, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_OAF_GP,
-                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_RL_OAF_GP, segment, period, 1, -1),
+                activeSeed.setValue(CEConst.IDS_GP_RL_OAF,
+                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_OAF, segment, period, 1, -1),
                         segment, period, 1, -1);
-                activeSeed.setValue(CEConst.IDS_RL_SAF_GP,
-                        scenEvent.saf * activeSeed.getValueFloat(CEConst.IDS_RL_SAF_GP, segment, period, 1, -1),
+                activeSeed.setValue(CEConst.IDS_GP_RL_SAF,
+                        scenEvent.saf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_SAF, segment, period, 1, -1),
                         segment, period, 1, -1);
 
                 if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_RL_LAFI_GP,
-                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_RL_LAFI_GP, segment, period, 1, -1),
+                    activeSeed.setValue(CEConst.IDS_GP_RL_LAFI,
+                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_GP_RL_LAFI, segment, period, 1, -1),
                             segment, period, 1, -1);
                 } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_RL_LAFWZ_GP,
-                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_RL_LAFWZ_GP, segment, period, 1, -1),
+                    activeSeed.setValue(CEConst.IDS_GP_RL_LAFWZ,
+                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, segment, period, 1, -1),
                             segment, period, 1, -1);
                 }
             }

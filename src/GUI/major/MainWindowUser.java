@@ -469,7 +469,7 @@ public class MainWindowUser extends MainWindow {
     public void showInput() {
         isShowingInput = true;
         tableDisplay.showInput();
-        graphicDisplay.showInput();
+        //graphicDisplay.showInput();
         //tabPanel.setSelectedComponent(singleScenSplitPanel);
         showInputButton.setSelected(true);
         showOutputButton.setSelected(false);
@@ -485,7 +485,7 @@ public class MainWindowUser extends MainWindow {
         //toolbox.showOutput();
         tableDisplay.showOutput();
         tableDisplaySegmentATM.update();
-        graphicDisplay.showOutput();
+        //graphicDisplay.showOutput();
         showInputButton.setSelected(false);
         showOutputButton.setSelected(true);
         inOutCB.setSelectedIndex(1);
@@ -1108,7 +1108,7 @@ public class MainWindowUser extends MainWindow {
         }
         activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
-        atmHolder.put(1, new ATDMScenario[] {activeATM, null});
+        atmHolder.put(1, new ATDMScenario[]{activeATM, null});
         activeSeed.addATDMSet(atmHolder);
         activeATDM++;
         // Reset window
