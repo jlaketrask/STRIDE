@@ -6,6 +6,7 @@
 package coreEngine.reliabilityAnalysis.DataStruct;
 
 import coreEngine.Helper.CEConst;
+import coreEngine.Helper.CEDate;
 import coreEngine.Seed;
 
 /**
@@ -14,54 +15,24 @@ import coreEngine.Seed;
  */
 public class DemandData {
 
-    /**
-     *
-     */
     private final float[][] demands = new float[12][7];
 
-    /**
-     *
-     */
     private final boolean[] activeDays = new boolean[7];
 
-    /**
-     *
-     */
     private final boolean[] activeMonths = new boolean[12];
 
-    /**
-     *
-     */
     private int year;
 
-    /**
-     *
-     */
     private int startMonth;
 
-    /**
-     *
-     */
     private int startDay;
 
-    /**
-     *
-     */
     private int endMonth;
 
-    /**
-     *
-     */
     private int endDay;
 
-    /**
-     *
-     */
     private Seed seed;
 
-    /**
-     *
-     */
     private final int type;
 
     /**
@@ -192,6 +163,14 @@ public class DemandData {
     public int getStartDay() {
         return this.startDay;
     }
+    
+    /**
+     * Returns a CEDate instance of the Reliability Reporting Period start date.
+     * @return Start date of the Reliability Reporting Period
+     */
+    public CEDate getStartDate() {
+        return new CEDate(this.year, this.startMonth, this.startDay);
+    }
 
     /**
      *
@@ -207,6 +186,14 @@ public class DemandData {
      */
     public int getEndDay() {
         return this.endDay;
+    }
+    
+    /**
+     * Returns a CEDate instance of the Reliability Reporting Period end date.
+     * @return End date of the Reliability Reporting Period
+     */
+    public CEDate getEndDate() {
+        return new CEDate(this.year, this.endMonth, this.endDay);
     }
 
     /**
@@ -511,9 +498,6 @@ public class DemandData {
         }
     }
 
-    /**
-     *
-     */
     private final float urbanDefaultValues[][] = new float[][]{
         {0.822158f, 0.822158f, 0.838936f, 0.864104f, 0.964777f, 0.830547f, 0.729875f},
         {0.848710f, 0.848710f, 0.866031f, 0.892012f, 0.995936f, 0.857371f, 0.753447f},
@@ -529,9 +513,6 @@ public class DemandData {
         {0.978525f, 0.978525f, 0.998495f, 1.028450f, 1.148269f, 0.988510f, 0.868690f}
     };
 
-    /**
-     *
-     */
     private final float ruralDefaultValues[][] = new float[][]{
         {0.710902f, 0.680969f, 0.695936f, 0.733352f, 0.868049f, 0.785734f, 0.755801f},
         {0.787988f, 0.754810f, 0.771399f, 0.812872f, 0.962175f, 0.870934f, 0.837756f},
@@ -547,9 +528,6 @@ public class DemandData {
         {0.829862f, 0.794920f, 0.812391f, 0.856068f, 1.013305f, 0.917216f, 0.882274f}
     };
 
-    /**
-     *
-     */
     private final float i40DefaultValues[][] = new float[][]{
         {0.996623f, 1.027775f, 1.040394f, 1.052601f, 1.081612f, 0.0f, 0.0f},
         {0.939253f, 1.010728f, 1.039214f, 1.092029f, 1.140072f, 0.0f, 0.0f},

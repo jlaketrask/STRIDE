@@ -13,59 +13,26 @@ import coreEngine.Seed;
  */
 public class IncidentData {
 
-    /**
-     *
-     */
     private final float[][] incidentProbabilities;
 
-    /**
-     *
-     */
     private final float[] incidentFreqMonth;  // Total number of incidents in a month
 
-    /**
-     *
-     */
     private final float[] incidentDistribution;
 
-    /**
-     *
-     */
     private final float[][] incidentDurationInfo;
 
-    /**
-     *
-     */
     private final float[][] incidentFFSAFs;
 
-    /**
-     *
-     */
     private final float[][] incidentCAFs;
 
-    /**
-     *
-     */
     private final float[][] incidentDAFs;
 
-    /**
-     *
-     */
     private final int[][] incidentLAFs;
 
-    /**
-     *
-     */
     private float crashRateRatio;
 
-    /**
-     *
-     */
     private Seed seed;
 
-    /**
-     *
-     */
     private final int modelType;
 
     /**
@@ -784,9 +751,6 @@ public class IncidentData {
 
     }
 
-    /**
-     *
-     */
     private void useDefaultAdjFactors() {
         useDefaultFFSAFs();
         useDefaultCAFs();
@@ -794,9 +758,6 @@ public class IncidentData {
         useDefaultLAFs();
     }
 
-    /**
-     *
-     */
     private void useMLDefaultAdjFactors() {
         useMLDefaultFFSAFs();
         useMLDefaultCAFs();
@@ -831,9 +792,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useDefaultFFSAFs() {
         float[][] tempFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -853,9 +811,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useDefaultCAFs() {
         float[][] tempCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
         {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
@@ -873,9 +828,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useDefaultDAFs() {
         float[][] tempDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -893,9 +845,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useDefaultLAFs() {
         int[][] tempLAFs = {{0, -1, -1, -1, -1},
         {0, -1, -2, -2, -2},
@@ -930,9 +879,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useMLDefaultFFSAFs() {
         float[][] tempFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -952,9 +898,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useMLDefaultCAFs() {
         float[][] tempCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
         {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
@@ -972,9 +915,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useMLDefaultDAFs() {
         float[][] tempDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -992,9 +932,6 @@ public class IncidentData {
         }
     }
 
-    /**
-     *
-     */
     private void useMLDefaultLAFs() {
         int[][] tempLAFs = {{0, -1, -1, -1, -1},
         {0, -1, -2, -2, -2},

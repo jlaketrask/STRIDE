@@ -47,7 +47,9 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
     private boolean inputCheckPassed = true;
 
     private final boolean isNewSeed;
+
     private final MainWindow mainWindow;
+
     private Seed seed;
 
     /**
@@ -115,8 +117,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         capacityDropText.setText(Integer.toString(seed.getValueInt(CEConst.IDS_CAPACITY_ALPHA)));
         gpOccText.setText(Float.toString(seed.getValueFloat(CEConst.IDS_OCCU_GP)));
         mlOccText.setText(Float.toString(seed.getValueFloat(CEConst.IDS_OCCU_ML)));
-        ffsKnownCheck.setSelected(seed.isFreeFlowSpeedKnown());//getValueString(CEConst.IDS_FFS_KNOWN).equals("true"));
-        useRampMeteringCheck.setSelected(seed.isRampMeteringUsed());//getValueString(CEConst.IDS_RM_USED).equals("true"));
+        ffsKnownCheck.setSelected(seed.isFreeFlowSpeedKnown());
         manageLaneCheck.setSelected(seed.isManagedLaneUsed());
         manageLaneCheck.setEnabled(seed.getValueInt(CEConst.IDS_NUM_SCEN) == 0);
         jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Fill Global Values"));
@@ -250,7 +251,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         delPeriodButton = new javax.swing.JButton();
         optionsJPanel = new javax.swing.JPanel();
         ffsKnownCheck = new javax.swing.JCheckBox();
-        useRampMeteringCheck = new javax.swing.JCheckBox();
         manageLaneCheck = new javax.swing.JCheckBox();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         fillGPJPanel = new javax.swing.JPanel();
@@ -611,7 +611,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         generalJPanel.add(delPeriodButton);
 
         optionsJPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Analysis Options"));
-        optionsJPanel.setLayout(new java.awt.GridLayout(1, 0));
+        optionsJPanel.setLayout(new java.awt.GridLayout(1, 2));
 
         ffsKnownCheck.setSelected(true);
         ffsKnownCheck.setText("Free Flow Speed Known");
@@ -621,14 +621,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             }
         });
         optionsJPanel.add(ffsKnownCheck);
-
-        useRampMeteringCheck.setText("Use Ramp Metering");
-        useRampMeteringCheck.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                useRampMeteringCheckItemStateChanged(evt);
-            }
-        });
-        optionsJPanel.add(useRampMeteringCheck);
 
         manageLaneCheck.setText("Managed Lanes Analysis");
         manageLaneCheck.addItemListener(new java.awt.event.ItemListener() {
@@ -966,11 +958,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         lateralClearanceText.setVisible(!ffsKnownCheck.isSelected() && lateralClearanceCheck.isSelected());
     }//GEN-LAST:event_ffsKnownCheckItemStateChanged
 
-    private void useRampMeteringCheckItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_useRampMeteringCheckItemStateChanged
-        rampMeteringCheck.setEnabled(useRampMeteringCheck.isSelected());
-        rampMeteringText.setVisible(useRampMeteringCheck.isSelected() && rampMeteringCheck.isSelected());
-    }//GEN-LAST:event_useRampMeteringCheckItemStateChanged
-
     private void checkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkButtonActionPerformed
         doInputCheck();
     }//GEN-LAST:event_checkButtonActionPerformed
@@ -1208,7 +1195,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
         //save general data to seed
         seed.setValue(CEConst.IDS_PROJECT_NAME, seedNameText.getText());
         seed.setFreeFlowSpeedKnown(ffsKnownCheck.isSelected());
-        seed.setRampMeteringUsed(useRampMeteringCheck.isSelected());
         seed.setValue(CEConst.IDS_JAM_DENSITY, Float.parseFloat(jamDensityText.getText()));
         seed.setValue(CEConst.IDS_CAPACITY_ALPHA, Integer.parseInt(capacityDropText.getText()));
 
@@ -1350,7 +1336,7 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
             int num = Integer.parseInt(rampMeteringText.getText());
             for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
                 for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
-                    seed.setValue(CEConst.IDS_ON_RAMP_METERING_RATE, num, seg, period);
+                    seed.setValue(CEConst.IDS_ON_RAMP_METERING_RATE_FIX, num, seg, period);
                 }
             }
         }
@@ -1732,7 +1718,6 @@ public class SeedGlobalDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox truckMLCheck;
     private javax.swing.JTextField truckMLText;
     private javax.swing.JTextField truckText;
-    private javax.swing.JCheckBox useRampMeteringCheck;
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;

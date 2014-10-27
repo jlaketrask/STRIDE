@@ -5,8 +5,8 @@
  */
 package coreEngine.atdm.DataStruct;
 
+import CompressArray.CA2DInt;
 import coreEngine.Helper.CEConst;
-import coreEngine.Helper.CM2DInt;
 
 /**
  *
@@ -14,29 +14,14 @@ import coreEngine.Helper.CM2DInt;
  */
 public class ATDMStrategyMat extends ATDMStrategy {
 
-    /**
-     *
-     */
-    private CM2DInt strategyMatrix;
+    private CA2DInt strategyMatrix;
 
-    /**
-     *
-     */
     private final int numSeg;
 
-    /**
-     *
-     */
     private final int numPeriods;
 
-    /**
-     *
-     */
     private final String strategyType;
 
-    /**
-     *
-     */
     private float shoulderCapacity[];
 
     /**
@@ -55,23 +40,23 @@ public class ATDMStrategyMat extends ATDMStrategy {
         this.shoulderCapacity = new float[5];
         switch (this.strategyType) {
             case CEConst.IDS_ATDM_STRAT_TYPE_RAMP_METERING:
-                this.strategyMatrix = new CM2DInt(numSeg, this.numPeriods, 2100);
+                this.strategyMatrix = new CA2DInt(numSeg, this.numPeriods, 2100);
                 break;
             case CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING:
-                this.strategyMatrix = new CM2DInt(numSeg, this.numPeriods, 0);
+                this.strategyMatrix = new CA2DInt(numSeg, this.numPeriods, 0);
                 fillShoulderDefaults();
                 break;
             default:
                 throw new RuntimeException("Invalid Strategy Type");
         }
-        
+
     }
 
     /**
      *
      * @return
      */
-    public CM2DInt getStrategyMatrix() {
+    public CA2DInt getStrategyMatrix() {
         return strategyMatrix;
     }
 
@@ -79,7 +64,7 @@ public class ATDMStrategyMat extends ATDMStrategy {
      *
      * @param newMatrix
      */
-    public void setStrategyMatrix(CM2DInt newMatrix) {
+    public void setStrategyMatrix(CA2DInt newMatrix) {
         this.strategyMatrix = newMatrix;
     }
 
@@ -93,13 +78,13 @@ public class ATDMStrategyMat extends ATDMStrategy {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public float[] getShoulderCapacity() {
         return shoulderCapacity;
     }
-    
+
     /**
      *
      * @param newValue
@@ -108,7 +93,7 @@ public class ATDMStrategyMat extends ATDMStrategy {
     public void setShoulderCapacity(float newValue, int numLanes) {
         shoulderCapacity[numLanes] = newValue;
     }
-    
+
     /**
      *
      * @param newValues
@@ -116,14 +101,14 @@ public class ATDMStrategyMat extends ATDMStrategy {
     public void setShoulderCapacity(float[] newValues) {
         shoulderCapacity = newValues;
     }
-    
+
     private void fillShoulderDefaults() {
         shoulderCapacity[0] = 0.7f;
         shoulderCapacity[1] = 0.75f;
         shoulderCapacity[2] = 0.8f;
         shoulderCapacity[3] = 0.85f;
         shoulderCapacity[4] = 0.9f;
-        
+
     }
 
 }

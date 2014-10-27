@@ -87,39 +87,18 @@ public class WeatherData {
      */
     public static final int DAF = 2;
 
-    /**
-     *
-     */
     private final float[][] weatherProbability;
 
-    /**
-     *
-     */
     private final float[] averageDuration;
 
-    /**
-     *
-     */
     private final float[][] adjustmentFactors;
 
-    /**
-     *
-     */
     private final float[] defaultCAF;
 
-    /**
-     *
-     */
     private int seedDefaultFFS;
 
-    /**
-     *
-     */
     private final boolean[] monthActive;
 
-    /**
-     *
-     */
     private String nearestMetroArea;
 
     /**
@@ -470,9 +449,6 @@ public class WeatherData {
     }
 
     // </editor-fold>
-    /**
-     *
-     */
     private void initializeFields() {
 
         // Zero probabilities
@@ -506,10 +482,6 @@ public class WeatherData {
         }
     }
 
-    /**
-     *
-     * @param month
-     */
     private void updateNormalWeather(int month) {
         float sum = 0.0f;
         for (int weather = 0; weather < 10; ++weather) {
@@ -732,9 +704,6 @@ public class WeatherData {
 
     } //end of extractFromWeatherDB
 
-    /**
-     *
-     */
     private void setCapacityAdjFactors() {
         // Setting default Capacity Adjustment Factors
         //adjustmentFactors[0][0] = 92.76f;
@@ -762,10 +731,6 @@ public class WeatherData {
         adjustmentFactors[0][10] = 1.0f;
     }
 
-    /**
-     *
-     * @param defaultFFS
-     */
     private void setFFSpeedAdjFactors(int defaultFFS) {
         // Setting the FFS adjustment factors
 
@@ -829,10 +794,6 @@ public class WeatherData {
         }
     }
 
-    /**
-     *
-     * @param defaultFFS
-     */
     private void setFFSpeedAdjFactorsOld(int defaultFFS) {
         // Setting the FFS adjustment factors
         switch (defaultFFS) {
@@ -863,9 +824,6 @@ public class WeatherData {
         }
     }
 
-    /**
-     *
-     */
     private void setDemandAdjFactors() {
         // Setting default Demand Adjustment Factors
         for (int weather = 0; weather < 11; ++weather) {

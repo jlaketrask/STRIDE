@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 /**
  * This class contains static methods to create various type of ArrayList or
- * normal array, to sum and average of Array/ArrayList, and to convert between
- * veh and pc. Only used in coreEngine package.
+ * normal array, to sum and average of Array/ArrayList, to compare LOS, and to
+ * convert between veh and pc. Only used in coreEngine package.
  *
  * @author Shu Liu
  */

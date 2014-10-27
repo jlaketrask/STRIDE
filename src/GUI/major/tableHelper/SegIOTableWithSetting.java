@@ -28,17 +28,15 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     // <editor-fold defaultstate="collapsed" desc="CORE FUNCTIONS">
     /**
-     * Constructor Create 4 table models and 2 table
+     * Constructor of Input/Output Table. Create 2 table models and 2 table
      */
     public SegIOTableWithSetting() {
         _resetCellSettings();
 
         firstColumnModel = new SegIOTableModel(true, this);
-        //firstColumnModelOutput = new SegIOTableModel(true, false, this);
         firstColumnTable = new FREEVAL_JTable(firstColumnModel);
 
         restColumnModel = new SegIOTableModel(false, this);
-        //restColumnModelOutput = new SegIOTableModel(false, false, this);
         restColumnTable = new FREEVAL_JTable(restColumnModel);
 
         restColumnTable.setColumnSelectionAllowed(true);
@@ -75,22 +73,29 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     }
 
     /**
-     * Show input
+     * Show input in table
      */
     public void showInput() {
-        isInput = true;
-        //firstColumnTable.setModel(firstColumnModel);
-        //restColumnTable.setModel(restColumnModel);
+        showInput = true;
+        showOutput = false;
         update();
     }
 
     /**
-     * Show output
+     * Show output in table
      */
     public void showOutput() {
-        isInput = false;
-        //firstColumnTable.setModel(firstColumnModelOutput);
-        //restColumnTable.setModel(restColumnModelOutput);
+        showInput = false;
+        showOutput = true;
+        update();
+    }
+
+    /**
+     * Show both input and output in table
+     */
+    public void showInputAndOutput() {
+        showInput = true;
+        showOutput = true;
         update();
     }
 
@@ -98,13 +103,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * Getter for cell editor
      *
      * @param isFirstColumn whether it is first column model
-     * @param isInput whether this model is used to show input
      * @param row row index
      * @param col column index
      * @return cell editor
      */
-    public TableCellEditor getCellEditor(boolean isFirstColumn, boolean isInput, int row, int col) {
-        TableCellSetting setting = findCellSetting(row, isInput);
+    public TableCellEditor getCellEditor(boolean isFirstColumn, int row, int col) {
+        TableCellSetting setting = findCellSetting(row);
 
         if (isFirstColumn) {
             return defaultCellEditor;
@@ -153,6 +157,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     }
                 case CEConst.IDS_TERRAIN:
                     return tableTerrainEditor;
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                    return tableRampMeteringTypeEditor;
                 case CEConst.IDS_ML_HAS_CROSS_WEAVE:
                     return tableCheckBoxEditor;
                 default:
@@ -170,7 +176,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * @return cell render
      */
     public TableCellRenderer getCellRenderer(boolean isFirstColumn, int row, int col) {
-        TableCellSetting setting = findCellSetting(row, isInput);
+        TableCellSetting setting = findCellSetting(row);
 
         if (isFirstColumn) {
             return tableFirstColumnRenderer;
@@ -216,6 +222,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                     }
                 case CEConst.IDS_TERRAIN:
                     return tableTerrainRenderer;
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                    return tableRampMeteringTypeRenderer;
                 case CEConst.IDS_ML_HAS_CROSS_WEAVE:
                     return tableCheckBoxRenderer;
                 default:
@@ -227,22 +235,14 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     /**
      * Getter for row count
      *
-     * @param isInput whether this model is used to show input
      * @return row count
      */
-    public int getRowCount(boolean isInput) {
+    public int getRowCount() {
         int count = 0;
-        if (isInput) {
-            for (TableCellSetting setting : settings) {
-                if (setting.showInInput && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
-                    count++;
-                }
-            }
-        } else {
-            for (TableCellSetting setting : settings) {
-                if (setting.showInOutput && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
-                    count++;
-                }
+        for (TableCellSetting setting : settings) {
+            if (((setting.showInInput && showInput) || (setting.showInOutput && showOutput))
+                    && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
+                count++;
             }
         }
         return count;
@@ -262,13 +262,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * Getter for value at a cell
      *
      * @param isFirstColumn whether it is first column model
-     * @param isInput whether this model is used to show input
      * @param row row index
      * @param col column index
      * @return value at a cell
      */
-    public Object getValueAt(boolean isFirstColumn, boolean isInput, int row, int col) {
-        TableCellSetting setting = findCellSetting(row, isInput);
+    public Object getValueAt(boolean isFirstColumn, int row, int col) {
+        TableCellSetting setting = findCellSetting(row);
         if (isFirstColumn) {
             return setting.header;
         } else {
@@ -280,26 +279,24 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * Getter for whether a cell is editable
      *
      * @param isFirstColumn whether it is first column model
-     * @param isInput whether this model is used to show input
      * @param row row index
      * @param col column index
      * @return whether a cell is editable
      */
-    public boolean isCellEditable(boolean isFirstColumn, boolean isInput, int row, int col) {
-        return !isFirstColumn && findCellSetting(row, isInput).editable && !getValueAt(isFirstColumn, isInput, row, col).equals(CEConst.IDS_NA);
+    public boolean isCellEditable(boolean isFirstColumn, int row, int col) {
+        return !isFirstColumn && findCellSetting(row).editable && !getValueAt(isFirstColumn, row, col).equals(CEConst.IDS_NA);
     }
 
     /**
      * Setter for value at a cell
      *
      * @param isFirstColumn whether it is first column model
-     * @param isInput whether this model is used to show input
      * @param value new value
      * @param row row index
      * @param col column index
      */
-    public void setValueAt(boolean isFirstColumn, boolean isInput, Object value, int row, int col) {
-        TableCellSetting setting = findCellSetting(row, isInput);
+    public void setValueAt(boolean isFirstColumn, Object value, int row, int col) {
+        TableCellSetting setting = findCellSetting(row);
         if (!isFirstColumn && setting.editable) {
             seed.setValue(setting.identifier, value, col, period, scen, atdm);
             mainWindow.seedDataChanged();
@@ -310,11 +307,10 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * Getter for column header
      *
      * @param isFirstColumn whether it is first column model
-     * @param isInput whether this model is used to show input
      * @param col column index
      * @return column header
      */
-    public String getColumnName(boolean isFirstColumn, boolean isInput, int col) {
+    public String getColumnName(boolean isFirstColumn, int col) {
         if (isFirstColumn) {
             return "Segment";
         } else {
@@ -338,18 +334,27 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         update();
     }
 
+    /**
+     *
+     */
     public void showGPOnly() {
         showGP = true;
         showML = false;
         update();
     }
 
+    /**
+     *
+     */
     public void showMLOnly() {
         showGP = false;
         showML = true;
         update();
     }
 
+    /**
+     *
+     */
     public void showGPML() {
         showGP = true;
         showML = true;
@@ -362,9 +367,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     public void update() {
         autoConfigRowDisplay();
         firstColumnModel.fireTableStructureChanged();
-        //firstColumnModelOutput.fireTableStructureChanged();
         restColumnModel.fireTableStructureChanged();
-        //restColumnModelOutput.fireTableStructureChanged();
     }
 
     /**
@@ -424,11 +427,6 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         setting.showInInput = seed.isFreeFlowSpeedKnown();
                         setting.showInOutput = setting.showInOutput && seed.isFreeFlowSpeedKnown();
                         break;
-                    case CEConst.IDS_ON_RAMP_METERING_RATE:
-                        //auto hide rows depending on whether ramp metering is used
-                        setting.showInInput = seed.isRampMeteringUsed();
-                        setting.showInOutput = setting.showInOutput && seed.isRampMeteringUsed();
-                        break;
                     case CEConst.IDS_RL_CAF_GP:
                     case CEConst.IDS_RL_OAF_GP:
                     case CEConst.IDS_RL_DAF_GP:
@@ -444,12 +442,17 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
                         setting.showInInput = scen != 0;
                         setting.showInOutput = setting.showInOutput && scen != 0;
                         break;
-                    case CEConst.IDS_ATDM_CAF:
-                    case CEConst.IDS_ATDM_OAF:
-                    case CEConst.IDS_ATDM_DAF:
-                    case CEConst.IDS_ATDM_SAF:
-                    case CEConst.IDS_ATDM_LAF:
-                    case CEConst.IDS_ATDM_RM:
+                    case CEConst.IDS_ATDM_CAF_GP:
+                    case CEConst.IDS_ATDM_OAF_GP:
+                    case CEConst.IDS_ATDM_DAF_GP:
+                    case CEConst.IDS_ATDM_SAF_GP:
+                    case CEConst.IDS_ATDM_LAF_GP:
+                    case CEConst.IDS_ATDM_RM_GP:
+                    case CEConst.IDS_ATDM_CAF_ML:
+                    case CEConst.IDS_ATDM_OAF_ML:
+                    case CEConst.IDS_ATDM_DAF_ML:
+                    case CEConst.IDS_ATDM_SAF_ML:
+                    case CEConst.IDS_ATDM_LAF_ML:
                         //auto hide rows depending on whether it is ATDM or not
                         setting.showInInput = atdm >= 0;
                         setting.showInOutput = setting.showInOutput && atdm >= 0;
@@ -515,14 +518,16 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ATDM_LAF = "ATDM # Lanes Adj. Fac.";
         STR_ATDM_RM = "ATDM Ramp Metering (vph)";
 
+        STR_ACC_DEC_LANE_LENGTH = "Acc/Dec Lane Length (ft)";
+
         // ONR Variable Column Text
         STR_ON_RAMP_SIDE = "ONR Side";
-        STR_ACC_DEC_LANE_LENGTH = "Acc/Dec Lane Length (ft)";
 
         STR_NUM_ON_RAMP_LANES = "# Lanes: ONR";
         STR_ON_RAMP_DEMAND_VEH = "ONR/Entering Dem. (vph)";
         STR_ON_RAMP_FREE_FLOW_SPEED = "ONR Free Flow Speed (mph)";
-        STR_ON_RAMP_METERING_RATE = "ONR Metering Rate (vph)";
+        STR_ON_RAMP_METERING_TYPE = "ONR Metering Type";
+        STR_ON_RAMP_METERING_RATE = "ONR Metering Fixed Rate (vph)";
 
         // OFR Variable Column Text
         STR_OFF_RAMP_SIDE = "OFR Side";
@@ -603,6 +608,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         STR_ML_SDAF = "ML RL Exit Dem. Adj. Fac.";
         STR_ML_SSAF = "ML RL Free Flow Speed Adj. Fac.";
         STR_ML_SLAF = "ML RL # Lanes Adj. Fac. I.";
+        STR_ML_ATDM_CAF = "ML ATDM Capacity Adj. Fac.";
+        STR_ML_ATDM_OAF = "ML ATDM Entering Dem. Adj. Fac.";
+        STR_ML_ATDM_DAF = "ML ATDM Exit Dem. Adj. Fac.";
+        STR_ML_ATDM_SAF = "ML ATDM Free Flow Speed Adj. Fac.";
+        STR_ML_ATDM_LAF = "ML ATDM # Lanes Adj. Fac.";
+
         STR_ML_ACC_DEC_LANE_LENGTH = "ML Acc/Dec Lane Length (ft)";
 
         // ONR Variable Column Text
@@ -705,12 +716,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_RL_SAF, CEConst.IDS_RL_SAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
         settings.add(new TableCellSetting(STR_RL_LAFI, CEConst.IDS_RL_LAFI_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
         settings.add(new TableCellSetting(STR_RL_LAFWZ, CEConst.IDS_RL_LAFWZ_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_OAF, CEConst.IDS_ATDM_OAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_DAF, CEConst.IDS_ATDM_DAF, true, false, COLOR_GP_SCENARIO_1, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_CAF, CEConst.IDS_ATDM_CAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_SAF, CEConst.IDS_ATDM_SAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_LAF, CEConst.IDS_ATDM_LAF, true, false, COLOR_GP_SCENARIO_2, true, false, true));
-        settings.add(new TableCellSetting(STR_ATDM_RM, CEConst.IDS_ATDM_RM, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_OAF, CEConst.IDS_ATDM_OAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_DAF, CEConst.IDS_ATDM_DAF_GP, true, false, COLOR_GP_SCENARIO_1, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_CAF, CEConst.IDS_ATDM_CAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_SAF, CEConst.IDS_ATDM_SAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_LAF, CEConst.IDS_ATDM_LAF_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
+        settings.add(new TableCellSetting(STR_ATDM_RM, CEConst.IDS_ATDM_RM_GP, true, false, COLOR_GP_SCENARIO_2, true, false, true));
 
         //special input data
         settings.add(new TableCellSetting(STR_ACC_DEC_LANE_LENGTH, CEConst.IDS_ACC_DEC_LANE_LENGTH, true, false, COLOR_GP_FIX_INPUT, true, false, true));
@@ -719,7 +730,8 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_NUM_ON_RAMP_LANES, CEConst.IDS_NUM_ON_RAMP_LANES, true, false, COLOR_GP_TIME_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_ON_RAMP_FREE_FLOW_SPEED, CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED, true, false, COLOR_GP_TIME_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_ON_RAMP_DEMAND_VEH, CEConst.IDS_ON_RAMP_DEMAND_VEH, true, false, COLOR_GP_TIME_INPUT, true, false, true));
-        settings.add(new TableCellSetting(STR_ON_RAMP_METERING_RATE, CEConst.IDS_ON_RAMP_METERING_RATE, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ON_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE, true, false, COLOR_GP_TIME_INPUT, true, false, true));
+        settings.add(new TableCellSetting(STR_ON_RAMP_METERING_RATE, CEConst.IDS_ON_RAMP_METERING_RATE_FIX, true, false, COLOR_GP_TIME_INPUT, true, false, true));
 
         settings.add(new TableCellSetting(STR_OFF_RAMP_SIDE, CEConst.IDS_OFF_RAMP_SIDE, true, false, COLOR_GP_FIX_INPUT, true, false, true));
         settings.add(new TableCellSetting(STR_NUM_OFF_RAMP_LANES, CEConst.IDS_NUM_OFF_RAMP_LANES, true, false, COLOR_GP_TIME_INPUT, true, false, true));
@@ -803,6 +815,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         settings.add(new TableCellSetting(STR_ML_SSAF, CEConst.IDS_ML_RLSSAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
         settings.add(new TableCellSetting(STR_ML_SLAF, CEConst.IDS_ML_RLSLAF, true, false, COLOR_ML_SCENARIO_2, false, true, true));
 
+        settings.add(new TableCellSetting(STR_ML_ATDM_OAF, CEConst.IDS_ATDM_OAF_ML, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_DAF, CEConst.IDS_ATDM_DAF_ML, true, false, COLOR_ML_SCENARIO_1, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_CAF, CEConst.IDS_ATDM_CAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_SAF, CEConst.IDS_ATDM_SAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+        settings.add(new TableCellSetting(STR_ML_ATDM_LAF, CEConst.IDS_ATDM_LAF_ML, true, false, COLOR_ML_SCENARIO_2, false, true, true));
+
         settings.add(new TableCellSetting(STR_ML_ACC_DEC_LANE_LENGTH, CEConst.IDS_ML_ACC_DEC_LANE_LENGTH, true, false, COLOR_ML_FIX_INPUT, false, true, true));
 
         settings.add(new TableCellSetting(STR_ML_ON_RAMP_SIDE, CEConst.IDS_ML_ON_RAMP_SIDE, true, false, COLOR_ML_FIX_INPUT, false, true, true));
@@ -871,34 +889,61 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     // <editor-fold defaultstate="collapsed" desc="GP header strings">
     // Basic Segment Variable Column Text
     transient private String STR_GP_HEADER;
+
     transient private String STR_SEGMENT_TYPE;
+
     transient private String STR_SEGMENT_LENGTH;
+
     transient private String STR_SEGMENT_WIDTH;
+
     transient private String STR_LATERAL_CLEARANCE;
+
     transient private String STR_TERRAIN;
+
     transient private String STR_TRUCK_CAR_EQ;
+
     transient private String STR_RV_CAR_EQ;
 
     transient private String STR_NUM_LANES;
+
     transient private String STR_FREE_FLOW_SPEED;
+
     transient private String STR_DEMAND_VEH;
+
     transient private String STR_TRUCK_PERCENTAGE;
+
     transient private String STR_RV_PERCENTAGE;
+
     transient private String STR_U_CAF;
+
     transient private String STR_U_OAF;
+
     transient private String STR_U_DAF;
+
     transient private String STR_U_SAF;
+
     transient private String STR_RL_CAF;
+
     transient private String STR_RL_OAF;
+
     transient private String STR_RL_DAF;
+
     transient private String STR_RL_SAF;
+
     transient private String STR_RL_LAFI;
+
     transient private String STR_RL_LAFWZ;
+
     transient private String STR_ATDM_CAF;
+
     transient private String STR_ATDM_OAF;
+
     transient private String STR_ATDM_DAF;
+
     transient private String STR_ATDM_SAF;
+
     transient private String STR_ATDM_LAF;
+
     transient private String STR_ATDM_RM;
 
     transient private String STR_ACC_DEC_LANE_LENGTH;
@@ -907,100 +952,162 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     transient private String STR_ON_RAMP_SIDE;
 
     transient private String STR_NUM_ON_RAMP_LANES;
+
     transient private String STR_ON_RAMP_DEMAND_VEH;
+
     transient private String STR_ON_RAMP_FREE_FLOW_SPEED;
-    //transient private String STR_ON_RAMP_TRUCK_PERCENTAGE;
-    //transient private String STR_ON_RAMP_RV_PERCENTAGE;
+
     transient private String STR_ON_RAMP_METERING_RATE;
+
+    transient private String STR_ON_RAMP_METERING_TYPE;
 
     // OFR Variable Column Text
     transient private String STR_OFF_RAMP_SIDE;
 
     transient private String STR_NUM_OFF_RAMP_LANES;
+
     transient private String STR_OFF_RAMP_DEMAND_VEH;
+
     transient private String STR_OFF_RAMP_FREE_FLOW_SPEED;
-    //transient private String STR_OFF_RAMP_TRUCK_PERCENTAGE;
-    //transient private String STR_OFF_RAMP_RV_PERCENTAGE;
 
     // Weaving Segment Variable Column Text
     transient private String STR_LENGTH_OF_WEAVING;
+
     transient private String STR_MIN_LANE_CHANGE_ONR_TO_FRWY;
+
     transient private String STR_MIN_LANE_CHANGE_FRWY_TO_OFR;
+
     transient private String STR_MIN_LANE_CHANGE_ONR_TO_OFR;
+
     transient private String STR_NUM_LANES_WEAVING;
 
     transient private String STR_RAMP_TO_RAMP_DEMAND_VEH;
 
     // Basic Segment Output Column Text
     transient private String STR_TYPE_USED;
+
     transient private String STR_SPEED;
+
     transient private String STR_TOTAL_DENSITY_VEH;
+
     transient private String STR_TOTAL_DENSITY_PC;
+
     transient private String STR_INFLUENCED_DENSITY_PC;
+
     transient private String STR_CAPACITY;
+
     transient private String STR_ADJUSTED_DEMAND;
+
     transient private String STR_DC;
+
     transient private String STR_VOLUME_SERVED;
+
     transient private String STR_VC;
+
     transient private String STR_DENSITY_BASED_LOS;
+
     transient private String STR_DEMAND_BASED_LOS;
+
     transient private String STR_QUEUE_LENGTH;
+
     transient private String STR_QUEUE_PERCENTAGE;
+
     transient private String STR_ON_QUEUE_VEH;
 
     transient private String STR_ACTUAL_TIME;
+
     transient private String STR_FFS_TIME;
+
     transient private String STR_MAINLINE_DELAY;
+
     transient private String STR_SYSTEM_DELAY;
+
     transient private String STR_VMTD;
+
     transient private String STR_VMTV;
+
     transient private String STR_PMTD;
+
     transient private String STR_PMTV;
+
     transient private String STR_VHT;
+
     transient private String STR_VHD;
+
     transient private String STR_SPACE_MEAN_SPEED;
+
     transient private String STR_TRAVEL_TIME_INDEX;
 
     // Special Output Column Text
     transient private String STR_ON_RAMP_CAPACITY;
+
     transient private String STR_ADJUSTED_ON_RAMP_DEMAND;
+
     transient private String STR_ON_RAMP_VOLUME_SERVED;
+
     transient private String STR_OFF_RAMP_CAPACITY;
+
     transient private String STR_ADJUSTED_OFF_RAMP_DEMAND;
+
     transient private String STR_OFF_RAMP_VOLUME_SERVED;
 
     transient private String STR_ON_RAMP_DELAY;
+
     transient private String STR_ACCESS_DELAY;
 
     //Used on GP but only when ML is on
     transient private String STR_ML_HAS_CROSS_WEAVE;
+
     transient private String STR_ML_CROSS_WEAVE_LC_MIN;
+
     transient private String STR_ML_CROSS_WEAVE_VOLUME;
+
     transient private String STR_ML_CROSS_WEAVE_CAF;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ML header strings">
     // Basic Segment Variable Column Text
     transient private String STR_ML_HEADER;
+
     transient private String STR_ML_SEGMENT_TYPE;
     //transient private String STR_ML_METHOD_TYPE;
+
     transient private String STR_ML_SEPARATION_TYPE;
     //transient private String STR_ML_SEGMENT_LENGTH;
 
     transient private String STR_ML_NUM_LANES;
+
     transient private String STR_ML_FREE_FLOW_SPEED;
+
     transient private String STR_ML_DEMAND_VEH;
+
     transient private String STR_ML_TRUCK_PERCENTAGE;
+
     transient private String STR_ML_RV_PERCENTAGE;
+
     transient private String STR_ML_UCAF;
+
     transient private String STR_ML_UOAF;
+
     transient private String STR_ML_UDAF;
+
     transient private String STR_ML_USAF;
+
     transient private String STR_ML_SCAF;
+
     transient private String STR_ML_SOAF;
+
     transient private String STR_ML_SDAF;
+
     transient private String STR_ML_SSAF;
+
     transient private String STR_ML_SLAF;
+
+    transient private String STR_ML_ATDM_CAF;
+    transient private String STR_ML_ATDM_OAF;
+    transient private String STR_ML_ATDM_DAF;
+    transient private String STR_ML_ATDM_SAF;
+    transient private String STR_ML_ATDM_LAF;
 
     transient private String STR_ML_ACC_DEC_LANE_LENGTH;
 
@@ -1008,105 +1115,151 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
     transient private String STR_ML_ON_RAMP_SIDE;
 
     transient private String STR_ML_NUM_ON_RAMP_LANES;
+
     transient private String STR_ML_ON_RAMP_DEMAND_VEH;
+
     transient private String STR_ML_ON_RAMP_FREE_FLOW_SPEED;
 
     // OFR Variable Column Text
     transient private String STR_ML_OFF_RAMP_SIDE;
 
     transient private String STR_ML_NUM_OFF_RAMP_LANES;
+
     transient private String STR_ML_OFF_RAMP_DEMAND_VEH;
+
     transient private String STR_ML_OFF_RAMP_FREE_FLOW_SPEED;
 
     // Weaving Segment Variable Column Text
     transient private String STR_ML_LENGTH_SHORT;
+
     transient private String STR_ML_MIN_LANE_CHANGE_ONR_TO_FRWY;
+
     transient private String STR_ML_MIN_LANE_CHANGE_FRWY_TO_OFR;
+
     transient private String STR_ML_MIN_LANE_CHANGE_ONR_TO_OFR;
+
     transient private String STR_ML_NUM_LANES_WEAVING;
+
     transient private String STR_ML_LC_MIN;
+
     transient private String STR_ML_LC_MAX;
 
     transient private String STR_ML_RAMP_TO_RAMP_DEMAND_VEH;
 
     // Basic Segment Output Column Text
     transient private String STR_ML_TYPE_USED;
+
     transient private String STR_ML_SPEED;
+
     transient private String STR_ML_TOTAL_DENSITY_VEH;
+
     transient private String STR_ML_TOTAL_DENSITY_PC;
+
     transient private String STR_ML_INFLUENCED_DENSITY_PC;
+
     transient private String STR_ML_CAPACITY;
+
     transient private String STR_ML_ADJUSTED_DEMAND;
+
     transient private String STR_ML_DC;
+
     transient private String STR_ML_VOLUME_SERVED;
+
     transient private String STR_ML_VC;
+
     transient private String STR_ML_DENSITY_BASED_LOS;
+
     transient private String STR_ML_DEMAND_BASED_LOS;
+
     transient private String STR_ML_QUEUE_LENGTH;
+
     transient private String STR_ML_QUEUE_PERCENTAGE;
+
     transient private String STR_ML_ON_QUEUE_VEH;
 
     transient private String STR_ML_ACTUAL_TIME;
+
     transient private String STR_ML_FFS_TIME;
+
     transient private String STR_ML_MAINLINE_DELAY;
+
     transient private String STR_ML_SYSTEM_DELAY;
+
     transient private String STR_ML_VMTD;
+
     transient private String STR_ML_VMTV;
+
     transient private String STR_ML_PMTD;
+
     transient private String STR_ML_PMTV;
+
     transient private String STR_ML_VHT;
+
     transient private String STR_ML_VHD;
+
     transient private String STR_ML_SPACE_MEAN_SPEED;
+
     transient private String STR_ML_TRAVEL_TIME_INDEX;
 
     // Special Output Column Text
     transient private String STR_ML_ON_RAMP_CAPACITY;
+
     transient private String STR_ML_ADJUSTED_ON_RAMP_DEMAND;
+
     transient private String STR_ML_ON_RAMP_VOLUME_SERVED;
+
     transient private String STR_ML_OFF_RAMP_CAPACITY;
+
     transient private String STR_ML_ADJUSTED_OFF_RAMP_DEMAND;
+
     transient private String STR_ML_OFF_RAMP_VOLUME_SERVED;
+
     transient private String STR_ML_ON_RAMP_DELAY;
+
     transient private String STR_ML_ACCESS_DELAY;
     // </editor-fold>
 
     private ArrayList<TableCellSetting> settings;
 
     private static final Color COLOR_GP_FIX_INPUT = new Color(153, 255, 153);
+
     private static final Color COLOR_GP_TIME_INPUT = new Color(255, 255, 150); //new Color(255, 255, 0)
+
     private static final Color COLOR_GP_SCENARIO_1 = new Color(255, 200, 200); //Color.pink; //new Color(255, 175, 175)
+
     private static final Color COLOR_GP_SCENARIO_2 = new Color(255, 230, 230); //Color.orange; //new Color(255, 200, 0)
+
     private static final Color COLOR_GP_OUTPUT = Color.cyan; //new Color(0, 255, 255)
 
     private static final Color COLOR_ML_FIX_INPUT = new Color(0, 200, 100);
+
     private static final Color COLOR_ML_TIME_INPUT = new Color(255, 200, 0);
+
     private static final Color COLOR_ML_SCENARIO_1 = new Color(255, 120, 120);
+
     private static final Color COLOR_ML_SCENARIO_2 = new Color(255, 160, 160);
+
     private static final Color COLOR_ML_OUTPUT = new Color(0, 200, 255);
 
-    private TableCellSetting findCellSetting(int row, boolean showInput) {
-        //search for corrent item
-        if (showInput) {
-            int count = -1;
-            for (TableCellSetting setting : settings) {
-                if (setting.showInInput && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
-                    count++;
-                    if (count == row) {
-                        return setting;
-                    }
+    /**
+     * search for cell setting at a particular row in the table
+     *
+     * @param row row index
+     * @return cell setting at a particular row in the table
+     */
+    private TableCellSetting findCellSetting(int row) {
+        int count = -1;
+        for (TableCellSetting setting : settings) {
+            if (((setting.showInInput && showInput) || (setting.showInOutput && showOutput))
+                    && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
+                count++;
+                if (count == row) {
+                    return setting;
                 }
             }
-        } else {
-            int count = -1;
-            for (TableCellSetting setting : settings) {
-                if (setting.showInOutput && ((setting.showInGP && showGP) || (setting.showInML && showML))) {
-                    count++;
-                    if (count == row) {
-                        return setting;
-                    }
-                }
-            }
+
         }
+
         return null;
     }
 
@@ -1117,7 +1270,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * @return color at a row
      */
     public Color getColorAt(int row) {
-        return findCellSetting(row, isInput).bgColor;
+        return findCellSetting(row).bgColor;
     }
 
     /**
@@ -1127,32 +1280,54 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
      * @return cell setting at a row
      */
     public TableCellSetting getCellSettingAt(int row) {
-        return findCellSetting(row, isInput);
+        return findCellSetting(row);
     }
 
     // <editor-fold defaultstate="collapsed" desc="CELL RENDERER AND EDITOR">
     private final TableFirstColumnRenderer tableFirstColumnRenderer = new TableFirstColumnRenderer(this);
+
     private final TableNumAndStringRenderer tableNumAndStringRenderer = new TableNumAndStringRenderer(this);
+
     private final TableSegTypeRenderer tableSegTypeRenderer = new TableSegTypeRenderer();
+
     private final TableRampSideRenderer tableRampSideRenderer = new TableRampSideRenderer();
+
     private final TableTerrainRenderer tableTerrainRenderer = new TableTerrainRenderer();
+
+    private final TableRampMeteringTypeRenderer tableRampMeteringTypeRenderer = new TableRampMeteringTypeRenderer();
+
     private final TableCheckBoxRenderer tableCheckBoxRenderer = new TableCheckBoxRenderer();
+
     private final TableSeparationTypeRenderer tableSeparationTypeRenderer = new TableSeparationTypeRenderer();
+
     private final TableMLMethodTypeRenderer tableMLMethodTypeRenderer = new TableMLMethodTypeRenderer();
 
     private final JTextField textFieldForCellEditor = new JTextField();
+
     private final DefaultCellEditor defaultCellEditor = new DefaultCellEditor(textFieldForCellEditor);
+
     private final TableSegTypeEditor tableSegTypeEditor = new TableSegTypeEditor();
+
     private final TableTerrainEditor tableTerrainEditor = new TableTerrainEditor();
+
+    private final TableRampMeteringTypeEditor tableRampMeteringTypeEditor = new TableRampMeteringTypeEditor();
+
     private final TableRampSideEditor tableRampSideEditor = new TableRampSideEditor();
+
     private final TableCheckBoxEditor tableCheckBoxEditor = new TableCheckBoxEditor();
+
     private final TableSeparationTypeEditor tableSeparationTypeEditor = new TableSeparationTypeEditor();
+
     private final TableMLMethodTypeEditor tableMLMethodTypeEditor = new TableMLMethodTypeEditor();
 
     private class TableFirstColumnRenderer extends DefaultTableCellRenderer {
 
         SegIOTableWithSetting wrapper;
 
+        /**
+         *
+         * @param wrapper
+         */
         public TableFirstColumnRenderer(SegIOTableWithSetting wrapper) {
             super();
             this.wrapper = wrapper;
@@ -1179,6 +1354,10 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         SegIOTableWithSetting wrapper;
 
+        /**
+         *
+         * @param wrapper
+         */
         public TableNumAndStringRenderer(SegIOTableWithSetting wrapper) {
             super();
             this.wrapper = wrapper;
@@ -1372,6 +1551,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private class TableRampSideRenderer extends DefaultTableCellRenderer {
 
+        /**
+         *
+         */
         public TableRampSideRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
@@ -1400,6 +1582,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         private final JComboBox SEG_TYPE_GP_DEFAULT = new JComboBox(new String[]{CEConst.STR_SEG_TYPE_B, CEConst.STR_SEG_TYPE_ONR,
             CEConst.STR_SEG_TYPE_OFR, CEConst.STR_SEG_TYPE_W, CEConst.STR_SEG_TYPE_R});
+
         private final JComboBox SEG_TYPE_GP_ML_ACS = new JComboBox(new String[]{CEConst.STR_SEG_TYPE_B, CEConst.STR_SEG_TYPE_ONR,
             CEConst.STR_SEG_TYPE_OFR, CEConst.STR_SEG_TYPE_W, CEConst.STR_SEG_TYPE_R, CEConst.STR_SEG_TYPE_ACS});
 
@@ -1449,10 +1632,16 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
             return segTypeCombox;
         }
 
+        /**
+         *
+         */
         public void switchToGPOnly() {
             segTypeCombox = SEG_TYPE_GP_DEFAULT;
         }
 
+        /**
+         *
+         */
         public void switchToGPAndML() {
             segTypeCombox = SEG_TYPE_GP_ML_ACS;
         }
@@ -1460,6 +1649,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private class TableSegTypeRenderer extends DefaultTableCellRenderer {
 
+        /**
+         *
+         */
         public TableSegTypeRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
@@ -1547,6 +1739,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private class TableTerrainRenderer extends DefaultTableCellRenderer {
 
+        /**
+         *
+         */
         public TableTerrainRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
@@ -1577,6 +1772,89 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
         }
     }
 
+    private class TableRampMeteringTypeEditor extends AbstractCellEditor implements TableCellEditor {
+
+        private final JComboBox terrainCombox = new JComboBox(new String[]{CEConst.STR_RAMP_METERING_TYPE_NONE, CEConst.STR_RAMP_METERING_TYPE_FIX,
+            CEConst.STR_RAMP_METERING_TYPE_LINEAR, CEConst.STR_RAMP_METERING_TYPE_FUZZY});
+
+        @Override
+        public Object getCellEditorValue() {
+            switch (terrainCombox.getSelectedIndex()) {
+                case 1:
+                    return CEConst.IDS_RAMP_METERING_TYPE_FIX;
+                case 2:
+                    return CEConst.IDS_RAMP_METERING_TYPE_LINEAR;
+                case 3:
+                    return CEConst.IDS_RAMP_METERING_TYPE_FUZZY;
+                default:
+                    return CEConst.IDS_RAMP_METERING_TYPE_NONE;
+            }
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            switch (Integer.parseInt(value.toString())) {
+                case CEConst.IDS_RAMP_METERING_TYPE_FIX:
+                    terrainCombox.setSelectedIndex(1);
+                    break;
+                case CEConst.IDS_RAMP_METERING_TYPE_LINEAR:
+                    terrainCombox.setSelectedIndex(2);
+                    break;
+                case CEConst.IDS_RAMP_METERING_TYPE_FUZZY:
+                    terrainCombox.setSelectedIndex(3);
+                    break;
+                default:
+                    terrainCombox.setSelectedIndex(0);
+                    break;
+            }
+
+            return terrainCombox;
+        }
+    }
+
+    private class TableRampMeteringTypeRenderer extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+
+            setForeground(null);
+            setBackground(null);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+                    row, column);
+
+            setHorizontalAlignment(JLabel.CENTER);
+
+            try {
+                switch (Integer.parseInt(value.toString())) {
+                    case CEConst.IDS_RAMP_METERING_TYPE_NONE:
+                        setText(CEConst.STR_RAMP_METERING_TYPE_NONE);
+                        break;
+                    case CEConst.IDS_RAMP_METERING_TYPE_FIX:
+                        setText(CEConst.STR_RAMP_METERING_TYPE_FIX);
+                        break;
+                    case CEConst.IDS_RAMP_METERING_TYPE_LINEAR:
+                        setText(CEConst.STR_RAMP_METERING_TYPE_LINEAR);
+                        break;
+                    case CEConst.IDS_RAMP_METERING_TYPE_FUZZY:
+                        setText(CEConst.STR_RAMP_METERING_TYPE_FUZZY);
+                        break;
+                    default:
+                        setText("? " + value.toString());
+                }
+            } catch (NumberFormatException e) {
+                setText(value.toString());
+                setForeground(Color.darkGray);
+                setBackground(Color.darkGray);
+            }
+            return this;
+        }
+    }
+
+    /**
+     *
+     */
     public class TableCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
         TableCheckBoxRenderer() {
@@ -1655,6 +1933,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private class TableSeparationTypeRenderer extends DefaultTableCellRenderer {
 
+        /**
+         *
+         */
         public TableSeparationTypeRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
@@ -1713,6 +1994,9 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     private class TableMLMethodTypeRenderer extends DefaultTableCellRenderer {
 
+        /**
+         *
+         */
         public TableMLMethodTypeRenderer() {
             super();
             this.setHorizontalAlignment(JLabel.CENTER);
@@ -1740,11 +2024,12 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
     // <editor-fold defaultstate="collapsed" desc="TABLE AND TABLE MODELS">
     private final FREEVAL_JTable firstColumnTable;
+
     private final FREEVAL_TableModel firstColumnModel;
-    //private final FREEVAL_TableModel firstColumnModelOutput;
+
     private final FREEVAL_JTable restColumnTable;
+
     private final FREEVAL_TableModel restColumnModel;
-    //private final FREEVAL_TableModel restColumnModelOutput;
 
     private class SegIOTableModel extends FREEVAL_TableModel {
 
@@ -1752,12 +2037,10 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
          * Constructor
          *
          * @param isFirstColumn whether it is first column model
-         * @param isInput whether this model is used for input
          * @param tableWithSetting the SegIOTableWithSetting object that
          * contains this model
          */
-        public SegIOTableModel(boolean isFirstColumn,//, boolean isInput,
-                SegIOTableWithSetting tableWithSetting) {
+        public SegIOTableModel(boolean isFirstColumn, SegIOTableWithSetting tableWithSetting) {
             this.isFirstColumn = isFirstColumn;
             //this.isInput = isInput;
             this.tableWithSetting = tableWithSetting;
@@ -1765,7 +2048,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         @Override
         public TableCellEditor getCellEditor(int row, int column) {
-            return tableWithSetting.getCellEditor(isFirstColumn, isInput, row, column);
+            return tableWithSetting.getCellEditor(isFirstColumn, row, column);
         }
 
         @Override
@@ -1775,7 +2058,7 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         @Override
         public int getRowCount() {
-            return tableWithSetting.getRowCount(isInput);
+            return tableWithSetting.getRowCount();
         }
 
         @Override
@@ -1785,36 +2068,44 @@ public class SegIOTableWithSetting implements FREEVAL_TableWithSetting {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return tableWithSetting.getValueAt(isFirstColumn, isInput, rowIndex, columnIndex);
+            return tableWithSetting.getValueAt(isFirstColumn, rowIndex, columnIndex);
         }
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            return tableWithSetting.isCellEditable(isFirstColumn, isInput, row, column);
+            return tableWithSetting.isCellEditable(isFirstColumn, row, column);
         }
 
         @Override
         public void setValueAt(Object value, int row, int column) {
-            tableWithSetting.setValueAt(isFirstColumn, isInput, value, row, column);
+            tableWithSetting.setValueAt(isFirstColumn, value, row, column);
         }
 
         @Override
         public String getColumnName(int column) {
-            return tableWithSetting.getColumnName(isFirstColumn, isInput, column);
+            return tableWithSetting.getColumnName(isFirstColumn, column);
         }
 
         private final boolean isFirstColumn;
-        //private final boolean isInput;
+
         private final SegIOTableWithSetting tableWithSetting;
     }
     // </editor-fold>
 
     private Seed seed;
+
     private int period = 0;
+
     private int scen = 0;
+
     private int atdm = -1;
-    private boolean isInput = true;
+
+    private boolean showInput = true;
+
+    private boolean showOutput = false;
+
     private boolean showGP = true;
+
     private boolean showML = false;
 
     private MainWindow mainWindow;

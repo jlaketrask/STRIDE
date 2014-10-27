@@ -107,11 +107,6 @@ public class ASCIISeedFileAdapter {
     /**
      * Item ID constant
      */
-    private static final String ID_RAMP_METERING = "006";
-
-    /**
-     * Item ID constant
-     */
     private static final String ID_ML_USED = "007";
 
     /**
@@ -304,6 +299,11 @@ public class ASCIISeedFileAdapter {
      * Item ID constant
      */
     private final static String ID_RAMP_TO_RAMP_DEMAND_VEH = "132";
+
+    /**
+     * Item ID constant
+     */
+    private static final String ID_RAMP_METERING = "133";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="ML HEADER">
@@ -1010,7 +1010,7 @@ public class ASCIISeedFileAdapter {
         itemListGP.add(new Item(ID_END, CEConst.IDS_END_TIME, GENERAL_INFO, OTHER));
         itemListGP.add(new Item(ID_NUM_SEGMENTS, CEConst.IDS_NUM_SEGMENT, GENERAL_INFO, INTEGER));
         itemListGP.add(new Item(ID_FFS_KNOWN, CEConst.IDS_FFS_KNOWN, GENERAL_INFO, BOOLEAN));
-        itemListGP.add(new Item(ID_RAMP_METERING, CEConst.IDS_RM_USED, GENERAL_INFO, BOOLEAN));
+
         itemListGP.add(new Item(ID_ML_USED, CEConst.IDS_MANAGED_LANE_USED, GENERAL_INFO, BOOLEAN));
         itemListGP.add(new Item(ID_ALPHA, CEConst.IDS_CAPACITY_ALPHA, GENERAL_INFO, INTEGER));
         itemListGP.add(new Item(ID_JAM_DENSITY, CEConst.IDS_JAM_DENSITY, GENERAL_INFO, FLOAT));
@@ -1042,7 +1042,7 @@ public class ASCIISeedFileAdapter {
         itemListGP.add(new Item(ID_NUM_ON_RAMP_LANES, CEConst.IDS_NUM_ON_RAMP_LANES, TIME_DEPENDENT, INTEGER));
         itemListGP.add(new Item(ID_ON_RAMP_DEMAND_VEH, CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED, TIME_DEPENDENT, INTEGER));
         itemListGP.add(new Item(ID_ON_RAMP_FREE_FLOW_SPEED, CEConst.IDS_ON_RAMP_DEMAND_VEH, TIME_DEPENDENT, INTEGER));
-        itemListGP.add(new Item(ID_ON_RAMP_METERING_RATE, CEConst.IDS_ON_RAMP_METERING_RATE, TIME_DEPENDENT, INTEGER));
+        itemListGP.add(new Item(ID_ON_RAMP_METERING_RATE, CEConst.IDS_ON_RAMP_METERING_RATE_FIX, TIME_DEPENDENT, INTEGER));
 
         itemListGP.add(new Item(ID_OFF_RAMP_SIDE, CEConst.IDS_OFF_RAMP_SIDE, TIME_INDEPENDENT, OTHER));
         itemListGP.add(new Item(ID_NUM_OFF_RAMP_LANES, CEConst.IDS_NUM_OFF_RAMP_LANES, TIME_DEPENDENT, INTEGER));
@@ -1055,6 +1055,8 @@ public class ASCIISeedFileAdapter {
         itemListGP.add(new Item(ID_MIN_LANE_CHANGE_ONR_TO_OFR, CEConst.IDS_MIN_LANE_CHANGE_ONR_TO_OFR, TIME_INDEPENDENT, INTEGER));
         itemListGP.add(new Item(ID_NUM_LANES_WEAVING, CEConst.IDS_NUM_LANES_WEAVING, TIME_INDEPENDENT, INTEGER));
         itemListGP.add(new Item(ID_RAMP_TO_RAMP_DEMAND_VEH, CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH, TIME_DEPENDENT, INTEGER));
+
+        itemListGP.add(new Item(ID_RAMP_METERING, CEConst.IDS_RAMP_METERING_TYPE, TIME_DEPENDENT, INTEGER));
     }
 
     /**

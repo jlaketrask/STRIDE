@@ -15,39 +15,18 @@ import java.util.Arrays;
  */
 public class ATDMStrategy implements Serializable, Cloneable {
 
-    /**
-     *
-     */
     private String description;
 
-    /**
-     *
-     */
     private int id;
 
-    /**
-     *
-     */
     private String category;
 
-    /**
-     *
-     */
     private float[] adjFactors;
     
-    /**
-     *
-     */
     private int incidentDurationReduction;
     
-    /**
-     *
-     */
     private static final long serialVersionUID = 24865713845L;
     
-    /**
-     *
-     */
     private static final String[] categoriesString = {"Control Strategy","Advisory Strategy", "Treatment Strategy",
                                                "Site Management & Traffic Control", "Detection & Verification",
                                                 "Quick Clearance & Recovery"};

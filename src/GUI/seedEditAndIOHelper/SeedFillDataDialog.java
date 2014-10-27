@@ -35,68 +35,103 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
     public static final int RET_OK = 1;
 
     private final Seed seed;
+
     private final MainWindow mainWindow;
 
     private DefaultListModel periodModel_fix;
+
     private DefaultListModel periodModel_var;
 
     private DefaultListModel segmentModel_all_GP;
+
     private DefaultListModel segmentModel_all_ML;
+
     private DefaultListModel segmentModel_first;
 
     private DefaultListModel segmentModel_ONR_OFR_GP;
+
     private DefaultListModel segmentModel_ONR_W_GP;
+
     private DefaultListModel segmentModel_ONR_W_ACS_GP;
+
     private DefaultListModel segmentModel_OFR_W_GP;
+
     private DefaultListModel segmentModel_OFR_W_ACS_GP;
+
     private DefaultListModel segmentModel_W_GP;
 
     private DefaultListModel segmentModel_ONR_OFR_ML;
+
     private DefaultListModel segmentModel_ONR_W_ML;
+
     private DefaultListModel segmentModel_ONR_W_ACS_ML;
+
     private DefaultListModel segmentModel_OFR_W_ML;
+
     private DefaultListModel segmentModel_OFR_W_ACS_ML;
+
     private DefaultListModel segmentModel_W_ML;
 
     //GP Segments
     private final static String STR_SEGMENT_LENGTH = "Segment Length (ft)";
+
     private final static String STR_LANE_WIDTH = "Lane Width (ft)";
+
     private final static String STR_LATERAL_CLEARANCE = "Lateral Clearance (ft)";
+
     private final static String STR_TRUCK_CAR_ET = "Truck-PC Equivalence (ET)";
+
     private final static String STR_RV_CAR_EV = "RV-PC Equivalence (ER)";
 
     private final static String STR_NUM_LANES = "# of Lanes: Mainline";
+
     private final static String STR_FREE_FLOW_SPEED = "Free Flow Speed (mph)";
+
     private final static String STR_DEMAND_VEH = "Mainline Demand (vph)";
+
     private final static String STR_TRUCK_PERCENTAGE = "Truck (%)";
+
     private final static String STR_RV_PERCENTAGE = "RV (%)";
+
     private final static String STR_CAF = "Seed Capacity Adj. Factor";
+
     private final static String STR_OAF = "Seed Origin Demand Adj. Factor";
+
     private final static String STR_DAF = "Seed Destination Demand Adj. Factor";
+
     private final static String STR_FFSAF = "Seed Free Flow Speed Adj. Factor";
 
     // On Ramp Variable Column Text
     private final static String STR_ACC_DEC_LANE_LENGTH = "Acc/Dec Lane Length (ft)";
 
     private final static String STR_NUM_ON_RAMP_LANES = "# Of Lanes: On Ramp";
+
     private final static String STR_ON_RAMP_DEMAND_VEH = "On Ramp / Entering Demand (vph)";
+
     private final static String STR_ON_RAMP_FREE_FLOW_SPEED = "On Ramp Free Flow Speed (mph)";
     //private final static String STR_ON_RAMP_TRUCK_PERCENTAGE = "On Ramp Truck (%)";
     //private final static String STR_ON_RAMP_RV_PERCENTAGE = "On Ramp RV (%)";
+
     private final static String STR_ON_RAMP_METERING_RATE = "On Ramp Metering Rate (vph)";
 
     // Off Ramp Variable Column Text
     private final static String STR_NUM_OFF_RAMP_LANES = "# Of Lanes: Off Ramp";
+
     private final static String STR_OFF_RAMP_DEMAND_VEH = "Off Ramp / Exit Demand (vph)";
+
     private final static String STR_OFF_RAMP_FREE_FLOW_SPEED = "Off Ramp Free Flow Speed (mph)";
     //private final static String STR_OFF_RAMP_TRUCK_PERCENTAGE = "Off Ramp Truck (%)";
     //private final static String STR_OFF_RAMP_RV_PERCENTAGE = "Off Ramp RV (%)";
 
     // Weaving Segment Variable Column Text
     private final static String STR_LENGTH_OF_WEAVING = "Weave Segment Ls (ft)";
+
     private final static String STR_MIN_LANE_CHANGE_ONR_TO_FRWY = "Weave Segment LCRF";
+
     private final static String STR_MIN_LANE_CHANGE_FRWY_TO_OFR = "Weave Segment LCFR";
+
     private final static String STR_MIN_LANE_CHANGE_ONR_TO_OFR = "Weave Segment LCRR";
+
     private final static String STR_NUM_LANES_WEAVING = "Weave Segment NW";
 
     private final static String STR_RAMP_TO_RAMP_DEMAND_VEH = "Ramp to Ramp Demand (vph)";
@@ -105,49 +140,87 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
     //private final static String STR_ML_SEGMENT_LENGTH = "Segment Length (ft)";
     //private final static String STR_ML_TYPE = "ML Type (HOV/HOT)";
     private final static String STR_ML_SEPARATION = "ML Separation Type";
+
     private final static String STR_ML_NUM_LANES = "ML # of Lanes: Mainline";
+
     private final static String STR_ML_FREE_FLOW_SPEED = "ML Free Flow Speed (mph)";
+
     private final static String STR_ML_DEMAND_VEH = "ML Mainline Demand (vph)";
+
     private final static String STR_ML_TRUCK_PERCENTAGE = "ML Truck (%)";
+
     private final static String STR_ML_RV_PERCENTAGE = "ML RV (%)";
+
     private final static String STR_ML_CAF = "ML Seed Capacity Adj. Factor";
+
     private final static String STR_ML_OAF = "ML Seed Origin Demand Adj. Factor";
+
     private final static String STR_ML_DAF = "ML Seed Destination Demand Adj. Factor";
+
     private final static String STR_ML_FFSAF = "ML Seed Free Flow Speed Adj. Factor";
 
     // On Ramp Variable Column Text
     private final static String STR_ML_ACC_DEC_LANE_LENGTH = "ML Acc/Dec Lane Length (ft)";
 
     private final static String STR_ML_NUM_ON_RAMP_LANES = "ML # Of Lanes: On Ramp";
+
     private final static String STR_ML_ON_RAMP_DEMAND_VEH = "ML On Ramp / Entering Demand (vph)";
+
     private final static String STR_ML_ON_RAMP_FREE_FLOW_SPEED = "ML On Ramp Free Flow Speed (mph)";
 
     // Off Ramp Variable Column Text
     private final static String STR_ML_NUM_OFF_RAMP_LANES = "ML # Of Lanes: Off Ramp";
+
     private final static String STR_ML_OFF_RAMP_DEMAND_VEH = "ML Off Ramp / Exit Demand (vph)";
+
     private final static String STR_ML_OFF_RAMP_FREE_FLOW_SPEED = "ML Off Ramp Free Flow Speed (mph)";
 
     // Weaving Segment Variable Column Text
     private final static String STR_ML_LENGTH_OF_WEAVING = "ML Weave Segment Ls (ft)";
+
     private final static String STR_ML_MIN_LANE_CHANGE_ONR_TO_FRWY = "ML Weave Segment LCRF";
+
     private final static String STR_ML_MIN_LANE_CHANGE_FRWY_TO_OFR = "ML Weave Segment LCFR";
+
     private final static String STR_ML_MIN_LANE_CHANGE_ONR_TO_OFR = "ML Weave Segment LCRR";
+
     private final static String STR_ML_NUM_LANES_WEAVING = "ML Weave Segment NW";
 
     private final static String STR_ML_RAMP_TO_RAMP_DEMAND_VEH = "ML Ramp to Ramp Demand (vph)";
 
     private final static String STR_ML_MIN_LC = "ML Min Lane Change";
+
     private final static String STR_ML_MAX_LC = "ML Max Lane Change";
+
     private final static String STR_ML_HAS_CW = "Analysis of Cross Weave Effect";
+
     private final static String STR_ML_CW_LC_MIN = "Cross Weave LC Min";
+
     private final static String STR_ML_CW_VOLUME = "Cross Weave Volume";
 
     private class ItemSetting {
 
+        /**
+         *
+         */
         public String name;
+
+        /**
+         *
+         */
         public DefaultListModel periodModel;
+
+        /**
+         *
+         */
         public DefaultListModel segmentModel;
 
+        /**
+         *
+         * @param name
+         * @param periodModel
+         * @param segmentModel
+         */
         public ItemSetting(String name, DefaultListModel periodModel, DefaultListModel segmentModel) {//, ArrayList<Integer> segmentList) {
             this.name = name;
             this.periodModel = periodModel;
@@ -156,8 +229,11 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
     }
 
     private ItemSetting[] itemSettingsGP;
+
     private ItemSetting[] itemSettingsML;
+
     private DefaultComboBoxModel itemModelGP;
+
     private DefaultComboBoxModel itemModelML;
 
     /**
@@ -884,7 +960,7 @@ public class SeedFillDataDialog extends javax.swing.JDialog {
                 break;
 
             case STR_ON_RAMP_METERING_RATE:
-                seed.setValue(CEConst.IDS_ON_RAMP_METERING_RATE, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
+                seed.setValue(CEConst.IDS_ON_RAMP_METERING_RATE_FIX, Integer.parseInt(valueText.getText()), segIndex, periodIndex);
                 break;
 
             case STR_NUM_OFF_RAMP_LANES:

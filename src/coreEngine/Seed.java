@@ -73,9 +73,13 @@ public class Seed implements Serializable {
      */
     private boolean inFreeFlowSpeedKnown = true;
     /**
-     * Whether ramp metering is used
+     * Whether user defined ramp metering is used
      */
-    private boolean inRampMeteringUsed = false;
+    //private boolean inRampMeteringUsed = false;
+    /**
+     * Whether adaptive ramp metering is used
+     */
+    private boolean inAdaptiveRampMeteringUsed = false;
     /**
      * Facility wide jam density, pc/mi/ln
      */
@@ -419,11 +423,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    private float getATDMOAF(int scen, int atdm, int seg, int period) {
+    private float getATDMOAF(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 1
-                : ATDMSets.get(atdm).get(scen).OAF().get(seg, period);
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].OAF().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].OAF().get(seg, period);
     }
 
     /**
@@ -433,11 +440,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    private float getATDMDAF(int scen, int atdm, int seg, int period) {
+    private float getATDMDAF(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 1
-                : ATDMSets.get(atdm).get(scen).DAF().get(seg, period);
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].DAF().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].DAF().get(seg, period);
     }
 
     /**
@@ -447,11 +457,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    private float getATDMSAF(int scen, int atdm, int seg, int period) {
+    private float getATDMSAF(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 1
-                : ATDMSets.get(atdm).get(scen).SAF().get(seg, period);
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].SAF().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].SAF().get(seg, period);
     }
 
     /**
@@ -461,11 +474,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    private float getATDMCAF(int scen, int atdm, int seg, int period) {
+    private float getATDMCAF(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 1
-                : ATDMSets.get(atdm).get(scen).CAF().get(seg, period);
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].CAF().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].CAF().get(seg, period);
     }
 
     /**
@@ -475,11 +491,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    private int getATDMLAF(int scen, int atdm, int seg, int period) {
+    private int getATDMLAF(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 0
-                : ATDMSets.get(atdm).get(scen).LAF().get(seg, period);
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].LAF().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].LAF().get(seg, period);
     }
 
     /**
@@ -489,10 +508,14 @@ public class Seed implements Serializable {
      * @param atdm ATDM set index
      * @param seg segment index
      * @param period period index
+     * @param segType segment GP/ML type
      * @return ATDM adjustment factor
      */
-    int getATDMRM(int scen, int atdm, int seg, int period) {
-        return ATDMSets.get(atdm).get(scen).RM().get(seg, period);
+    int getATDMRM(int scen, int atdm, int seg, int period, int segType) {
+        return atdm < 0 ? 2100
+                : segType == CEConst.SEG_TYPE_GP
+                        ? ATDMSets.get(atdm).get(scen)[0].RM().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].RM().get(seg, period);
     }
 
     /**
@@ -506,7 +529,7 @@ public class Seed implements Serializable {
      * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMOAF(int scen, int atdm, int seg, int period, int segType) {
-        return getRLOAF(scen, seg, period, segType) * getATDMOAF(scen, atdm, seg, period);
+        return getRLOAF(scen, seg, period, segType) * getATDMOAF(scen, atdm, seg, period, segType);
     }
 
     /**
@@ -520,7 +543,7 @@ public class Seed implements Serializable {
      * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMDAF(int scen, int atdm, int seg, int period, int segType) {
-        return getRLDAF(scen, seg, period, segType) * getATDMDAF(scen, atdm, seg, period);
+        return getRLDAF(scen, seg, period, segType) * getATDMDAF(scen, atdm, seg, period, segType);
     }
 
     /**
@@ -534,7 +557,7 @@ public class Seed implements Serializable {
      * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMSAF(int scen, int atdm, int seg, int period, int segType) {
-        return getRLSAF(scen, seg, period, segType) * getATDMSAF(scen, atdm, seg, period);
+        return getRLSAF(scen, seg, period, segType) * getATDMSAF(scen, atdm, seg, period, segType);
     }
 
     /**
@@ -548,7 +571,7 @@ public class Seed implements Serializable {
      * @return RL and ATDM combined adjustment factor
      */
     float getRLAndATDMCAF(int scen, int atdm, int seg, int period, int segType) {
-        return getRLCAF(scen, seg, period, segType) * getATDMCAF(scen, atdm, seg, period);
+        return getRLCAF(scen, seg, period, segType) * getATDMCAF(scen, atdm, seg, period, segType);
     }
 
     /**
@@ -562,7 +585,7 @@ public class Seed implements Serializable {
      * @return RL and ATDM combined adjustment factor
      */
     int getRLAndATDMLAF(int scen, int atdm, int seg, int period, int segType) {
-        return getRLLAFI(scen, seg, period, segType) + getRLLAFWZ(scen, seg, period, segType) + getATDMLAF(scen, atdm, seg, period);
+        return getRLLAFI(scen, seg, period, segType) + getRLLAFWZ(scen, seg, period, segType) + getATDMLAF(scen, atdm, seg, period, segType);
     }
     // </editor-fold>
 
@@ -612,14 +635,14 @@ public class Seed implements Serializable {
     /**
      * ATDM Sets, each set contains a HashMap of related scenarios
      */
-    private ArrayList<HashMap<Integer, ATDMScenario>> ATDMSets = new ArrayList();
+    private ArrayList<HashMap<Integer, ATDMScenario[]>> ATDMSets = new ArrayList();
 
     /**
      * Add a new ATDM set
      *
      * @param newATDMSet new ATDM set
      */
-    public void addATDMSet(HashMap<Integer, ATDMScenario> newATDMSet) {
+    public void addATDMSet(HashMap<Integer, ATDMScenario[]> newATDMSet) {
         ATDMSets.add(newATDMSet);
         fireDataChanged(CHANGE_ATDM);
     }
@@ -655,7 +678,7 @@ public class Seed implements Serializable {
      */
     private int countATDM(int scen) {
         int result = 0;
-        for (HashMap<Integer, ATDMScenario> ATDMSet : ATDMSets) {
+        for (HashMap<Integer, ATDMScenario[]> ATDMSet : ATDMSets) {
             if (ATDMSet.get(scen) != null) {
                 result++;
             }
@@ -668,7 +691,7 @@ public class Seed implements Serializable {
      *
      * @return ATDM sets
      */
-    public ArrayList<HashMap<Integer, ATDMScenario>> getATDMSets() {
+    public ArrayList<HashMap<Integer, ATDMScenario[]>> getATDMSets() {
         return ATDMSets;
     }
     // </editor-fold>
@@ -686,7 +709,7 @@ public class Seed implements Serializable {
         try {
             return !needMemory && !seedInputModified
                     && (atdm >= 0
-                            ? ATDMSets.get(atdm).get(scen).getStatus() == CEConst.SCENARIO_HAS_OUTPUT
+                            ? ATDMSets.get(atdm).get(scen)[0].getStatus() == CEConst.SCENARIO_HAS_OUTPUT
                             : RL_ScenarioInfo.get(scen).statusRL == CEConst.SCENARIO_HAS_OUTPUT);
         } catch (Exception e) {
             return false;
@@ -1504,7 +1527,7 @@ public class Seed implements Serializable {
                 if (atdm < 0) {
                     RL_ScenarioInfo.get(scen).statusRL = CEConst.SCENARIO_HAS_OUTPUT;
                 } else {
-                    ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_HAS_OUTPUT);
+                    ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_HAS_OUTPUT);
                 }
 
                 seedInputModified = false;
@@ -1544,18 +1567,16 @@ public class Seed implements Serializable {
         }
 
         //required for each scenario
-        for (GPMLSegment segment : GPSegments) {
+        for (int seg = 0; seg < GPSegments.size(); seg++) {
             if (!inFreeFlowSpeedKnown) {
-                segment.estimateFFS();
-            }
-            segment.scenPreprocess(scen, atdm);
-        }
-        if (inManagedLaneUsed) {
-            for (GPMLSegment segment : MLSegments) {
-                if (!inFreeFlowSpeedKnown) {
-                    segment.estimateFFS();
+                GPSegments.get(seg).estimateFFS();
+                if (inManagedLaneUsed) {
+                    MLSegments.get(seg).estimateFFS();
                 }
-                segment.scenPreprocess(scen, atdm);
+            }
+            GPSegments.get(seg).scenPreprocess(scen, atdm);
+            if (inManagedLaneUsed) {
+                MLSegments.get(seg).scenPreprocess(scen, atdm);
             }
         }
     }
@@ -1733,8 +1754,8 @@ public class Seed implements Serializable {
         //TODO: need discussion for default parameters
         if (seg.inType == CEConst.SEG_TYPE_ACS) {
             seg.inShort_ft = seg.inSegLength_ft;
-            seg.inLCFR = 0;//1;
-            seg.inLCRF = 0;//1;
+            seg.inLCFR = 1;//1;
+            seg.inLCRF = 1;//1;
             seg.inLCRR = 0;//1;
             seg.inNWL = 2;
             seg.inOnSide = CEConst.RAMP_SIDE_RIGHT;
@@ -1765,7 +1786,7 @@ public class Seed implements Serializable {
 
         for (int period = 0; period < inNumPeriod; period++) {
 
-            if (false) {
+            if (isUnderSatGP(period)) {
                 //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
                     segment.runUndersaturated(scen, atdm, period);
@@ -1787,7 +1808,7 @@ public class Seed implements Serializable {
             }
 
             if (inManagedLaneUsed) {
-                if (false) {
+                if (isUnderSatML(period)) {
                     //run under sat for this period
                     for (GPMLSegment segment : MLSegments) {
                         segment.runUndersaturated(scen, atdm, period);
@@ -1880,12 +1901,12 @@ public class Seed implements Serializable {
      * @param scen scenario index (0 for seed, RL scenarios start with 1)
      * @return Facility summary of each ATDM plan
      */
-    public FacilitySummary testATDM(ATDMScenario atdmScenario, int scen) {
+    public FacilitySummary testATDM(ATDMScenario[] atdmScenario, int scen) {
         if (atdmScenario == null || scen > this.inNumScen) {
             return null;
         }
         int testATDMIndex = ATDMSets.size();
-        HashMap<Integer, ATDMScenario> testATDMSet = new HashMap();
+        HashMap<Integer, ATDMScenario[]> testATDMSet = new HashMap();
         testATDMSet.put(scen, atdmScenario);
         ATDMSets.add(testATDMSet);
 
@@ -2397,11 +2418,13 @@ public class Seed implements Serializable {
                     GPSegments.get(seg).inOnFFS.set(period, Integer.parseInt(value.toString()));
                     fireDataChanged(CHANGE_SEED);
                     break;
-                case CEConst.IDS_ON_RAMP_METERING_RATE:
-                    if (inRampMeteringUsed) {
-                        GPSegments.get(seg).inRM_veh.set(period, Integer.parseInt(value.toString()));
-                        fireDataChanged(CHANGE_SEED);
-                    }
+                case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
+                    GPSegments.get(seg).inRM_veh.set(period, Integer.parseInt(value.toString()));
+                    fireDataChanged(CHANGE_SEED);
+                    break;
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                    GPSegments.get(seg).inRampMeteringType.set(period, Integer.parseInt(value.toString()));
+                    fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_OFF_RAMP_SIDE:
                     GPSegments.get(seg).inOffSide = Integer.parseInt(value.toString());
@@ -2550,48 +2573,90 @@ public class Seed implements Serializable {
                         fireDataChanged(CHANGE_SCEN);
                     }
                     break;
-                case CEConst.IDS_ATDM_CAF:
+                case CEConst.IDS_ATDM_CAF_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).CAF().set(Float.parseFloat(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].CAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_SAF:
+                case CEConst.IDS_ATDM_SAF_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).SAF().set(Float.parseFloat(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].SAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_OAF:
+                case CEConst.IDS_ATDM_OAF_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).OAF().set(Float.parseFloat(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].OAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_DAF:
+                case CEConst.IDS_ATDM_DAF_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).DAF().set(Float.parseFloat(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].DAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_LAF:
+                case CEConst.IDS_ATDM_LAF_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).LAF().set(Integer.parseInt(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].LAF().set(Integer.parseInt(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-                case CEConst.IDS_ATDM_RM:
+                case CEConst.IDS_ATDM_RM_GP:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen).RM().set(Integer.parseInt(value.toString()), seg, period);
-                        ATDMSets.get(atdm).get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSets.get(atdm).get(scen)[0].RM().set(Integer.parseInt(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
+                case CEConst.IDS_ATDM_CAF_ML:
+                    if (atdm >= 0) {
+                        ATDMSets.get(atdm).get(scen)[1].CAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+                case CEConst.IDS_ATDM_SAF_ML:
+                    if (atdm >= 0) {
+                        ATDMSets.get(atdm).get(scen)[1].SAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+                case CEConst.IDS_ATDM_OAF_ML:
+                    if (atdm >= 0) {
+                        ATDMSets.get(atdm).get(scen)[1].OAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+                case CEConst.IDS_ATDM_DAF_ML:
+                    if (atdm >= 0) {
+                        ATDMSets.get(atdm).get(scen)[1].DAF().set(Float.parseFloat(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+                case CEConst.IDS_ATDM_LAF_ML:
+                    if (atdm >= 0) {
+                        ATDMSets.get(atdm).get(scen)[1].LAF().set(Integer.parseInt(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+//                case CEConst.IDS_ATDM_RM_ML:
+//                    if (atdm >= 0) {
+//                        ATDMSets.get(atdm).get(scen)[1].RM().set(Integer.parseInt(value.toString()), seg, period);
+//                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+//                        fireDataChanged(CHANGE_ATDM);
+//                    }
+//                    break;
 
                 case CEConst.IDS_START_TIME:
                     if (GPSegments == null && MLSegments == null) {
@@ -2876,7 +2941,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_MAIN_NUM_LANES_IN:
                     return GPSegments.get(seg).inMainlineNumLanes.get(period);
                 case CEConst.IDS_MAIN_NUM_LANES_IN_AND_ATDM:
-                    return GPSegments.get(seg).inMainlineNumLanes.get(period) + getATDMLAF(scen, atdm, seg, period);
+                    return GPSegments.get(seg).inMainlineNumLanes.get(period) + getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
                 case CEConst.IDS_MAIN_DEMAND_VEH:
                     return GPSegments.get(seg).inMainlineDemand_veh.get(period);
                 case CEConst.IDS_MAIN_FREE_FLOW_SPEED:
@@ -2891,7 +2956,7 @@ public class Seed implements Serializable {
                     return GPSegments.get(seg).inOnDemand_veh.get(period);
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
                     return GPSegments.get(seg).inOnFFS.get(period);
-                case CEConst.IDS_ON_RAMP_METERING_RATE:
+                case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
                     return GPSegments.get(seg).inRM_veh.get(period);
                 case CEConst.IDS_OFF_RAMP_SIDE:
                     return GPSegments.get(seg).inOffSide;
@@ -2913,6 +2978,9 @@ public class Seed implements Serializable {
                     return GPSegments.get(seg).inNWL;
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
                     return GPSegments.get(seg).inRRDemand_veh.get(period);
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                    return GPSegments.get(seg).inRampMeteringType.get(period);
+
                 case CEConst.IDS_TYPE_USED:
                     checkInBuffer(scen, atdm);
                     return GPSegments.get(seg).scenType[period];
@@ -2924,10 +2992,10 @@ public class Seed implements Serializable {
                     return getRLLAFWZ(scen, seg, period, CEConst.SEG_TYPE_GP);
                 case CEConst.IDS_ML_RLSLAF:
                     return getRLLAFI(scen, seg, period, CEConst.SEG_TYPE_ML);
-                case CEConst.IDS_ATDM_LAF:
-                    return getATDMLAF(scen, atdm, seg, period);
-                case CEConst.IDS_ATDM_RM:
-                    return getATDMRM(scen, atdm, seg, period);
+                case CEConst.IDS_ATDM_LAF_GP:
+                    return getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                case CEConst.IDS_ATDM_RM_GP:
+                    return getATDMRM(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
 
                 //maganged lane parameters
                 case CEConst.IDS_ML_NUM_SEGMENT:
@@ -2942,6 +3010,8 @@ public class Seed implements Serializable {
                     return MLSegments.get(seg).inMainlineNumLanes.get(period);
                 case CEConst.IDS_ML_DEMAND_VEH:
                     return MLSegments.get(seg).inMainlineDemand_veh.get(period);
+                case CEConst.IDS_ATDM_LAF_ML:
+                    return getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_ML_FREE_FLOW_SPEED:
                     return MLSegments.get(seg).inMainlineFFS.get(period);
                 case CEConst.IDS_ML_ON_RAMP_SIDE:
@@ -3006,10 +3076,10 @@ public class Seed implements Serializable {
                 case CEConst.IDS_RL_OAF_GP:
                 case CEConst.IDS_RL_DAF_GP:
                 case CEConst.IDS_RL_SAF_GP:
-                case CEConst.IDS_ATDM_CAF:
-                case CEConst.IDS_ATDM_OAF:
-                case CEConst.IDS_ATDM_DAF:
-                case CEConst.IDS_ATDM_SAF:
+                case CEConst.IDS_ATDM_CAF_GP:
+                case CEConst.IDS_ATDM_OAF_GP:
+                case CEConst.IDS_ATDM_DAF_GP:
+                case CEConst.IDS_ATDM_SAF_GP:
                 case CEConst.IDS_SPEED:
                 case CEConst.IDS_TOTAL_DENSITY_VEH:
                 case CEConst.IDS_TOTAL_DENSITY_PC:
@@ -3379,14 +3449,14 @@ public class Seed implements Serializable {
                     return getRLDAF(scen, seg, period, CEConst.SEG_TYPE_GP);
                 case CEConst.IDS_RL_SAF_GP:
                     return getRLSAF(scen, seg, period, CEConst.SEG_TYPE_GP);
-                case CEConst.IDS_ATDM_CAF:
-                    return getATDMCAF(scen, atdm, seg, period);
-                case CEConst.IDS_ATDM_OAF:
-                    return getATDMOAF(scen, atdm, seg, period);
-                case CEConst.IDS_ATDM_DAF:
-                    return getATDMDAF(scen, atdm, seg, period);
-                case CEConst.IDS_ATDM_SAF:
-                    return getATDMSAF(scen, atdm, seg, period);
+                case CEConst.IDS_ATDM_CAF_GP:
+                    return getATDMCAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                case CEConst.IDS_ATDM_OAF_GP:
+                    return getATDMOAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                case CEConst.IDS_ATDM_DAF_GP:
+                    return getATDMDAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                case CEConst.IDS_ATDM_SAF_GP:
+                    return getATDMSAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
                 case CEConst.IDS_ML_CROSS_WEAVE_CAF:
                     return GPSegments.get(seg).inCrossCAF[period];
                 case CEConst.IDS_SPEED:
@@ -3587,6 +3657,14 @@ public class Seed implements Serializable {
                     return getRLDAF(scen, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_ML_RLSSAF:
                     return getRLSAF(scen, seg, period, CEConst.SEG_TYPE_ML);
+                case CEConst.IDS_ATDM_CAF_ML:
+                    return getATDMCAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
+                case CEConst.IDS_ATDM_OAF_ML:
+                    return getATDMOAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
+                case CEConst.IDS_ATDM_DAF_ML:
+                    return getATDMDAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
+                case CEConst.IDS_ATDM_SAF_ML:
+                    return getATDMSAF(scen, atdm, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_ML_SPEED:
                 case CEConst.IDS_ML_SPACE_MEAN_SPEED:
                     checkInBuffer(scen, atdm);
@@ -3951,7 +4029,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ON_RAMP_METERING_RATE:
+                case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
                 case CEConst.IDS_OFF_RAMP_SIDE:
                 case CEConst.IDS_NUM_OFF_RAMP_LANES:
                 case CEConst.IDS_OFF_RAMP_DEMAND_VEH:
@@ -3966,8 +4044,8 @@ public class Seed implements Serializable {
                 case CEConst.IDS_SCENARIO_STATUS:
                 case CEConst.IDS_RL_LAFI_GP:
                 case CEConst.IDS_RL_LAFWZ_GP:
-                case CEConst.IDS_ATDM_LAF:
-                case CEConst.IDS_ATDM_RM:
+                case CEConst.IDS_ATDM_LAF_GP:
+                case CEConst.IDS_ATDM_RM_GP:
 
                 //maganged lane parameters
                 case CEConst.IDS_CB_NUM_SEGMENT:
@@ -4081,7 +4159,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ON_RAMP_SIDE:
                 case CEConst.IDS_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ON_RAMP_METERING_RATE:
+                case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
                 case CEConst.IDS_ON_RAMP_CAPACITY:
                 case CEConst.IDS_ON_RAMP_DELAY:
                 case CEConst.IDS_ON_QUEUE_VEH:
@@ -4092,6 +4170,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ADJUSTED_ON_RAMP_DEMAND:
                 case CEConst.IDS_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ON_RAMP_VOLUME_SERVED:
+                case CEConst.IDS_RAMP_METERING_TYPE:
                     if (GPSegments.get(seg).inType != CEConst.SEG_TYPE_ONR && GPSegments.get(seg).inType != CEConst.SEG_TYPE_W && GPSegments.get(seg).inType != CEConst.SEG_TYPE_ACS) {
                         return CEConst.IDS_NA;
                     }
@@ -4249,9 +4328,9 @@ public class Seed implements Serializable {
                 case CEConst.IDS_SCEN_DETAIL:
                     return RL_ScenarioInfo.get(scen).detail;
                 case CEConst.IDS_ATDM_NAME:
-                    return ATDMSets.get(atdm).get(scen).getName();
+                    return ATDMSets.get(atdm).get(scen)[0].getName();
                 case CEConst.IDS_ATDM_DETAIL:
-                    return ATDMSets.get(atdm).get(scen).getDiscription();
+                    return ATDMSets.get(atdm).get(scen)[0].getDiscription();
                 case CEConst.IDS_PERIOD_TIME:
                     return CETime.addTime(inStartTime, LENGTH_OF_EACH_PERIOD, period).toString() + " - "
                             + CETime.addTime(inStartTime, LENGTH_OF_EACH_PERIOD, period + 1).toString();
@@ -4282,7 +4361,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ON_RAMP_METERING_RATE:
+                case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
                 case CEConst.IDS_OFF_RAMP_SIDE:
                 case CEConst.IDS_NUM_OFF_RAMP_LANES:
                 case CEConst.IDS_OFF_RAMP_DEMAND_VEH:
@@ -4295,13 +4374,15 @@ public class Seed implements Serializable {
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ML_CROSS_WEAVE_LC_MIN:
                 case CEConst.IDS_ML_CROSS_WEAVE_VOLUME:
+                case CEConst.IDS_RAMP_METERING_TYPE:
 
                 case CEConst.IDS_TYPE_USED:
                 case CEConst.IDS_SCENARIO_STATUS:
                 case CEConst.IDS_RL_LAFI_GP:
                 case CEConst.IDS_RL_LAFWZ_GP:
-                case CEConst.IDS_ATDM_LAF:
-                case CEConst.IDS_ATDM_RM:
+                case CEConst.IDS_ATDM_LAF_GP:
+                case CEConst.IDS_ATDM_LAF_ML:
+                case CEConst.IDS_ATDM_RM_GP:
                 case CEConst.IDS_CAPACITY_ALPHA:
 
                 case CEConst.IDS_CB_NUM_SEGMENT:
@@ -4353,10 +4434,10 @@ public class Seed implements Serializable {
                 case CEConst.IDS_RL_OAF_GP:
                 case CEConst.IDS_RL_DAF_GP:
                 case CEConst.IDS_RL_SAF_GP:
-                case CEConst.IDS_ATDM_CAF:
-                case CEConst.IDS_ATDM_OAF:
-                case CEConst.IDS_ATDM_DAF:
-                case CEConst.IDS_ATDM_SAF:
+                case CEConst.IDS_ATDM_CAF_GP:
+                case CEConst.IDS_ATDM_OAF_GP:
+                case CEConst.IDS_ATDM_DAF_GP:
+                case CEConst.IDS_ATDM_SAF_GP:
                 case CEConst.IDS_ML_CROSS_WEAVE_CAF:
                 case CEConst.IDS_ON_RAMP_TRUCK_PERCENTAGE:
                 case CEConst.IDS_ON_RAMP_RV_PERCENTAGE:
@@ -4447,6 +4528,10 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_RLSOAF:
                 case CEConst.IDS_ML_RLSDAF:
                 case CEConst.IDS_ML_RLSSAF:
+                case CEConst.IDS_ATDM_CAF_ML:
+                case CEConst.IDS_ATDM_OAF_ML:
+                case CEConst.IDS_ATDM_DAF_ML:
+                case CEConst.IDS_ATDM_SAF_ML:
                 case CEConst.IDS_ML_SPEED:
                 case CEConst.IDS_ML_SPACE_MEAN_SPEED:
                 case CEConst.IDS_ML_TOTAL_DENSITY_VEH:
@@ -4624,8 +4709,8 @@ public class Seed implements Serializable {
                 //Boolean
                 case CEConst.IDS_FFS_KNOWN:
                     return Boolean.toString(inFreeFlowSpeedKnown);
-                case CEConst.IDS_RM_USED:
-                    return Boolean.toString(inRampMeteringUsed);
+                case CEConst.IDS_ADAPTIVE_RM_USED:
+                    return Boolean.toString(inAdaptiveRampMeteringUsed);
                 case CEConst.IDS_MANAGED_LANE_USED:
                     return Boolean.toString(inManagedLaneUsed);
 
@@ -4958,32 +5043,6 @@ public class Seed implements Serializable {
     public void setFreeFlowSpeedKnown(boolean freeFlowSpeedKnown) {
         if (inFreeFlowSpeedKnown != freeFlowSpeedKnown) {
             inFreeFlowSpeedKnown = freeFlowSpeedKnown;
-            fireDataChanged(CHANGE_SEED);
-        }
-    }
-
-    /**
-     * Getter for whether ramp metering is used
-     *
-     * @return whether ramp metering is used
-     */
-    public boolean isRampMeteringUsed() {
-        return inRampMeteringUsed;
-    }
-
-    /**
-     * Setter for whether ramp metering is used
-     *
-     * @param rampMeteringUsed whether ramp metering is used
-     */
-    public void setRampMeteringUsed(boolean rampMeteringUsed) {
-        if (inRampMeteringUsed != rampMeteringUsed) {
-            inRampMeteringUsed = rampMeteringUsed;
-            if (!inRampMeteringUsed && GPSegments != null) {
-                for (GPMLSegment segment : GPSegments) {
-                    segment.inRM_veh = CEHelper.int_1D(inNumPeriod, 2100);
-                }
-            }
             fireDataChanged(CHANGE_SEED);
         }
     }
@@ -5679,9 +5738,9 @@ public class Seed implements Serializable {
                 for (ScenarioInfo info : RL_ScenarioInfo) {
                     info.statusRL = CEConst.SCENARIO_INPUT_ONLY;
                 }
-                for (HashMap<Integer, ATDMScenario> ATDMSet : ATDMSets) {
+                for (HashMap<Integer, ATDMScenario[]> ATDMSet : ATDMSets) {
                     for (int scen : ATDMSet.keySet()) {
-                        ATDMSet.get(scen).setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        ATDMSet.get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                     }
                 }
                 break;

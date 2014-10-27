@@ -1,6 +1,5 @@
 package coreEngine;
 
-import coreEngine.GPMLSegment;
 import coreEngine.Helper.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,33 +9,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * This class is used to output detailed 15-sec over saturated calculation
  *
  * @author Shu Liu
  */
 public class DebugOutput {
 
     /**
-     *
+     * csv file writer
      */
     private static CSVWriter writer;
 
     /**
-     *
+     * Total number of items in each row
      */
     private static final int NUM_ITEMS = 17;
 
     /**
-     *
+     * Decimal formatter for integer
      */
     private static final DecimalFormat f0 = new DecimalFormat("0");
 
     /**
-     *
+     * Decimal formatter for floating number
      */
     private static final DecimalFormat f2 = new DecimalFormat("0.00");
 
     /**
-     *
+     * Initialize debug output
      */
     public static void startOutput() {
         try {
@@ -47,9 +47,10 @@ public class DebugOutput {
     }
 
     /**
+     * Write results for a period (60 steps) into the csv file
      *
-     * @param period
-     * @param Segments
+     * @param period analysis period index
+     * @param Segments ArrayList of segments (GP or ML segments)
      * @throws IOException
      */
     public static void write(int period, ArrayList<GPMLSegment> Segments) throws IOException {
@@ -269,7 +270,7 @@ public class DebugOutput {
     }
 
     /**
-     *
+     * Finish debug output
      */
     public static void finish() {
         try {

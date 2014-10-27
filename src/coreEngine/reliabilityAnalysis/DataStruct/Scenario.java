@@ -1,7 +1,7 @@
 package coreEngine.reliabilityAnalysis.DataStruct;
 
-import coreEngine.Helper.CM3DFloat;
-import coreEngine.Helper.CM3DInt;
+import CompressArray.CA3DFloat;
+import CompressArray.CA3DInt;
 import java.io.Serializable;
 
 /**
@@ -12,44 +12,20 @@ import java.io.Serializable;
  */
 public class Scenario implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 59009123790834L;
 
-    /**
-     *
-     */
-    private CM3DFloat CAF;
+    private CA3DFloat CAF;
 
-    /**
-     *
-     */
-    private CM3DFloat SAF;
+    private CA3DFloat SAF;
 
-    /**
-     *
-     */
-    private CM3DFloat DAF;
+    private CA3DFloat DAF;
 
-    /**
-     *
-     */
-    private CM3DFloat OAF;
+    private CA3DFloat OAF;
 
-    /**
-     *
-     */
-    private CM3DInt LAFI;
+    private CA3DInt LAFI;
 
-    /**
-     *
-     */
-    private CM3DInt LAFWZ;
+    private CA3DInt LAFWZ;
 
-    /**
-     *
-     */
     private int numScen;
 
     /**
@@ -60,19 +36,19 @@ public class Scenario implements Serializable {
      */
     public Scenario(int numScen, int numSeg, int numPeriod) {
         this.numScen = numScen;
-        CAF = new CM3DFloat(numScen, numSeg, numPeriod, 1);
-        SAF = new CM3DFloat(numScen, numSeg, numPeriod, 1);
-        DAF = new CM3DFloat(numScen, numSeg, numPeriod, 1);
-        OAF = new CM3DFloat(numScen, numSeg, numPeriod, 1);
-        LAFI = new CM3DInt(numScen, numSeg, numPeriod, 0);
-        LAFWZ = new CM3DInt(numScen, numSeg, numPeriod, 0);
+        CAF = new CA3DFloat(numScen, numSeg, numPeriod, 1);
+        SAF = new CA3DFloat(numScen, numSeg, numPeriod, 1);
+        DAF = new CA3DFloat(numScen, numSeg, numPeriod, 1);
+        OAF = new CA3DFloat(numScen, numSeg, numPeriod, 1);
+        LAFI = new CA3DInt(numScen, numSeg, numPeriod, 0);
+        LAFWZ = new CA3DInt(numScen, numSeg, numPeriod, 0);
     }
 
     /**
      *
      * @return
      */
-    public CM3DFloat CAF() {
+    public CA3DFloat CAF() {
         return CAF;
     }
 
@@ -80,7 +56,7 @@ public class Scenario implements Serializable {
      *
      * @return
      */
-    public CM3DFloat SAF() {
+    public CA3DFloat SAF() {
         return SAF;
     }
 
@@ -88,7 +64,7 @@ public class Scenario implements Serializable {
      *
      * @return
      */
-    public CM3DFloat DAF() {
+    public CA3DFloat DAF() {
         return DAF;
     }
 
@@ -96,7 +72,7 @@ public class Scenario implements Serializable {
      *
      * @return
      */
-    public CM3DFloat OAF() {
+    public CA3DFloat OAF() {
         return OAF;
     }
 
@@ -104,7 +80,7 @@ public class Scenario implements Serializable {
      *
      * @return
      */
-    public CM3DInt LAFI() {
+    public CA3DInt LAFI() {
         return LAFI;
     }
 
@@ -112,7 +88,7 @@ public class Scenario implements Serializable {
      *
      * @return
      */
-    public CM3DInt LAFWZ() {
+    public CA3DInt LAFWZ() {
         return LAFWZ;
     }
 

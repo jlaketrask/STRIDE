@@ -15,54 +15,31 @@ import java.io.Serializable;
  */
 public class WorkZoneData implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 8234793115000L;
 
-    /**
-     *
-     */
     private static Seed seed;
 
     // Dates
-    /**
-     *
-     */
-    private CEDate startDate;
 
-    /**
-     *
-     */
+        private CEDate startDate;
+
     private CEDate endDate;
 
     //Periods
-    /**
-     *
-     */
-    private int startPeriod;
 
-    /**
-     *
-     */
+        private int startPeriod;
+
     private int endPeriod;
 
     //Segments
-    /**
-     *
-     */
-    private int startSegment;
 
-    /**
-     *
-     */
+        private int startSegment;
+
     private int endSegment;
 
     //Severity
-    /**
-     *
-     */
-    private int severity;
+
+        private int severity;
 
     /**
      *
@@ -142,7 +119,7 @@ public class WorkZoneData implements Serializable {
                 + "  (Seg. " + startSegment + " - " + endSegment + ")"
                 + "  (Per. " + startPeriod + " - " + endPeriod + ")";
     }
-
+    
     /**
      *
      * @param wz
@@ -157,16 +134,16 @@ public class WorkZoneData implements Serializable {
         } else if (this.startDate.isAfter(wz.startDate) && this.startDate.isBeforeOrSameAs(wz.endDate)) {
             hasDateOverlap = true;
         }
-
+        
         // If dates overlap, check if segments overlap
         if (hasDateOverlap) {
-            if (this.startSegment <= wz.startSegment && this.endSegment >= wz.startSegment) {
+            if (this.startSegment <= wz.startSegment && this.endSegment >=wz.startSegment) {
                 hasDateAndSegmentOverlap = true;
             } else if (this.startSegment > wz.startSegment && this.startSegment <= wz.endSegment) {
                 hasDateAndSegmentOverlap = true;
             }
         }
-
+        
         // If necessary, check period overlap
         if (hasDateAndSegmentOverlap) {
             if (this.startPeriod <= wz.startPeriod && this.endPeriod >= wz.startPeriod) {
@@ -175,16 +152,18 @@ public class WorkZoneData implements Serializable {
                 hasOverlap = true;
             }
         }
-
+                
         return hasOverlap;
     }
+    
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
+
     /**
      *
      * @return
      */
-    public CEDate getStartDate() {
+        public CEDate getStartDate() {
         return this.startDate;
     }
 
@@ -300,11 +279,12 @@ public class WorkZoneData implements Serializable {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Setters">
+
     /**
      *
      * @param date
      */
-    public void setStartDate(CEDate date) {
+        public void setStartDate(CEDate date) {
         this.startDate = date;
     }
 
@@ -536,11 +516,12 @@ public class WorkZoneData implements Serializable {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Static Setters">
+
     /**
      *
      * @param newSeed
      */
-    public static void setSeed(Seed newSeed) {
+        public static void setSeed(Seed newSeed) {
         seed = newSeed;
         //0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
         if (seed.getWorkZoneSAFs() != null) {
@@ -680,10 +661,8 @@ public class WorkZoneData implements Serializable {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Fill Presets">
-    /**
-     *
-     */
-    private static void useDefaultAdjFactors() {
+
+        private static void useDefaultAdjFactors() {
         useDefaultFFSAFs();
         useDefaultCAFs();
         useDefaultDAFs();
@@ -717,9 +696,6 @@ public class WorkZoneData implements Serializable {
         }
     }
 
-    /**
-     *
-     */
     private static void useDefaultFFSAFs() {
         float[][] tempFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -739,9 +715,6 @@ public class WorkZoneData implements Serializable {
         }
     }
 
-    /**
-     *
-     */
     private static void useDefaultCAFs() {
         float[][] tempCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
         {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
@@ -759,9 +732,6 @@ public class WorkZoneData implements Serializable {
         }
     }
 
-    /**
-     *
-     */
     private static void useDefaultDAFs() {
         float[][] tempDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -779,9 +749,6 @@ public class WorkZoneData implements Serializable {
         }
     }
 
-    /**
-     *
-     */
     private static void useDefaultLAFs() {
         int[][] tempLAFs = {{0, -1, -1, -1, -1},
         {0, -1, -2, -2, -2},
@@ -818,10 +785,8 @@ public class WorkZoneData implements Serializable {
 
     // </editor-fold>
     // 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
-    /**
-     *
-     */
-    private static final float[][] workZoneFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+
+        private static final float[][] workZoneFFSAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -830,9 +795,6 @@ public class WorkZoneData implements Serializable {
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
     }; // 5 is workZone type, 7 is number of lanes;
 
-    /**
-     *
-     */
     private static final float[][] workZoneCAFs = {{0.81f, 0.70f, 0.70f, 0.70f, 0.70f},
     {0.83f, 0.74f, 0.51f, 0.51f, 0.51f},
     {0.85f, 0.77f, 0.50f, 0.52f, 0.52f},
@@ -842,9 +804,6 @@ public class WorkZoneData implements Serializable {
     {0.93f, 0.89f, 0.84f, 0.66f, 0.66f}
     }; // 5 is workZone type, 7 is number of lanes;
 
-    /**
-     *
-     */
     private static final float[][] workZoneDAFs = {{1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
@@ -854,9 +813,6 @@ public class WorkZoneData implements Serializable {
     {1.0f, 1.0f, 1.0f, 1.0f, 1.0f}
     }; // 5 is workZone type, 7 is number of lanes;
 
-    /**
-     *
-     */
     private static final int[][] workZoneLAFs = {{0, -1, -1, -1, -1},
     {0, -1, -2, -2, -2},
     {0, -1, -2, -3, -3},

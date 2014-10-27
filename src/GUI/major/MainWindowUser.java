@@ -115,8 +115,8 @@ public class MainWindowUser extends MainWindow {
             activeSeed.setRLScenarios(new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)), null, scenarioInfos);
         }
 
-        HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
-        atmHolder.put(1, activeATM);
+        HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
+        atmHolder.put(1, new ATDMScenario[]{activeATM, null});
         activeSeed.addATDMSet(atmHolder);
 
         completedRunsPeriodATM = new ArrayList();
@@ -1107,8 +1107,8 @@ public class MainWindowUser extends MainWindow {
             periodATM[per] = new PeriodATM(activeSeed, per);
         }
         activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
-        HashMap<Integer, ATDMScenario> atmHolder = new HashMap();
-        atmHolder.put(1, activeATM);
+        HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
+        atmHolder.put(1, new ATDMScenario[] {activeATM, null});
         activeSeed.addATDMSet(atmHolder);
         activeATDM++;
         // Reset window

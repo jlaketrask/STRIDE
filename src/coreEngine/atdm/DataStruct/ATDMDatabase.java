@@ -15,44 +15,20 @@ import java.util.ArrayList;
  */
 public class ATDMDatabase implements Serializable {
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> demandStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> weatherStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> incidentStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> workZoneStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> rmStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMStrategy> hsrStrat;
 
-    /**
-     *
-     */
     private final ArrayList<ATDMPlan> atdmPlans;
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 51348672125L;
 
     /**
@@ -85,9 +61,6 @@ public class ATDMDatabase implements Serializable {
         initATDMPlans();
     }
 
-    /**
-     *
-     */
     private void initDemandDefaultStrategies() {
         int startId = demandStrat.size() + 1;
 
@@ -100,9 +73,6 @@ public class ATDMDatabase implements Serializable {
         demandStrat.add(new ATDMStrategy(startId, "Employer TDM", 1));
     }
 
-    /**
-     *
-     */
     private void initWeatherDefaultStrategies() {
         int startId = weatherStrat.size() + 1;
 
@@ -115,9 +85,6 @@ public class ATDMDatabase implements Serializable {
         weatherStrat.add(new ATDMStrategy(startId++, "Fog Dispersion", 2));
     }
 
-    /**
-     *
-     */
     private void initIncidentDefaultStrategies() {
         int startId = incidentStrat.size() + 1;
 
@@ -136,9 +103,6 @@ public class ATDMDatabase implements Serializable {
         incidentStrat.add(new ATDMStrategy(startId++, "Automated Collision Notification Systems", 4));
     }
 
-    /**
-     *
-     */
     private void initWorkZoneDefaultStrategies() {
         int startId = workZoneStrat.size() + 1;
 
@@ -152,9 +116,6 @@ public class ATDMDatabase implements Serializable {
         workZoneStrat.add(new ATDMStrategy(startId++, "Detours", 1));
     }
 
-    /**
-     *
-     */
     private void initATDMPlans() {
         // If no plans exist, create one empty plan
         if (atdmPlans.isEmpty()) {

@@ -3,7 +3,7 @@ package coreEngine.Helper;
 import coreEngine.Seed;
 
 /**
- * This class is used to store output of a seed single run
+ * This class is used to store output of a seed single run.
  *
  * @author Shu Liu
  */

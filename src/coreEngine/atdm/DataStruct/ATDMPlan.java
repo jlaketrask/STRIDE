@@ -5,8 +5,8 @@
  */
 package coreEngine.atdm.DataStruct;
 
+import CompressArray.CA2DInt;
 import coreEngine.Helper.CEConst;
-import coreEngine.Helper.CM2DInt;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,45 +17,22 @@ import java.util.HashMap;
  */
 public class ATDMPlan implements Serializable, Cloneable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 7234909154855844L;
 
-    /**
-     *
-     */
     private int id;
 
-    /**
-     *
-     */
     private String name;
 
-    /**
-     *
-     */
     private String description;
 
-    /**
-     *
-     */
     private HashMap<ATDMStrategy, String> strategies;
 
-    //private CM2DInt RMRate;
+    //private CA2DInt RMRate;
+    private boolean hasRampMetering = false;
 
-    /**
-     *
-     */
-        private boolean hasRampMetering = false;
-
-    //private CM2DInt HSRMatrix;
+    //private CA2DInt HSRMatrix;
     //private float hardShoulderRunningCAF = 1.0f;
-
-    /**
-     *
-     */
-        private boolean hasShoulderOpening = false;
+    private boolean hasShoulderOpening = false;
 
     /**
      *
@@ -108,21 +85,16 @@ public class ATDMPlan implements Serializable, Cloneable {
         }
     }
 
-    /**
-     *
-     * @param basePlan
-     */
     private void copyStrategies(ATDMPlan basePlan) {
         strategies = (HashMap<ATDMStrategy, String>) basePlan.getAppliedStrategies().clone();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
-
     /**
      *
      * @return
      */
-        public String getName() {
+    public String getName() {
         return name;
     }
 
@@ -281,7 +253,7 @@ public class ATDMPlan implements Serializable, Cloneable {
      *
      * @return
      */
-    public CM2DInt getRMRate() {
+    public CA2DInt getRMRate() {
         for (ATDMStrategy strategy : strategies.keySet()) {
             if (CEConst.IDS_ATDM_STRAT_TYPE_RAMP_METERING.equalsIgnoreCase(strategies.get(strategy))) {
                 return ((ATDMStrategyMat) strategy).getStrategyMatrix();
@@ -294,7 +266,7 @@ public class ATDMPlan implements Serializable, Cloneable {
      *
      * @return
      */
-    public CM2DInt getHSRMatrix() {
+    public CA2DInt getHSRMatrix() {
         for (ATDMStrategy strategy : strategies.keySet()) {
             if (CEConst.IDS_ATDM_STRAT_TYPE_HARD_SHOULDER_RUNNING.equalsIgnoreCase(strategies.get(strategy))) {
                 return ((ATDMStrategyMat) strategy).getStrategyMatrix();
@@ -315,9 +287,9 @@ public class ATDMPlan implements Serializable, Cloneable {
         }
         throw new RuntimeException("Error: No HSR Strategy assigned to plan");
     }
-    
+
     /**
-     *@param numLanes
+     * @param numLanes
      * @return
      */
     public float getHSRCAF(int numLanes) {
@@ -330,13 +302,12 @@ public class ATDMPlan implements Serializable, Cloneable {
     }
 
     //</editor-fold>
-
     /**
      *
      * @param strategy
      * @return
      */
-        public boolean hasStrategy(ATDMStrategy strategy) {
+    public boolean hasStrategy(ATDMStrategy strategy) {
         for (ATDMStrategy strat : strategies.keySet()) {
             if (strat == strategy) {
                 return true;
@@ -365,12 +336,11 @@ public class ATDMPlan implements Serializable, Cloneable {
 //        hardShoulderRunningCAF = newVal;
 //    }
     // <editor-fold defaultstate="collapsed" desc="Setters">
-
     /**
      *
      * @param newID
      */
-        public void setID(int newID) {
+    public void setID(int newID) {
         this.id = newID;
     }
 
@@ -390,19 +360,18 @@ public class ATDMPlan implements Serializable, Cloneable {
         this.description = newDescription;
     }
 
-//    public void setRMRate(CM2DInt newRMRate) {
+//    public void setRMRate(CA2DInt newRMRate) {
 //        RMRate = newRMRate;
 //    }
 //
-//    public void setHSRMatrix(CM2DInt newHSRMatrix) {
+//    public void setHSRMatrix(CA2DInt newHSRMatrix) {
 //        HSRMatrix = newHSRMatrix;
 //    }
-
     /**
      *
      * @param val
      */
-        public void useRampMetering(boolean val) {
+    public void useRampMetering(boolean val) {
         hasRampMetering = val;
     }
 
