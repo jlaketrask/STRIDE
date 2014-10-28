@@ -420,9 +420,9 @@ public class Toolbox extends javax.swing.JPanel {
     }//GEN-LAST:event_workZoneEventButtonActionPerformed
 
     private void atmParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atmParametersButtonActionPerformed
-        ATMParameterDialog atmParamDialog = new ATMParameterDialog(null, true);
+        ATMParameterDialog atmParamDialog = new ATMParameterDialog(mainWindow, true);
         atmParamDialog.setATMParameters(mainWindow.getUserLevelParameters().atm);
-        atmParamDialog.setMainWindow(mainWindow);
+        //atmParamDialog.setMainWindow(mainWindow);
         atmParamDialog.setLocationRelativeTo(null);
         atmParamDialog.setVisible(true);
         atmParamDialog.dispose();

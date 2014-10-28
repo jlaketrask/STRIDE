@@ -17,6 +17,8 @@ public class ATMParameterSet {
 
     public float hsrCapacity[];
     public Boolean[] diversionAtSeg;
+    public float[] OFRdiversion;
+    public float[] ONRdiversion;
 
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
@@ -25,7 +27,15 @@ public class ATMParameterSet {
 
     public ATMParameterSet(Seed seed) {
         hsrCapacity = new float[5];
-        diversionAtSeg = new Boolean[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
+        if  (seed != null) {
+            diversionAtSeg = new Boolean[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
+            OFRdiversion = new float[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
+            ONRdiversion = new float[seed.getValueInt(CEConst.IDS_NUM_SEGMENT)];
+        } else {
+            diversionAtSeg = new Boolean[1];
+            OFRdiversion = new float[1];
+            ONRdiversion = new float[1];
+        }
         useDefaults();
     }
 
@@ -45,5 +55,7 @@ public class ATMParameterSet {
         hsrCapacity[4] = HSR_Capacities[3];
 
         Arrays.fill(diversionAtSeg, Boolean.FALSE);
+        Arrays.fill(ONRdiversion, 0.0f);
+        Arrays.fill(OFRdiversion, 0.0f);
     }
 }

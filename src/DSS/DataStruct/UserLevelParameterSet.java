@@ -78,6 +78,11 @@ public class UserLevelParameterSet {
 
     public void setSeed(Seed seed) {
         setArraysBySeed(seed);
+        updateATMParams(seed);
+    }
+    
+    private void updateATMParams(Seed seed) {
+        atm = new ATMParameterSet(seed);
     }
 
     private void initArrays() {

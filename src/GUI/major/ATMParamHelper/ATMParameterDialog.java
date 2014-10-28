@@ -29,10 +29,12 @@ public class ATMParameterDialog extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public ATMParameterDialog(java.awt.Frame parent, boolean modal) {
+    public ATMParameterDialog(MainWindow parent, boolean modal) {
         super(parent, modal);
         initComponents();
-
+        
+        this.mainWindow = parent;
+        
         //<editor-fold defaultstate="collapsed" desc="Spinner Listeners">
         hsr1LPct.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -421,8 +423,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        ATMDiversionDialog divDialog = new ATMDiversionDialog(null, true);
-        divDialog.setMainWindow(mainWindow);
+        ATMDiversionDialog divDialog = new ATMDiversionDialog(mainWindow, true);
         //divDialog.setSeed(mainWindow.getActiveSeed());
         //divDialog.setUserParams(mainWindow.getUserLevelParameters());
         divDialog.setLocationRelativeTo(null);
