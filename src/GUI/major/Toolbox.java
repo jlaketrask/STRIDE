@@ -422,6 +422,7 @@ public class Toolbox extends javax.swing.JPanel {
     private void atmParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atmParametersButtonActionPerformed
         ATMParameterDialog atmParamDialog = new ATMParameterDialog(null, true);
         atmParamDialog.setATMParameters(mainWindow.getUserLevelParameters().atm);
+        atmParamDialog.setMainWindow(mainWindow);
         atmParamDialog.setLocationRelativeTo(null);
         atmParamDialog.setVisible(true);
         atmParamDialog.dispose();
@@ -525,7 +526,7 @@ public class Toolbox extends javax.swing.JPanel {
         weatherEventButton.setEnabled(false);
         incidentEventButton.setEnabled(false);
         workZoneEventButton.setEnabled(false);
-        
+
         cfgATMPanel.setEnabled(false);
         atmParametersButton.setEnabled(false);
     }
@@ -581,7 +582,7 @@ public class Toolbox extends javax.swing.JPanel {
         weatherEventButton.setEnabled(true);
         incidentEventButton.setEnabled(true);
         workZoneEventButton.setEnabled(true);
-        
+
         cfgATMPanel.setEnabled(true);
         atmParametersButton.setEnabled(true);
     }

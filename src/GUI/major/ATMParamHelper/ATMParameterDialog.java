@@ -6,6 +6,7 @@
 package GUI.major.ATMParamHelper;
 
 import DSS.DataStruct.ATMParameterSet;
+import GUI.major.MainWindow;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -15,28 +16,30 @@ import javax.swing.SpinnerNumberModel;
 public class ATMParameterDialog extends javax.swing.JDialog {
 
     private int laneMaxCapacity;
-    
+
     private ATMParameterSet atmParams;
-    
+
     private boolean returnStatus = false;
-    
+
+    private MainWindow mainWindow;
+
     /**
      * Creates new form ATMParameterDialog
-     * 
+     *
      * @param parent
-     * @param modal 
+     * @param modal
      */
     public ATMParameterDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         //<editor-fold defaultstate="collapsed" desc="Spinner Listeners">
         hsr1LPct.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr1LPctStateChanged(evt);
             }
         });
-        
+
         hsr1LVPH.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr1LVPHStateChanged(evt);
@@ -47,7 +50,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 hsr2LPctStateChanged(evt);
             }
         });
-        
+
         hsr2LVPH.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr2LVPHStateChanged(evt);
@@ -58,7 +61,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 hsr3LPctStateChanged(evt);
             }
         });
-        
+
         hsr3LVPH.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr3LVPHStateChanged(evt);
@@ -69,7 +72,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 hsr4LPctStateChanged(evt);
             }
         });
-        
+
         hsr4LVPH.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr4LVPHStateChanged(evt);
@@ -80,22 +83,22 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 hsr5LPctStateChanged(evt);
             }
         });
-        
+
         hsr5LVPH.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 hsr5LVPHStateChanged(evt);
             }
         });
 //</editor-fold>
-        
+
         laneMaxCapacity = 2000;
-        
-        hsr1LPct.setModel(new SpinnerNumberModel(0,0,laneMaxCapacity,1));
-        hsr2LPct.setModel(new SpinnerNumberModel(0,0,laneMaxCapacity,1));
-        hsr3LPct.setModel(new SpinnerNumberModel(0,0,laneMaxCapacity,1));
-        hsr4LPct.setModel(new SpinnerNumberModel(0,0,laneMaxCapacity,1));
-        hsr5LPct.setModel(new SpinnerNumberModel(0,0,laneMaxCapacity,1));
-                
+
+        hsr1LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
+        hsr2LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
+        hsr3LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
+        hsr4LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
+        hsr5LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
+
         hsr1LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr2LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr3LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
@@ -109,34 +112,38 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         setHardShoulderCAFs(atmParams.hsrCapacity);
         this.atmParams = atmParams;
     }
-    
-    private void setHardShoulderCAFs(float[] hsrCAFs) {
-        hsr1LPct.setValue(Math.round(hsrCAFs[0]*100.0f));
-        hsr2LPct.setValue(Math.round(hsrCAFs[1]*100.0f));
-        hsr3LPct.setValue(Math.round(hsrCAFs[2]*100.0f));
-        hsr4LPct.setValue(Math.round(hsrCAFs[3]*100.0f));
-        hsr5LPct.setValue(Math.round(hsrCAFs[4]*100.0f));
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
     }
-    
+
+    private void setHardShoulderCAFs(float[] hsrCAFs) {
+        hsr1LPct.setValue(Math.round(hsrCAFs[0] * 100.0f));
+        hsr2LPct.setValue(Math.round(hsrCAFs[1] * 100.0f));
+        hsr3LPct.setValue(Math.round(hsrCAFs[2] * 100.0f));
+        hsr4LPct.setValue(Math.round(hsrCAFs[3] * 100.0f));
+        hsr5LPct.setValue(Math.round(hsrCAFs[4] * 100.0f));
+    }
+
     public float[] getHardShoulderCAFs() {
         float[] hsrCAFs = new float[5];
-        hsrCAFs[0] = ((int) hsr1LPct.getValue())/100.0f;
-        hsrCAFs[1] = ((int) hsr2LPct.getValue())/100.0f;
-        hsrCAFs[2] = ((int) hsr3LPct.getValue())/100.0f;
-        hsrCAFs[3] = ((int) hsr4LPct.getValue())/100.0f;
-        hsrCAFs[4] = ((int) hsr5LPct.getValue())/100.0f;
-        
+        hsrCAFs[0] = ((int) hsr1LPct.getValue()) / 100.0f;
+        hsrCAFs[1] = ((int) hsr2LPct.getValue()) / 100.0f;
+        hsrCAFs[2] = ((int) hsr3LPct.getValue()) / 100.0f;
+        hsrCAFs[3] = ((int) hsr4LPct.getValue()) / 100.0f;
+        hsrCAFs[4] = ((int) hsr5LPct.getValue()) / 100.0f;
+
         return hsrCAFs;
     }
-    
+
     public boolean getReturnStatus() {
         return returnStatus;
     }
-    
+
     private void doClose() {
         this.setVisible(false);
     }
-    
+
     private void updateHSRSpinnersVPH() {
         updateHSRSpinnersVPH(1);
         updateHSRSpinnersVPH(2);
@@ -144,33 +151,33 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         updateHSRSpinnersVPH(4);
         updateHSRSpinnersVPH(5);
     }
-    
+
     private void updateHSRSpinnersVPH(int numLanes) {
         int val;
         switch (numLanes) {
             case 1:
-                val = Math.round(((int)hsr1LPct.getValue())/100.0f*laneMaxCapacity);
+                val = Math.round(((int) hsr1LPct.getValue()) / 100.0f * laneMaxCapacity);
                 hsr1LVPH.setValue(val);
                 break;
             case 2:
-                val = Math.round(((int)hsr2LPct.getValue())/100.0f*laneMaxCapacity);
+                val = Math.round(((int) hsr2LPct.getValue()) / 100.0f * laneMaxCapacity);
                 hsr2LVPH.setValue(val);
                 break;
             case 3:
-                val = Math.round(((int)hsr3LPct.getValue())/100.0f*laneMaxCapacity);
+                val = Math.round(((int) hsr3LPct.getValue()) / 100.0f * laneMaxCapacity);
                 hsr3LVPH.setValue(val);
                 break;
             case 4:
-                val = Math.round(((int)hsr4LPct.getValue())/100.0f*laneMaxCapacity);
+                val = Math.round(((int) hsr4LPct.getValue()) / 100.0f * laneMaxCapacity);
                 hsr4LVPH.setValue(val);
                 break;
             case 5:
-                val = Math.round(((int)hsr5LPct.getValue())/100.0f*laneMaxCapacity);
+                val = Math.round(((int) hsr5LPct.getValue()) / 100.0f * laneMaxCapacity);
                 hsr5LVPH.setValue(val);
                 break;
         }
     }
-    
+
     private void updateHSRSpinnersPct() {
         updateHSRSpinnersPct(1);
         updateHSRSpinnersPct(2);
@@ -178,72 +185,72 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         updateHSRSpinnersPct(4);
         updateHSRSpinnersPct(5);
     }
-    
+
     private void updateHSRSpinnersPct(int numLanes) {
         int val;
         switch (numLanes) {
             case 1:
-                val = Math.round(100.0f*((int) hsr1LVPH.getValue())/laneMaxCapacity);
+                val = Math.round(100.0f * ((int) hsr1LVPH.getValue()) / laneMaxCapacity);
                 hsr1LPct.setValue(val);
                 break;
             case 2:
-                val = Math.round(100.0f*((int) hsr2LVPH.getValue())/laneMaxCapacity);
+                val = Math.round(100.0f * ((int) hsr2LVPH.getValue()) / laneMaxCapacity);
                 hsr2LPct.setValue(val);
                 break;
             case 3:
-                val = Math.round(100.0f*((int) hsr3LVPH.getValue())/laneMaxCapacity);
+                val = Math.round(100.0f * ((int) hsr3LVPH.getValue()) / laneMaxCapacity);
                 hsr3LPct.setValue(val);
                 break;
             case 4:
-                val = Math.round(100.0f*((int) hsr4LVPH.getValue())/laneMaxCapacity);
+                val = Math.round(100.0f * ((int) hsr4LVPH.getValue()) / laneMaxCapacity);
                 hsr4LPct.setValue(val);
                 break;
             case 5:
-                val = Math.round(100.0f*((int) hsr5LVPH.getValue())/laneMaxCapacity);
+                val = Math.round(100.0f * ((int) hsr5LVPH.getValue()) / laneMaxCapacity);
                 hsr5LPct.setValue(val);
                 break;
         }
     }
-    
-    private void hsr1LPctStateChanged(javax.swing.event.ChangeEvent evt) {                                      
-        updateHSRSpinnersVPH(1);
-    }                                     
 
-    private void hsr1LVPHStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    private void hsr1LPctStateChanged(javax.swing.event.ChangeEvent evt) {
+        updateHSRSpinnersVPH(1);
+    }
+
+    private void hsr1LVPHStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersPct(1);
     }
-    
-    private void hsr2LPctStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+
+    private void hsr2LPctStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersVPH(2);
-    }                                     
+    }
 
-    private void hsr2LVPHStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    private void hsr2LVPHStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersPct(2);
-    } 
-    
-    private void hsr3LPctStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    }
+
+    private void hsr3LPctStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersVPH(3);
-    }                                     
+    }
 
-    private void hsr3LVPHStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    private void hsr3LVPHStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersPct(3);
-    } 
-    
-    private void hsr4LPctStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    }
+
+    private void hsr4LPctStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersVPH(4);
-    }                                     
+    }
 
-    private void hsr4LVPHStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    private void hsr4LVPHStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersPct(1);
-    } 
-    
-    private void hsr5LPctStateChanged(javax.swing.event.ChangeEvent evt) {                                      
-        updateHSRSpinnersVPH(5);
-    }                                     
+    }
 
-    private void hsr5LVPHStateChanged(javax.swing.event.ChangeEvent evt) {                                      
+    private void hsr5LPctStateChanged(javax.swing.event.ChangeEvent evt) {
+        updateHSRSpinnersVPH(5);
+    }
+
+    private void hsr5LVPHStateChanged(javax.swing.event.ChangeEvent evt) {
         updateHSRSpinnersPct(5);
-    } 
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -277,6 +284,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("User Level ATM Parameter Defaults");
@@ -344,7 +352,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 .addGroup(hsrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         okButton.setText("OK");
@@ -361,6 +369,13 @@ public class ATMParameterDialog extends javax.swing.JDialog {
             }
         });
 
+        jButton1.setText("Configure Variable Message Sign Locations for Traffic Diversion");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -373,7 +388,8 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton)))
+                        .addComponent(cancelButton))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -381,6 +397,8 @@ public class ATMParameterDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(hsrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
@@ -402,6 +420,15 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         doClose();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ATMDiversionDialog divDialog = new ATMDiversionDialog(null, true);
+        divDialog.setMainWindow(mainWindow);
+        //divDialog.setSeed(mainWindow.getActiveSeed());
+        //divDialog.setUserParams(mainWindow.getUserLevelParameters());
+        divDialog.setLocationRelativeTo(null);
+        divDialog.setVisible(true);
+        divDialog.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
@@ -416,6 +443,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     private javax.swing.JSpinner hsr5LPct;
     private javax.swing.JSpinner hsr5LVPH;
     private javax.swing.JPanel hsrPanel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
