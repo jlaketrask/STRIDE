@@ -34,12 +34,7 @@ public class ATMUpdater {
         this.seed = seed;
         this.atm = atmScenario;  //x = segment, y = period
         this.periodATM = periodATM;
-        if (userParams != null) {
-            this.userParams = userParams;
-        } else {
-            this.userParams = new UserLevelParameterSet();
-            //this.userParams.useDefaults();
-        }
+        this.userParams = userParams;
     }
 
     public void update(int currPeriod) {
@@ -53,6 +48,7 @@ public class ATMUpdater {
                 // Assigning Ramp Metering
                 if (currATM.getRMType(seg) == PeriodATM.ID_RM_TYPE_USER) {
                     // User Specified
+                    seed.setValue(CEConst.IDS_ATDM_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_FIX, seg, currPeriod + 1);
                     atm.RM().set(currATM.getRMRate(seg), seg, currPeriod + 1);
                     atm.setRampMetering(true);
                 } else {
@@ -78,7 +74,7 @@ public class ATMUpdater {
                 if (currATM.getHSRUsed(seg)) {
                     atm.LAF().add(1, seg, currPeriod + 1); // Adding lane
 
-                    // Calculating new segment CAF using shoulder CAF 
+                    // Calculating new segment CAF using shoulder CAF
                     float seedCAF = seed.getValueFloat(CEConst.IDS_GP_USER_CAF, seg, currPeriod + 1);
                     float rlCAF = seed.getRLCAF(1, seg, currPeriod + 1, CEConst.SEG_TYPE_GP);
                     //float avgCAF = (seedCAF + rlCAF) / 2.0f;

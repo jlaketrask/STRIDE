@@ -32,12 +32,14 @@ import javax.swing.table.TableCellRenderer;
 public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     //private String[] columnNames;
-    private final String[] rowNames = {"Toggle Ramp Metering Used",
+    private final String[] rowNames = {"Enable Ramp Metering",
         "Remaining Implementation Periods",
         "Ramp Metering Rate",
-        "Toggle Hard Shoulder Running Used",
-        "Remaining Implementation Periods",};
-        //"Hard Shoulder Capacity"};
+        "Enable Hard Shoulder Running",
+        "Remaining Implementation Periods",
+        "Enable Traffic Diversion",
+        "Remaining Implementation Periods"};
+    //"Hard Shoulder Capacity"};
 
     private MainWindowUser mainWindow;
     private Seed seed;
@@ -51,23 +53,25 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
     private final DefaultTableCellRenderer blackOutRenderer;
     private final DefaultTableCellRenderer rightRenderer;
     //private final ComboBoxRenderer rmComboBoxRenderer;
-    
+
     private final TableSelectionCellEditor defaultCellEditor;
     private final DefaultCellEditor checkBoxEditor;
     private final DefaultCellEditor rmComboBoxEditor;
-    
+
     private final JTable parentTable;
 
     private final int tableType;
 
     public static final int TYPE_ROW_NAMES = 0;
     public static final int TYPE_ATM_INPUT = 1;
-    
+
     private static final int ROW_RM_TYPE = 0;
     private static final int ROW_RM_IMPLEMENTATION_PERIODS = 1;
     private static final int ROW_RM_RATE = 2;
     private static final int ROW_HSR_TOGGLE = 3;
     private static final int ROW_HSR_IMPLEMENTATION_PERIODS = 4;
+    private static final int ROW_DIVERSION_TOGGLE = 5;
+    private static final int ROW_DIVERSION_PERIODS = 6;
     //private static final int ROW_HSR_CAPACITY = 5;
 
     public FREEVAL_DSS_TableModel(int tableType, JTable parentTable) {
@@ -86,17 +90,17 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         blackOutRenderer.setBackground(Color.DARK_GRAY);
         rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-        
+
         // Creating Default cell editor
         defaultCellEditor = new TableSelectionCellEditor(true);
-        
+
         // Creating CheckBox cell editor
         JCheckBox editorCB = new JCheckBox();
         editorCB.setHorizontalAlignment(JLabel.CENTER);
         editorCB.setBackground(Color.WHITE);
         editorCB.setForeground(Color.WHITE);
         checkBoxEditor = new DefaultCellEditor(editorCB);
-        
+
         //Creating Ramp Metering ComboBoxEditor
         //rmComboBoxRenderer = new ComboBoxRenderer();
         //rmComboBoxRenderer.addItem("None");
@@ -152,12 +156,12 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                 switch (row) {
                     case ROW_RM_TYPE:
                         if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_USER) {
-                                return "User Specified";
-                            } else if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_LINEAR) {
-                                return "Adaptive";
-                            } else {
-                                return "None";
-                            }
+                            return "User Specified";
+                        } else if (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_LINEAR) {
+                            return "Adaptive";
+                        } else {
+                            return "None";
+                        }
                     case ROW_RM_IMPLEMENTATION_PERIODS:
                         return periodATM[currPeriod].getRMDuration(col);
                     case ROW_RM_RATE:
@@ -170,8 +174,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         return periodATM[currPeriod].getHSRUsed(col);
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
                         return periodATM[currPeriod].getHSRDuration(col);
-                    //case 5:
-                    //    return periodATM[currPeriod].getHSRCapacity(col);
+                    case ROW_DIVERSION_TOGGLE:
+                        return periodATM[currPeriod].getDiversionUsed(col);
+                    case ROW_DIVERSION_PERIODS:
+                        return periodATM[currPeriod].getDiversionDuration(col);
                     default:
                         throw new RuntimeException("Invalid Row Index");
                 }
@@ -219,9 +225,16 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                                 this.fireTableCellUpdated(ROW_HSR_IMPLEMENTATION_PERIODS, col);
                             }
                             break;
-                        //case 5:
-                        //    periodATM[currPeriod].setHSRCapacity(Integer.parseInt((String) value), col);
-                        //    break;
+                        case ROW_DIVERSION_TOGGLE:
+                            periodATM[currPeriod].setDiversionUsed((boolean) value, col);
+                            if (periodATM[currPeriod].getDiversionUsed(col)) {
+                                parentTable.changeSelection(ROW_DIVERSION_PERIODS, col, false, false);
+                            } else {
+                                this.fireTableCellUpdated(ROW_DIVERSION_PERIODS, col);
+                            }
+                            break;
+                        case ROW_DIVERSION_PERIODS:
+                            periodATM[currPeriod].setDiversionDuration(Integer.parseInt((String) value), col);
                         default:
                             throw new RuntimeException("Invalid Row Index");
                     }
@@ -251,6 +264,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         return (periodATM[currPeriod].getRMType(col) == PeriodATM.ID_RM_TYPE_USER);
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
                         return (periodATM[currPeriod].getHSRUsed(col));
+                    case ROW_DIVERSION_TOGGLE:
+                        return periodATM[currPeriod].diversionAvailableAtSegment(col);
+                    case ROW_DIVERSION_PERIODS:
+                        return periodATM[currPeriod].getDiversionUsed(col);
                     default:
                         return false;
                 }
@@ -302,13 +319,15 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             return blackOutRenderer;
                         }
                     case ROW_HSR_TOGGLE:
-                        if (isCellEditable(ROW_HSR_TOGGLE, col)) {
+                    case ROW_DIVERSION_TOGGLE:
+                        if (isCellEditable(row, col)) {
                             return checkBoxRenderer;
                         } else {
                             return blackOutRenderer;
                         }
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
-                        if (isCellEditable(ROW_HSR_IMPLEMENTATION_PERIODS, col)) {
+                    case ROW_DIVERSION_PERIODS:
+                        if (isCellEditable(row, col)) {
                             return centerRenderer;
                         } else {
                             return blackOutRenderer;
@@ -331,8 +350,9 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             return this;
         }
     }
-    
+
     private class ComboBoxRenderer extends JComboBox implements TableCellRenderer {
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
             try {
@@ -343,46 +363,47 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             return this;
         }
     }
-    
-    public class WideComboBox extends JComboBox{ 
 
-        public WideComboBox() { 
-        } 
+    public class WideComboBox extends JComboBox {
 
-        public WideComboBox(final Object items[]){ 
-            super(items); 
-        } 
+        public WideComboBox() {
+        }
 
-        public WideComboBox(Vector items) { 
-            super(items); 
-        } 
+        public WideComboBox(final Object items[]) {
+            super(items);
+        }
 
-            public WideComboBox(ComboBoxModel aModel) { 
-            super(aModel); 
-        } 
+        public WideComboBox(Vector items) {
+            super(items);
+        }
 
-        private boolean layingOut = false; 
+        public WideComboBox(ComboBoxModel aModel) {
+            super(aModel);
+        }
 
-        public void doLayout(){ 
-            try{ 
-                layingOut = true; 
-                    super.doLayout(); 
-            }finally{ 
-                layingOut = false; 
-            } 
-        } 
+        private boolean layingOut = false;
 
-        public Dimension getSize(){ 
-            Dimension dim = super.getSize(); 
-            if(!layingOut) 
-                dim.width = Math.max(dim.width, getPreferredSize().width); 
-            return dim; 
-        } 
+        public void doLayout() {
+            try {
+                layingOut = true;
+                super.doLayout();
+            } finally {
+                layingOut = false;
+            }
+        }
+
+        public Dimension getSize() {
+            Dimension dim = super.getSize();
+            if (!layingOut) {
+                dim.width = Math.max(dim.width, getPreferredSize().width);
+            }
+            return dim;
+        }
     }
     // </editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Cell Editors">
-    public TableCellEditor getEditor(int row,int col) {
+    public TableCellEditor getEditor(int row, int col) {
         switch (this.tableType) {
             default:
             case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
@@ -390,7 +411,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
                 if (row == ROW_RM_TYPE) {
                     return rmComboBoxEditor;
-                } else if (row == ROW_HSR_TOGGLE) {
+                } else if (row == ROW_HSR_TOGGLE || row == ROW_DIVERSION_TOGGLE) {
                     return checkBoxEditor;
                 } else {
                     return defaultCellEditor;

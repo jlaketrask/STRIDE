@@ -98,14 +98,18 @@ public class MainWindowUser extends MainWindow {
 
         initComponents();
         activeSeed = seed;
+        if (userParams != null) {
+            this.userLevelParams = userParams;
+        } else {
+            this.userLevelParams = new UserLevelParameterSet(seed);
+            //this.userParams.useDefaults();
+        }
         // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(activeSeed, per);
+            periodATM[per] = new PeriodATM(activeSeed, per, userLevelParams.atm);
         }
-
-        userLevelParams = userParams;
 
         atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM, userLevelParams);
         if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
@@ -1104,7 +1108,7 @@ public class MainWindowUser extends MainWindow {
 
         // Create new of each
         for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(activeSeed, per);
+            periodATM[per] = new PeriodATM(activeSeed, per, userLevelParams.atm);
         }
         activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();

@@ -33,6 +33,10 @@ public class PeriodATM {
     //private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 
+    private final Boolean[] diversionUsed;
+    private final int[] diversionDuration;
+
+    private final ATMParameterSet ATMParams;
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
     public static final String ID_AFTYPE_CAF = "ID_AFTYPE_CAF";
     public static final String ID_AFTYPE_SAF = "ID_AFTYPE_SAF";
@@ -47,10 +51,13 @@ public class PeriodATM {
     public static final String ID_HSR_DURATION = "ID_HSR_DURATION";
     public static final String ID_HSR_USED = "ID_HSR_USED";
     public static final String ID_HSR_CAPACITY = "ID_HSR_CAPACITY";
-    // </editor-fold>
+    public static final String ID_DIVERSION_USED = "ID_DIVERSION_USED";
+    public static final String ID_DIVERSION_DURATION = "ID_DIVERSION_DURATION";
 
-    public PeriodATM(Seed seed, int period) {
+// </editor-fold>
+    public PeriodATM(Seed seed, int period, ATMParameterSet ATMParams) {
         this.seed = seed;
+        this.ATMParams = ATMParams;
 
         // Settting period
         this.period = period;
@@ -76,8 +83,11 @@ public class PeriodATM {
         Arrays.fill(hsrDuration, 0);
         hsrUsed = new Boolean[numSeg];
         Arrays.fill(hsrUsed, false);
-        //hsrCapacity = new float[numSeg];
-        //Arrays.fill(hsrCapacity, 1.0f);
+
+        diversionUsed = new Boolean[numSeg];
+        Arrays.fill(diversionUsed, false);
+        diversionDuration = new int[numSeg];
+        Arrays.fill(diversionDuration, 0);
 
     }
 
@@ -105,6 +115,8 @@ public class PeriodATM {
                 return rmDuration[seg];
             case ID_HSR_DURATION:
                 return hsrDuration[seg];
+            case ID_DIVERSION_DURATION:
+                return diversionDuration[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -116,6 +128,8 @@ public class PeriodATM {
                 return rampMeteringUsed[seg];
             case ID_HSR_USED:
                 return hsrUsed[seg];
+            case ID_DIVERSION_USED:
+                return diversionUsed[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -153,18 +167,24 @@ public class PeriodATM {
             case ID_HSR_DURATION:
                 hsrDuration[seg] = value;
                 break;
+            case ID_DIVERSION_DURATION:
+                diversionDuration[seg] = value;
+                break;
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
     }
 
-    public void setValueBool(String identifier, boolean value, int period) {
+    public void setValueBool(String identifier, boolean value, int seg) {
         switch (identifier) {
             case ID_RAMP_METERING_USED:
-                rampMeteringUsed[period] = value;
+                rampMeteringUsed[seg] = value;
                 break;
             case ID_HSR_USED:
-                hsrUsed[period] = value;
+                hsrUsed[seg] = value;
+                break;
+            case ID_DIVERSION_USED:
+                diversionUsed[seg] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
@@ -188,7 +208,7 @@ public class PeriodATM {
     private void setRMUsed(Boolean value, int seg) {
         rampMeteringUsed[seg] = value;
     }
-    
+
     public void setRMType(int value, int seg) {
         rampMeteringType[seg] = value;
         if (value == ID_RM_TYPE_USER || value == ID_RM_TYPE_LINEAR || value == ID_RM_TYPE_FUZZY) {
@@ -210,11 +230,18 @@ public class PeriodATM {
         hsrUsed[seg] = value;
     }
 
+    public void setDiversionDuration(int value, int seg) {
+        diversionDuration[seg] = value;
+    }
+
+    public void setDiversionUsed(Boolean value, int seg) {
+        diversionUsed[seg] = value;
+    }
+
     //public void setHSRCapacity(float value, int seg) {
     //    hsrCapacity[seg] = value;
     //}
 //</editor-fold>
-
 //<editor-fold defaultstate="collapsed" desc="Getters for Fields">
     public int getPeriod() {
         return period;
@@ -235,7 +262,7 @@ public class PeriodATM {
     public Boolean getRMUsed(int seg) {
         return rampMeteringUsed[seg];
     }
-    
+
     public int getRMType(int seg) {
         return rampMeteringType[seg];
     }
@@ -252,10 +279,21 @@ public class PeriodATM {
         return hsrUsed[seg];
     }
 
+    public int getDiversionDuration(int seg) {
+        return diversionDuration[seg];
+    }
+
+    public Boolean getDiversionUsed(int seg) {
+        return diversionUsed[seg];
+    }
+
     //public float getHSRCapacity(int seg) {
     //    return hsrCapacity[seg];
     //}
 //</editor-fold>
+    public boolean diversionAvailableAtSegment(int seg) {
+        return ATMParams.diversionAtSeg[seg];
+    }
 
     private int arrayMax(int[] arr) {
         int max = -9999;

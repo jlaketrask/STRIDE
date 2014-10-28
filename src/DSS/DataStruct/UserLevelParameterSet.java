@@ -55,13 +55,6 @@ public class UserLevelParameterSet {
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
 
-    public UserLevelParameterSet() {
-        initArrays();
-        useDefaults();
-        atm = new ATMParameterSet();
-        //atm.useDefaults();
-    }
-
     public UserLevelParameterSet(Seed seed) {
         //initArrays();
         if (seed != null) {
@@ -70,7 +63,7 @@ public class UserLevelParameterSet {
             initArrays();
             useDefaults();
         }
-        atm = new ATMParameterSet();
+        atm = new ATMParameterSet(seed);
         //atm.useDefaults();
 
     }
