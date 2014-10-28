@@ -48,7 +48,6 @@ public class ATMUpdater {
                 // Assigning Ramp Metering
                 if (currATM.getRMType(seg) == PeriodATM.ID_RM_TYPE_USER) {
                     // User Specified
-                    seed.setValue(CEConst.IDS_ATDM_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_FIX, seg, currPeriod + 1);
                     atm.RM().getRampMeteringFixRate().set(currATM.getRMRate(seg), seg, currPeriod + 1);
                     atm.RM().getRampMeteringType().set(CEConst.IDS_RAMP_METERING_TYPE_FIX, seg, currPeriod + 1);
                 } else {

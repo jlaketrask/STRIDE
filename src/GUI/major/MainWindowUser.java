@@ -122,7 +122,7 @@ public class MainWindowUser extends MainWindow {
         HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
         atmHolder.put(1, new ATDMScenario[]{activeATM, null});
         activeSeed.addATDMSet(atmHolder);
-
+        
         completedRunsPeriodATM = new ArrayList();
         completedRunsATDMScen = new ArrayList();
 
