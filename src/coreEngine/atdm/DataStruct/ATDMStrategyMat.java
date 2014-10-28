@@ -5,7 +5,7 @@ import coreEngine.Helper.CEConst;
 
 /**
  *
- * @author jltrask
+ * @author Lake Trask
  */
 public class ATDMStrategyMat extends ATDMStrategy {
 

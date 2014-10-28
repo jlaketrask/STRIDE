@@ -3,6 +3,7 @@ package coreEngine.atdm.DataStruct;
 import CompressArray.CA2DFloat;
 import CompressArray.CA2DInt;
 import coreEngine.Helper.CEConst;
+import coreEngine.Helper.RMHelper;
 import java.io.Serializable;
 
 /**
@@ -23,11 +24,11 @@ public class ATDMScenario implements Serializable {
 
     private final CA2DFloat OAF;
 
-    private final CA2DInt RM;
+    private final RMHelper RM;
 
     private final CA2DInt LAF;
 
-    private boolean hasRampMetering;
+    private final CA2DInt atdmRampMeteringType;
 
     private String name;
 
@@ -45,9 +46,10 @@ public class ATDMScenario implements Serializable {
         SAF = new CA2DFloat(numSeg, numPeriod, 1);
         DAF = new CA2DFloat(numSeg, numPeriod, 1);
         OAF = new CA2DFloat(numSeg, numPeriod, 1);
-        RM = new CA2DInt(numSeg, numPeriod, 2100);
+        //RM = new CA2DInt(numSeg, numPeriod, 2100);
+        RM = new RMHelper(numSeg, numPeriod);
         LAF = new CA2DInt(numSeg, numPeriod, 0);
-        hasRampMetering = false;
+        atdmRampMeteringType = new CA2DInt(numSeg, numPeriod, CEConst.IDS_RAMP_METERING_TYPE_NONE);
     }
 
     /**
@@ -86,7 +88,7 @@ public class ATDMScenario implements Serializable {
      *
      * @return
      */
-    public CA2DInt RM() {
+    public RMHelper RM() {
         return RM;
     }
 
@@ -146,19 +148,7 @@ public class ATDMScenario implements Serializable {
         this.status = status;
     }
 
-    /**
-     *
-     * @param val
-     */
-    public void setRampMetering(boolean val) {
-        this.hasRampMetering = val;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean hasRampMetering() {
-        return this.hasRampMetering;
+    public CA2DInt getRampMeteringType() {
+        return atdmRampMeteringType;
     }
 }

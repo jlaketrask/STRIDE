@@ -360,8 +360,8 @@ public class ScenarioInfo implements Serializable {
         }
         updateName();
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Has event functions">
     /**
      * Whether this scenario has weather event
@@ -585,8 +585,8 @@ public class ScenarioInfo implements Serializable {
         detail = " Seed Demand Multiplier: " + this.demandMultiplier + " ";
         updateName();
     }
-
     //</editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Getter for number of weather events
@@ -1228,12 +1228,12 @@ public class ScenarioInfo implements Serializable {
         }
 
         if (atdmPlan.hasRampMetering()) {
-            tempATDMScenario.setRampMetering(true);
-            tempATDMScenario.RM().deepCopyFrom(atdmPlan.getRMRate());
+            tempATDMScenario.RM().setGlobalRMType(CEConst.IDS_RAMP_METERING_TYPE_FIX);
+            tempATDMScenario.RM().getRampMeteringFixRate().deepCopyFrom(atdmPlan.getRMRate());
         }
         return tempATDMScenario;
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="ATDMScenario Generation for ML">
     /**
@@ -1694,7 +1694,7 @@ public class ScenarioInfo implements Serializable {
 
         // No hard shoulder running for Managed Lanes.
         // No ramp metering for Managed Lanes
-        tempATDMScenario.setRampMetering(false);
+        tempATDMScenario.RM().setGlobalRMType(CEConst.IDS_RAMP_METERING_TYPE_NONE);
 
         //if (atdmPlan.hasRampMetering()) {
         //    tempATDMScenario.setRampMetering(true);
@@ -1703,8 +1703,8 @@ public class ScenarioInfo implements Serializable {
         //System.out.println("Sucessfully Created ML ATDM");
         return tempATDMScenario;
     }
-//</editor-fold>
-//</editor-fold>
+    //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Deprecated original ATDM without diversion for incidents">
     /**
@@ -2234,7 +2234,7 @@ public class ScenarioInfo implements Serializable {
         }
 
         if (atdmPlan.hasRampMetering()) {
-            tempATDMScenario.RM().deepCopyFrom(atdmPlan.getRMRate());
+            //tempATDMScenario.RM().deepCopyFrom(atdmPlan.getRMRate());
         }
         return tempATDMScenario;
     }

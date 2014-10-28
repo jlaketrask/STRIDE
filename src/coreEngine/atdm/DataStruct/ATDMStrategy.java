@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author jltrask
+ * @author Lake Trask
  */
 public class ATDMStrategy implements Serializable, Cloneable {
 

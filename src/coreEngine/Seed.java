@@ -5,6 +5,7 @@ import coreEngine.Helper.CEDate;
 import coreEngine.Helper.CEHelper;
 import coreEngine.Helper.CETime;
 import coreEngine.Helper.FacilitySummary;
+import coreEngine.Helper.RMHelper;
 import coreEngine.atdm.DataStruct.ATDMDatabase;
 import coreEngine.atdm.DataStruct.ATDMScenario;
 import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
@@ -73,13 +74,13 @@ public class Seed implements Serializable {
      */
     private boolean inFreeFlowSpeedKnown = true;
     /**
-     * Whether user defined ramp metering is used
+     * User defined ramp metering information for general purpose segments
      */
-    //private boolean inRampMeteringUsed = false;
+    private RMHelper rampMeteringGP;
     /**
-     * Whether adaptive ramp metering is used
+     * User defined ramp metering information for managed lanes segments
      */
-    private boolean inAdaptiveRampMeteringUsed = false;
+    private RMHelper rampMeteringML;
     /**
      * Facility wide jam density, pc/mi/ln
      */
@@ -514,8 +515,8 @@ public class Seed implements Serializable {
     int getATDMRM(int scen, int atdm, int seg, int period, int segType) {
         return atdm < 0 ? 2100
                 : segType == CEConst.SEG_TYPE_GP
-                        ? ATDMSets.get(atdm).get(scen)[0].RM().get(seg, period)
-                        : ATDMSets.get(atdm).get(scen)[1].RM().get(seg, period);
+                        ? ATDMSets.get(atdm).get(scen)[0].RM().getRampMeteringFixRate().get(seg, period)
+                        : ATDMSets.get(atdm).get(scen)[1].RM().getRampMeteringFixRate().get(seg, period);
     }
 
     /**
@@ -1079,9 +1080,11 @@ public class Seed implements Serializable {
         calNumPeriods();
 
         GPSegments = generateSegments(numSegment, inNumPeriod, CEConst.SEG_TYPE_GP);
+        rampMeteringGP = new RMHelper(this);
 
         if (inManagedLaneUsed) {
             MLSegments = generateSegments(numSegment, inNumPeriod, CEConst.SEG_TYPE_ML);
+            rampMeteringML = new RMHelper(this);
             connectGPAndMLSegments();
         } else {
             MLSegments = null;
@@ -1167,8 +1170,11 @@ public class Seed implements Serializable {
      */
     public String addSegment(int index, int num) {
         _addSegment(index, num, GPSegments, CEConst.SEG_TYPE_GP);
+        getRampMetering(0, -1, CEConst.SEG_TYPE_GP).addSegment(index, num);
+
         if (inManagedLaneUsed) {
             _addSegment(index, num, MLSegments, CEConst.SEG_TYPE_ML);
+            getRampMetering(0, -1, CEConst.SEG_TYPE_ML).addSegment(index, num);
             connectGPAndMLSegments();
         }
         fireDataChanged(CHANGE_SEED);
@@ -1235,8 +1241,10 @@ public class Seed implements Serializable {
     public String delSegment(int fromIndex, int toIndex) {
         int num = toIndex - fromIndex + 1;
         _delSegment(fromIndex, toIndex, GPSegments);
+        getRampMetering(0, -1, CEConst.SEG_TYPE_GP).removeSegment(fromIndex, toIndex - fromIndex + 1);
         if (inManagedLaneUsed) {
             _delSegment(fromIndex, toIndex, MLSegments);
+            getRampMetering(0, -1, CEConst.SEG_TYPE_ML).removeSegment(fromIndex, toIndex - fromIndex + 1);
         }
         fireDataChanged(CHANGE_SEED);
         return num + (num > 1 ? " segments " : " segment ") + "deleted";
@@ -1318,9 +1326,21 @@ public class Seed implements Serializable {
                     _addPeriod(segment, numPeriodToBeAdded, isAtBeginning);
                 }
 
+                if (isAtBeginning) {
+                    getRampMetering(0, -1, CEConst.SEG_TYPE_GP).addPeriod(0, numPeriodToBeAdded);
+                } else {
+                    getRampMetering(0, -1, CEConst.SEG_TYPE_GP).addPeriod(inNumPeriod, numPeriodToBeAdded);
+                }
+
                 if (inManagedLaneUsed) {
                     for (GPMLSegment segment : MLSegments) {
                         _addPeriod(segment, numPeriodToBeAdded, isAtBeginning);
+                    }
+
+                    if (isAtBeginning) {
+                        getRampMetering(0, -1, CEConst.SEG_TYPE_ML).addPeriod(0, numPeriodToBeAdded);
+                    } else {
+                        getRampMetering(0, -1, CEConst.SEG_TYPE_ML).addPeriod(inNumPeriod, numPeriodToBeAdded);
                     }
                 }
 
@@ -1367,8 +1387,6 @@ public class Seed implements Serializable {
                 segment.inUOAF.add(0, segment.inUOAF.get(0));
                 segment.inUDAF.add(0, segment.inUDAF.get(0));
                 segment.inUSAF.add(0, segment.inUSAF.get(0));
-
-                segment.inRM_veh.add(0, segment.inRM_veh.get(0));
             }
         } else {
             for (int count = 0; count < numPeriodToBeAdded; count++) {
@@ -1393,8 +1411,6 @@ public class Seed implements Serializable {
                 segment.inUOAF.add(segment.inUOAF.get(0));
                 segment.inUDAF.add(segment.inUDAF.get(0));
                 segment.inUSAF.add(segment.inUSAF.get(0));
-
-                segment.inRM_veh.add(segment.inRM_veh.get(0));
             }
         }
     }
@@ -1421,9 +1437,21 @@ public class Seed implements Serializable {
                     _delPeriod(segment, numPeriodToBeDeleted, isFromBeginning);
                 }
 
+                if (isFromBeginning) {
+                    getRampMetering(0, -1, CEConst.SEG_TYPE_GP).removePeriod(0, numPeriodToBeDeleted);
+                } else {
+                    getRampMetering(0, -1, CEConst.SEG_TYPE_GP).removePeriod(inNumPeriod, numPeriodToBeDeleted);
+                }
+
                 if (inManagedLaneUsed) {
                     for (GPMLSegment segment : MLSegments) {
                         _delPeriod(segment, numPeriodToBeDeleted, isFromBeginning);
+                    }
+
+                    if (isFromBeginning) {
+                        getRampMetering(0, -1, CEConst.SEG_TYPE_ML).removePeriod(0, numPeriodToBeDeleted);
+                    } else {
+                        getRampMetering(0, -1, CEConst.SEG_TYPE_ML).removePeriod(inNumPeriod, numPeriodToBeDeleted);
                     }
                 }
 
@@ -1470,8 +1498,6 @@ public class Seed implements Serializable {
                 segment.inUOAF.remove(0);
                 segment.inUDAF.remove(0);
                 segment.inUSAF.remove(0);
-
-                segment.inRM_veh.remove(0);
             }
         } else {
             for (int count = 0; count < numPeriodToBeDeleted; count++) {
@@ -1496,8 +1522,6 @@ public class Seed implements Serializable {
                 segment.inUOAF.remove(inNumPeriod);
                 segment.inUDAF.remove(inNumPeriod);
                 segment.inUSAF.remove(inNumPeriod);
-
-                segment.inRM_veh.remove(inNumPeriod);
             }
         }
     }
@@ -1786,7 +1810,7 @@ public class Seed implements Serializable {
 
         for (int period = 0; period < inNumPeriod; period++) {
 
-            if (isUnderSatGP(period)) {
+            if (false) {
                 //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
                     segment.runUndersaturated(scen, atdm, period);
@@ -1808,7 +1832,7 @@ public class Seed implements Serializable {
             }
 
             if (inManagedLaneUsed) {
-                if (isUnderSatML(period)) {
+                if (false) {
                     //run under sat for this period
                     for (GPMLSegment segment : MLSegments) {
                         segment.runUndersaturated(scen, atdm, period);
@@ -2419,11 +2443,11 @@ public class Seed implements Serializable {
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
-                    GPSegments.get(seg).inRM_veh.set(period, Integer.parseInt(value.toString()));
+                    getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_RAMP_METERING_TYPE:
-                    GPSegments.get(seg).inRampMeteringType.set(period, Integer.parseInt(value.toString()));
+                    getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().set(Integer.parseInt(value.toString()), seg, period);
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_OFF_RAMP_SIDE:
@@ -2610,7 +2634,7 @@ public class Seed implements Serializable {
                     break;
                 case CEConst.IDS_GP_ATDM_RM:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen)[0].RM().set(Integer.parseInt(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].RM().getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
@@ -2650,13 +2674,6 @@ public class Seed implements Serializable {
                         fireDataChanged(CHANGE_ATDM);
                     }
                     break;
-//                case CEConst.IDS_ATDM_RM_ML:
-//                    if (atdm >= 0) {
-//                        ATDMSets.get(atdm).get(scen)[1].RM().set(Integer.parseInt(value.toString()), seg, period);
-//                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
-//                        fireDataChanged(CHANGE_ATDM);
-//                    }
-//                    break;
 
                 case CEConst.IDS_START_TIME:
                     if (GPSegments == null && MLSegments == null) {
@@ -2955,7 +2972,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
                     return GPSegments.get(seg).inOnFFS.get(period);
                 case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
-                    return GPSegments.get(seg).inRM_veh.get(period);
+                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().get(seg, period);
                 case CEConst.IDS_OFF_RAMP_SIDE:
                     return GPSegments.get(seg).inOffSide;
                 case CEConst.IDS_NUM_OFF_RAMP_LANES:
@@ -2977,7 +2994,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
                     return GPSegments.get(seg).inRRDemand_veh.get(period);
                 case CEConst.IDS_RAMP_METERING_TYPE:
-                    return GPSegments.get(seg).inRampMeteringType.get(period);
+                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().get(seg, period);
 
                 case CEConst.IDS_TYPE_USED:
                     checkInBuffer(scen, atdm);
@@ -3020,8 +3037,7 @@ public class Seed implements Serializable {
                     return MLSegments.get(seg).inOnDemand_veh.get(period);
                 case CEConst.IDS_ML_ON_RAMP_FREE_FLOW_SPEED:
                     return MLSegments.get(seg).inOnFFS.get(period);
-                case CEConst.IDS_ML_ON_RAMP_METERING_RATE:
-                    return MLSegments.get(seg).inRM_veh.get(period);
+
                 case CEConst.IDS_ML_OFF_RAMP_SIDE:
                     return MLSegments.get(seg).inOffSide;
                 case CEConst.IDS_ML_NUM_OFF_RAMP_LANES:
@@ -4000,7 +4016,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ML_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ML_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ML_ON_RAMP_METERING_RATE:
                 case CEConst.IDS_ML_OFF_RAMP_SIDE:
                 case CEConst.IDS_ML_NUM_OFF_RAMP_LANES:
                 case CEConst.IDS_ML_OFF_RAMP_DEMAND_VEH:
@@ -4169,7 +4184,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_ON_RAMP_SIDE:
                 case CEConst.IDS_ML_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ML_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ML_ON_RAMP_METERING_RATE:
                 case CEConst.IDS_ML_ON_RAMP_CAPACITY:
                 case CEConst.IDS_ML_ON_RAMP_DELAY:
                 case CEConst.IDS_ML_ON_QUEUE_VEH:
@@ -4334,7 +4348,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ML_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ML_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ML_ON_RAMP_FREE_FLOW_SPEED:
-                case CEConst.IDS_ML_ON_RAMP_METERING_RATE:
                 case CEConst.IDS_ML_OFF_RAMP_SIDE:
                 case CEConst.IDS_ML_NUM_OFF_RAMP_LANES:
                 case CEConst.IDS_ML_OFF_RAMP_DEMAND_VEH:
@@ -4604,8 +4617,6 @@ public class Seed implements Serializable {
                 //Boolean
                 case CEConst.IDS_FFS_KNOWN:
                     return Boolean.toString(inFreeFlowSpeedKnown);
-                case CEConst.IDS_ADAPTIVE_RM_USED:
-                    return Boolean.toString(inAdaptiveRampMeteringUsed);
                 case CEConst.IDS_MANAGED_LANE_USED:
                     return Boolean.toString(inManagedLaneUsed);
 
@@ -5448,6 +5459,22 @@ public class Seed implements Serializable {
      */
     public void setTTI_Value(float[] TTI_Value) {
         this.TTI_Value = TTI_Value;
+    }
+
+    /**
+     * Getter for comprehensive ramp metering information
+     *
+     * @param scen scenario index
+     * @param atdm ATDM index
+     * @param segType segment GP/ML type
+     * @return comprehensive ramp metering information
+     */
+    public RMHelper getRampMetering(int scen, int atdm, int segType) {
+        if (atdm < 0 || getATDMSets().get(atdm) == null || getATDMSets().get(atdm).get(scen) == null || ATDMSets.get(atdm).get(scen)[segType].RM() == null) {
+            return segType == CEConst.SEG_TYPE_GP ? rampMeteringGP : rampMeteringML;
+        } else {
+            return ATDMSets.get(atdm).get(scen)[segType].RM();
+        }
     }
     // </editor-fold>
 

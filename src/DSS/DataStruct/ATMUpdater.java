@@ -49,12 +49,11 @@ public class ATMUpdater {
                 if (currATM.getRMType(seg) == PeriodATM.ID_RM_TYPE_USER) {
                     // User Specified
                     seed.setValue(CEConst.IDS_ATDM_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_FIX, seg, currPeriod + 1);
-                    atm.RM().set(currATM.getRMRate(seg), seg, currPeriod + 1);
-                    atm.setRampMetering(true);
+                    atm.RM().getRampMeteringFixRate().set(currATM.getRMRate(seg), seg, currPeriod + 1);
+                    atm.RM().getRampMeteringType().set(CEConst.IDS_RAMP_METERING_TYPE_FIX, seg, currPeriod + 1);
                 } else {
                     // Use adaptive
-                    System.out.println("Using adaptive.");
-                    seed.setValue(CEConst.IDS_RAMP_METERING_TYPE, CEConst.IDS_RAMP_METERING_TYPE_LINEAR, seg, currPeriod + 1);
+                    atm.RM().getRampMeteringType().set(CEConst.IDS_RAMP_METERING_TYPE_LINEAR, seg, currPeriod + 1);
                 }
 
                 if (currATM.getRMDuration(seg) > 1) {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author jltrask
+ * @author Lake Trask
  */
 public class ATDMDatabase implements Serializable {
 

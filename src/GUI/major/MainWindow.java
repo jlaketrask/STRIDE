@@ -124,8 +124,10 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
-
-        userParams = new UserLevelParameterSet(activeSeed);
+        
+        if (activeSeed != null) {
+            userParams = new UserLevelParameterSet(activeSeed);
+        }
 
     }
 

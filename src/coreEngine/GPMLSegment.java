@@ -207,11 +207,11 @@ public class GPMLSegment implements Serializable {
     /**
      * Ramp metering fix rate vph
      */
-    ArrayList<Integer> inRM_veh;
+    //ArrayList<Integer> inRM_veh;
     /**
      * Ramp metering type
      */
-    ArrayList<Integer> inRampMeteringType;
+    //ArrayList<Integer> inRampMeteringType;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="MANAGED LANE ADDITIONAL INPUT DATA">
@@ -443,8 +443,6 @@ public class GPMLSegment implements Serializable {
         inUDAF = CEHelper.float_1D(inNumPeriod, 1); //user densination demand adjustment factor
         inUSAF = CEHelper.float_1D(inNumPeriod, 1); //user free flow speed adjustment factor
 
-        inRM_veh = CEHelper.int_1D(inNumPeriod, 2100); //ramp metering rate vph
-        inRampMeteringType = CEHelper.int_1D(inNumPeriod, CEConst.IDS_RAMP_METERING_TYPE_NONE); //ramp metering type
         inGPCrossWeaveVolume = CEHelper.int_1D(inNumPeriod, 1);
     }
 
@@ -621,12 +619,13 @@ public class GPMLSegment implements Serializable {
      */
     private void calRM(int scen, int atdm) {
         if (inGPMLType == CEConst.SEG_TYPE_GP) {
-            if (atdm < 0 || (seed.getATDMSets().get(atdm).get(scen) != null && !seed.getATDMSets().get(atdm).get(scen)[0].hasRampMetering())) {
-                for (int period = 0; period < inNumPeriod; period++) {
-                    scenRM_veh[period] = inRM_veh.get(period);
-                }
-            } else {
-                for (int period = 0; period < inNumPeriod; period++) {
+            for (int period = 0; period < inNumPeriod; period++) {
+                if (atdm < 0
+                        || (seed.getATDMSets().get(atdm).get(scen) != null
+                        && seed.getRampMetering(scen, atdm, inGPMLType).getRampMeteringType().get(inIndex, period) == CEConst.IDS_RAMP_METERING_TYPE_NONE)) {
+                    scenRM_veh[period] = seed.getRampMetering(scen, atdm, inGPMLType).getRampMeteringFixRate().get(inIndex, period);
+                    //inRM_veh.get(period);
+                } else {
                     //ATDM RM override seed RM
                     scenRM_veh[period] = seed.getATDMRM(scen, atdm, inIndex, period, inGPMLType);
                 }
@@ -879,17 +878,17 @@ public class GPMLSegment implements Serializable {
                     case CEConst.SEG_TYPE_ONR:
                         scenType[period] = inUpSeg.inMainlineNumLanes.get(period)
                                 <= inMainlineNumLanes.get(period) - inOnNumLanes.get(period)
-                                ? CEConst.SEG_TYPE_ONR_B : inType;
+                                        ? CEConst.SEG_TYPE_ONR_B : inType;
                         break;
                     case CEConst.SEG_TYPE_OFR:
                         scenType[period] = inDownSeg.inMainlineNumLanes.get(period)
                                 <= inMainlineNumLanes.get(period) - inOffNumLanes.get(period)
-                                ? CEConst.SEG_TYPE_OFR_B : inType;
+                                        ? CEConst.SEG_TYPE_OFR_B : inType;
                         break;
                     case CEConst.SEG_TYPE_W:
                         scenType[period]
                                 = inShort_ft > funcMaxShort(period)
-                                ? CEConst.SEG_TYPE_W_B : inType;
+                                        ? CEConst.SEG_TYPE_W_B : inType;
                         break;
                     default:
                         System.out.println("Warning: calType - Invalid Type");
@@ -1217,10 +1216,10 @@ public class GPMLSegment implements Serializable {
         scenMainlineVolume_veh[period] = scenMainlineDemand_veh[period];
         scenOnVolume_veh[period]
                 = inType == CEConst.SEG_TYPE_ONR || inType == CEConst.SEG_TYPE_W || inType == CEConst.SEG_TYPE_ACS
-                ? scenOnDemand_veh[period] : 0;
+                        ? scenOnDemand_veh[period] : 0;
         scenOffVolume_veh[period]
                 = inType == CEConst.SEG_TYPE_OFR || inType == CEConst.SEG_TYPE_W || inType == CEConst.SEG_TYPE_ACS
-                ? scenOffDemand_veh[period] : 0;
+                        ? scenOffDemand_veh[period] : 0;
 
         scenVC[period] = scenMainlineVolume_veh[period] / scenMainlineCapacity_veh[period];
         if (scenVC[period] > scenMaxVC) {
@@ -2267,7 +2266,7 @@ public class GPMLSegment implements Serializable {
             MI[step] = funcMI(period, step);
             if (inDownSeg != null && (inDownSeg.inType == CEConst.SEG_TYPE_ONR || inDownSeg.inType == CEConst.SEG_TYPE_W || inDownSeg.inType == CEConst.SEG_TYPE_ACS)) {
                 //on-ramp calculation
-                inDownSeg.ONRF[step] = inDownSeg.funcONRF(period, step);
+                inDownSeg.ONRF[step] = inDownSeg.funcONRF(scen, atdm, period, step);
             }
 
             //Equation 25-6 HCM Page 25-22
@@ -2843,12 +2842,14 @@ public class GPMLSegment implements Serializable {
      * Calculate ONRO for a particular step in a particular period in a
      * particular scenario
      *
+     * @param scen scenario index
+     * @param atdm ATDM index
      * @param period analysis period index (0 is the first analysis period)
      * @param step time step index (0 is the first step)
      * @return ONRO
      */
-    private float funcONRO(int period, int step) {
-        scenRM_veh[period] = funcRampMetering(period, step);
+    private float funcONRO(int scen, int atdm, int period, int step) {
+        scenRM_veh[period] = funcRampMetering(scen, atdm, period, step);
 
         //Equation 25-15 HCM Page 25-26
         float result = Math.min(scenRM_veh[period], scenOnCapacity_veh[period]) / T;//1 and 2
@@ -2890,15 +2891,17 @@ public class GPMLSegment implements Serializable {
      * Calculate ONRF for a particular step in a particular period in a
      * particular scenario
      *
+     * @param scen scenario index
+     * @param atdm ATDM index
      * @param period analysis period index (0 is the first analysis period)
      * @param step time step index (0 is the first step)
      * @return ONRF
      */
-    private float funcONRF(int period, int step) {
+    private float funcONRF(int scen, int atdm, int period, int step) {
         if (inType == CEConst.SEG_TYPE_ONR || inType == CEConst.SEG_TYPE_W || inType == CEConst.SEG_TYPE_ACS) {
             float ONRI = funcONRI(period, step);
             //float ONRO = funcONRO( period, step);
-            ONRO[step] = funcONRO(period, step);
+            ONRO[step] = funcONRO(scen, atdm, period, step);
             if (ONRO[step] >= ONRI) {
                 ONRQ[step] = 0f;
                 //Equation 25-16 HCM Page 25-26
@@ -3082,8 +3085,8 @@ public class GPMLSegment implements Serializable {
             //TODO use new test method for on ramp delay
             scenOnDelay[period]
                     = inType == CEConst.SEG_TYPE_ONR || inType == CEConst.SEG_TYPE_W || inType == CEConst.SEG_TYPE_ACS
-                    ? testOnRampDelay[period]
-                    : 0;
+                            ? testOnRampDelay[period]
+                            : 0;
             if (inType != CEConst.SEG_TYPE_ACS) {
                 //calculate system delay for normal segments
                 scenSysDelay[period] = scenMainlineDelay + scenOnDelay[period];
@@ -3145,8 +3148,8 @@ public class GPMLSegment implements Serializable {
         } else {
             float density_pc
                     = (scenType[period] == CEConst.SEG_TYPE_W || scenType[period] == CEConst.SEG_TYPE_ACS
-                    ? CEHelper.veh_to_pc(scenAllDensity_veh[period], inMainlineFHV[period])
-                    : scenIADensity_pc[period]);
+                            ? CEHelper.veh_to_pc(scenAllDensity_veh[period], inMainlineFHV[period])
+                            : scenIADensity_pc[period]);
             if (density_pc <= 10.5) {
                 return "A";
             } else {
@@ -3243,14 +3246,23 @@ public class GPMLSegment implements Serializable {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="USER DEFINED AND ADAPTIVE RAMP METERING">
-    private float funcRampMetering(int period, int step) {
-        switch (inRampMeteringType.get(period)) {
+    /**
+     * Calculate ramp metering for a particular step
+     *
+     * @param scen scenario index
+     * @param atdm ATDM index
+     * @param period period index
+     * @param step step index
+     * @return ramp metering for a particular step
+     */
+    private float funcRampMetering(int scen, int atdm, int period, int step) {
+        switch (seed.getRampMetering(scen, atdm, inGPMLType).getRampMeteringType().get(inIndex, period)) {
             case CEConst.IDS_RAMP_METERING_TYPE_FIX:
                 return scenRM_veh[period];
             case CEConst.IDS_RAMP_METERING_TYPE_LINEAR:
-                return funcAdaptiveRampMeteringLinear(period, step);
+                return funcAdaptiveRampMeteringLinear(scen, atdm, period, step);
             case CEConst.IDS_RAMP_METERING_TYPE_FUZZY:
-                return funcAdaptiveRampMeteringFuzzy(period, step);
+                return funcAdaptiveRampMeteringFuzzy(scen, atdm, period, step);
             default:
                 return Float.MAX_VALUE;
         }
@@ -3264,7 +3276,7 @@ public class GPMLSegment implements Serializable {
      * @param step step index
      * @return adjusted ramp metering rate
      */
-    private float funcAdaptiveRampMeteringLinear(int period, int step) {
+    private float funcAdaptiveRampMeteringLinear(int scen, int atdm, int period, int step) {
         float density = CEHelper.veh_to_pc(NV[(step + 59) % 60] / (inSegLength_ft / 5280f) / scenMainlineNumLanes[period], inMainlineFHV[period]);
         float result;
         if (density > 42) {
@@ -3286,7 +3298,7 @@ public class GPMLSegment implements Serializable {
      * @param step step index
      * @return adjusted ramp metering rate
      */
-    private float funcAdaptiveRampMeteringFuzzy(int period, int step) {
+    private float funcAdaptiveRampMeteringFuzzy(int scen, int atdm, int period, int step) {
         float density = CEHelper.veh_to_pc(NV[(step + 59) % 60] / (inSegLength_ft / 5280f) / scenMainlineNumLanes[period], inMainlineFHV[period]);
         float result;
         if (density > 42) {

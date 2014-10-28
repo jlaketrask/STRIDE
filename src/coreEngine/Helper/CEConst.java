@@ -362,11 +362,6 @@ public class CEConst {
     public final static String IDS_FFS_KNOWN = "IDS_FFS_KNOWN";
 
     /**
-     * Adaptive ramp metering used identifier
-     */
-    public final static String IDS_ADAPTIVE_RM_USED = "IDS_ADAPTIVE_RM_USED";
-
-    /**
      * Managed lane used identifier
      */
     public final static String IDS_MANAGED_LANE_USED = "IDS_MANAGED_LANE_USED";
@@ -1305,11 +1300,6 @@ public class CEConst {
      * On Ramp RV Percentage
      */
     public final static String IDS_ML_ON_RAMP_RV_PERCENTAGE = "IDS_ML_ON_RAMP_RV_PERCENTAGE";
-
-    /**
-     * On Ramp Metering Rate
-     */
-    public final static String IDS_ML_ON_RAMP_METERING_RATE = "IDS_ML_ON_RAMP_METERING_RATE";
 
     // Off Ramp Variable Column Text
     /**

@@ -8,31 +8,50 @@ import java.util.HashMap;
 
 /**
  *
- * @author jltrask
+ * @author Lake Trask
  */
 public class ATDMPlan implements Serializable, Cloneable {
 
+    /**
+     * serialVersionUID
+     */
     private static final long serialVersionUID = 7234909154855844L;
 
+    /**
+     * ATDM plan ID
+     */
     private int id;
 
+    /**
+     * ATDM plan name
+     */
     private String name;
 
+    /**
+     * ATDM plan description
+     */
     private String description;
 
+    /**
+     * Strategies contained in this ATDM plan
+     */
     private HashMap<ATDMStrategy, String> strategies;
 
-    //private CA2DInt RMRate;
+    /**
+     * Whether this ATDM plan has ramp metering
+     */
     private boolean hasRampMetering = false;
 
-    //private CA2DInt HSRMatrix;
-    //private float hardShoulderRunningCAF = 1.0f;
+    /**
+     * Whether this ATDM plan has shoulder opening
+     */
     private boolean hasShoulderOpening = false;
 
     /**
+     * Constructor of an empty ATDM plan
      *
-     * @param id
-     * @param name
+     * @param id ATDM plan ID
+     * @param name ATDM plan name
      */
     public ATDMPlan(int id, String name) {
 
@@ -47,9 +66,9 @@ public class ATDMPlan implements Serializable, Cloneable {
      * Creates a new ATDMPlan instance with all the strategies of the plan
      * specified in the constructor.
      *
-     * @param id
-     * @param name
-     * @param basePlan
+     * @param id ATDM plan ID
+     * @param name ATDM plan name
+     * @param basePlan ATDM plan to be copied from
      */
     public ATDMPlan(int id, String name, ATDMPlan basePlan) {
         this.id = id;
@@ -296,7 +315,6 @@ public class ATDMPlan implements Serializable, Cloneable {
         throw new RuntimeException("Error: No HSR Strategy assigned to plan");
     }
 
-    //</editor-fold>
     /**
      *
      * @param strategy
@@ -326,10 +344,8 @@ public class ATDMPlan implements Serializable, Cloneable {
     public boolean hasShoulderOpening() {
         return hasShoulderOpening;
     }
+    //</editor-fold>
 
-//    public void setHSRCAF(float newVal) {
-//        hardShoulderRunningCAF = newVal;
-//    }
     // <editor-fold defaultstate="collapsed" desc="Setters">
     /**
      *
@@ -355,13 +371,6 @@ public class ATDMPlan implements Serializable, Cloneable {
         this.description = newDescription;
     }
 
-//    public void setRMRate(CA2DInt newRMRate) {
-//        RMRate = newRMRate;
-//    }
-//
-//    public void setHSRMatrix(CA2DInt newHSRMatrix) {
-//        HSRMatrix = newHSRMatrix;
-//    }
     /**
      *
      * @param val
@@ -377,8 +386,8 @@ public class ATDMPlan implements Serializable, Cloneable {
     public void useShoulderOpening(boolean val) {
         hasShoulderOpening = val;
     }
-
     //</editor-fold>
+
     /**
      * Returns a deep copy of the ATDMPlan object. Same as clone (overridden and
      * implemented to be a deep copy in the source code).

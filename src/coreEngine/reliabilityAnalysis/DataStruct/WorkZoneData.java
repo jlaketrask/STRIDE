@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author jltrask
+ * @author Lake Trask
  */
 public class WorkZoneData implements Serializable {
 
