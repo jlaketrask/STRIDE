@@ -7,6 +7,7 @@ package GUI.major.ATMParamHelper;
 
 import DSS.DataStruct.ATMParameterSet;
 import GUI.major.MainWindow;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -34,6 +35,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         initComponents();
         
         this.mainWindow = parent;
+        atmParams = mainWindow.getUserLevelParameters().atm;
         
         //<editor-fold defaultstate="collapsed" desc="Spinner Listeners">
         hsr1LPct.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -106,8 +108,15 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         hsr3LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr4LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr5LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
+        
+        shoulderCB.setModel(createIncidentReductionModel(6));
+        oneLaneCB.setModel(createIncidentReductionModel(6));
+        twoLaneCB.setModel(createIncidentReductionModel(6));
+        threeLaneCB.setModel(createIncidentReductionModel(6));
+        fourLaneCB.setModel(createIncidentReductionModel(6));
 
         updateHSRSpinnersVPH();
+        updateComboBoxModels();
     }
 
     public void setATMParameters(ATMParameterSet atmParams) {
@@ -137,12 +146,28 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
         return hsrCAFs;
     }
+    
+    public int[] getIncidentReductions() {
+        int[] tempArr = new int[5];
+        tempArr[0] = shoulderCB.getSelectedIndex();
+        tempArr[1] = oneLaneCB.getSelectedIndex();
+        tempArr[2] = twoLaneCB.getSelectedIndex();
+        tempArr[3] = threeLaneCB.getSelectedIndex();
+        tempArr[4] = fourLaneCB.getSelectedIndex();
+        return tempArr;
+    }
 
     public boolean getReturnStatus() {
         return returnStatus;
     }
 
     private void doClose() {
+        if (returnStatus == true) {
+            this.atmParams.hsrCapacity = this.getHardShoulderCAFs();
+            this.atmParams.incidentDurationReduction = this.getIncidentReductions();
+        } else {
+            
+        }
         this.setVisible(false);
     }
 
@@ -254,6 +279,21 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         updateHSRSpinnersPct(5);
     }
 
+    private DefaultComboBoxModel createIncidentReductionModel(int maxNumPeriodsReduced) {
+        String[] itemArr = new String[maxNumPeriodsReduced+1]; 
+        for (int i = 0; i <= maxNumPeriodsReduced; i++) {
+            itemArr[i] = i*15+" min";
+        }
+        return new DefaultComboBoxModel(itemArr);
+    }
+    private void updateComboBoxModels() {
+        shoulderCB.setSelectedIndex(atmParams.incidentDurationReduction[0]);
+        oneLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[1]);
+        twoLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[2]);
+        threeLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[3]);
+        fourLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[4]);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -287,6 +327,21 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        shoulderCB = new javax.swing.JComboBox();
+        oneLaneCB = new javax.swing.JComboBox();
+        twoLaneCB = new javax.swing.JComboBox();
+        threeLaneCB = new javax.swing.JComboBox();
+        fourLaneCB = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("User Level ATM Parameter Defaults");
@@ -378,6 +433,73 @@ public class ATMParameterDialog extends javax.swing.JDialog {
             }
         });
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Incident Management", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 14))); // NOI18N
+
+        jPanel4.setLayout(new java.awt.GridLayout(2, 1));
+
+        jLabel3.setText("Incident Severity");
+        jPanel4.add(jLabel3);
+
+        jLabel5.setText("Duration Reduction");
+        jPanel4.add(jLabel5);
+
+        jPanel5.setLayout(new java.awt.GridLayout(2, 5));
+
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Shoulder");
+        jPanel5.add(jLabel6);
+
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("One Lane");
+        jPanel5.add(jLabel13);
+
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel15.setText("Two Lane");
+        jPanel5.add(jLabel15);
+
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("3 Lane");
+        jPanel5.add(jLabel12);
+
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel14.setText("4+ Lane");
+        jPanel5.add(jLabel14);
+
+        shoulderCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel5.add(shoulderCB);
+
+        oneLaneCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel5.add(oneLaneCB);
+
+        twoLaneCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel5.add(twoLaneCB);
+
+        threeLaneCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel5.add(threeLaneCB);
+
+        fourLaneCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel5.add(fourLaneCB);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE))
+                .addGap(0, 9, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -391,7 +513,8 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -400,8 +523,10 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(hsrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
                     .addComponent(cancelButton))
@@ -413,7 +538,6 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         this.returnStatus = true;
-        this.atmParams.hsrCapacity = this.getHardShoulderCAFs();
         doClose();
     }//GEN-LAST:event_okButtonActionPerformed
 
@@ -433,6 +557,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JComboBox fourLaneCB;
     private javax.swing.JSpinner hsr1LPct;
     private javax.swing.JSpinner hsr1LVPH;
     private javax.swing.JSpinner hsr2LPct;
@@ -448,13 +573,27 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JButton okButton;
+    private javax.swing.JComboBox oneLaneCB;
+    private javax.swing.JComboBox shoulderCB;
+    private javax.swing.JComboBox threeLaneCB;
+    private javax.swing.JComboBox twoLaneCB;
     // End of variables declaration//GEN-END:variables
 }
