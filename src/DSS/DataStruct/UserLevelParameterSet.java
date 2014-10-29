@@ -5,6 +5,7 @@
  */
 package DSS.DataStruct;
 
+import GUI.DSS.GraphicHelper.DSSGraphicHelper;
 import coreEngine.Seed;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -60,6 +61,8 @@ public class UserLevelParameterSet implements Serializable {
     private String DSSProjectName = "New Project";
     private String projectFileName;
     
+    public String SEGMENT_COLOR_STYLE;
+    
     public UserLevelParameterSet(Seed seed) {
         //initArrays();
         if (seed != null) {
@@ -70,6 +73,8 @@ public class UserLevelParameterSet implements Serializable {
         }
         atm = new ATMParameterSet(seed);
         //atm.useDefaults();
+        
+        SEGMENT_COLOR_STYLE = DSSGraphicHelper.COLOR_BY_LOS;
 
     }
 

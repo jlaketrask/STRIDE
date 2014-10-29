@@ -1,5 +1,6 @@
 package GUI.major;
 
+import GUI.DSS.GraphicHelper.DSSGraphicHelper;
 import GUI.major.graphicHelper.GraphicColorSetting;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
@@ -127,6 +128,8 @@ public class GraphicDisplay extends javax.swing.JPanel {
     private int maxNumOfMLLanes = 0;
 
     private boolean showIncidents = true;
+    
+    private String SEGMENT_COLOR_STYLE = "COLOR_BY_LOS";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="constructor and display control functions">
@@ -706,8 +709,12 @@ public class GraphicDisplay extends javax.swing.JPanel {
         if (scen < 0 || scen > seed.getValueInt(CEConst.IDS_NUM_SCEN)) {
             mainWindow.printLog("Debug: Error when draw output");
         } else {
-            g.setColor(
-                    findColor(seed.getValueString(CEConst.IDS_DENSITY_BASED_LOS, seg, period, scen, atdm).toUpperCase().substring(0, 1)));
+            if (SEGMENT_COLOR_STYLE.equalsIgnoreCase(DSSGraphicHelper.COLOR_BY_SPEED)) {
+                g.setColor(DSSGraphicHelper.getSegmentColorBySpeed(seed.getValueFloat(CEConst.IDS_SPEED, seg, period, scen, atdm)));
+            } else {
+                g.setColor(
+                        findColor(seed.getValueString(CEConst.IDS_DENSITY_BASED_LOS, seg, period, scen, atdm).toUpperCase().substring(0, 1)));
+            }
             g.fillRect(currX + 1, currY, (int) (seed.getValueInt(CEConst.IDS_SEGMENT_LENGTH_FT, seg) / 5280.0 * widthPerMile) - 1,
                     seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN_AND_ATDM, seg, period, scen, atdm) * heightPerLane);
         }
@@ -1086,6 +1093,10 @@ public class GraphicDisplay extends javax.swing.JPanel {
 
     public void showIncidents(boolean showIncidents) {
         this.showIncidents = showIncidents;
+    }
+    
+    public void setSegmentColorStyle(String colorStyle) {
+        SEGMENT_COLOR_STYLE = colorStyle;
     }
 
     /**

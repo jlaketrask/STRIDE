@@ -1,11 +1,11 @@
 New Navigator
 ML Segments can only be basic
-Color by speed, not level of service
 Add exit (return to Admin/User selection) menu item to Project menu
 Disable table settings (and menu bar) for User side
-New DSS file
 New Graphics for HSR, Message signs
 Summary:
     Description of strategies used
     Multiple ATM Runs
     "costs"
+New DSS file - Improvements? Save runs?
+Color by speed, not level of service - Color range?

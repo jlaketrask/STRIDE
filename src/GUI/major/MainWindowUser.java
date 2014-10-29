@@ -4,6 +4,7 @@ import DSS.DataStruct.ATMUpdater;
 import DSS.DataStruct.PeriodATM;
 import DSS.DataStruct.UserLevelParameterSet;
 import GUI.ATDMHelper.summary.ATDMSetSummaryDialog;
+import GUI.DSS.GraphicHelper.DSSGraphicHelper;
 import GUI.DSS.IOHelper.DSSProject;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
@@ -138,6 +139,15 @@ public class MainWindowUser extends MainWindow {
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.showIncidents(false);
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
+        
+        graphicDisplay.setSegmentColorStyle(userParams.SEGMENT_COLOR_STYLE);
+        int minFFS = 150;
+        for (int seg = 0; seg < activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+            if (activeSeed.getValueInt(CEConst.IDS_MAIN_FREE_FLOW_SPEED, seg) < minFFS) {
+                minFFS = activeSeed.getValueInt(CEConst.IDS_MAIN_FREE_FLOW_SPEED, seg);
+            }
+        }
+        DSSGraphicHelper.setColorRange(Math.round(minFFS/2.0f), minFFS);
 
         inOutCB.setSelectedIndex(1);
         inOutCB.setEnabled(false);

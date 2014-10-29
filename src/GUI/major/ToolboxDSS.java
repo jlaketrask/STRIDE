@@ -1,6 +1,7 @@
 package GUI.major;
 
 import GUI.DSS.ATMParamHelper.ATMParameterDialog;
+import GUI.DSS.ATMParamHelper.UserDisplaySettingsDialog;
 import GUI.DSS.eventHelper.IncidentEventDialog;
 import GUI.DSS.eventHelper.WeatherEventDialog;
 import GUI.DSS.eventHelper.WorkZoneDialog;
@@ -64,6 +65,7 @@ public class ToolboxDSS extends javax.swing.JPanel {
         workZoneEventButton = new javax.swing.JButton();
         cfgATMPanel = new javax.swing.JPanel();
         atmParametersButton = new javax.swing.JButton();
+        userDisplaySettingsButton = new javax.swing.JButton();
 
         newButton.setText("New");
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -265,7 +267,7 @@ public class ToolboxDSS extends javax.swing.JPanel {
         egPanel.add(workZoneEventButton);
 
         cfgATMPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Configure User Level Defaults"));
-        cfgATMPanel.setLayout(new java.awt.GridLayout(1, 0));
+        cfgATMPanel.setLayout(new java.awt.GridLayout(1, 2));
 
         atmParametersButton.setText("ATM Parameters");
         atmParametersButton.addActionListener(new java.awt.event.ActionListener() {
@@ -274,6 +276,14 @@ public class ToolboxDSS extends javax.swing.JPanel {
             }
         });
         cfgATMPanel.add(atmParametersButton);
+
+        userDisplaySettingsButton.setText("Display Settings");
+        userDisplaySettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userDisplaySettingsButtonActionPerformed(evt);
+            }
+        });
+        cfgATMPanel.add(userDisplaySettingsButton);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -286,8 +296,8 @@ public class ToolboxDSS extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(egPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cfgATMPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addComponent(cfgATMPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(117, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -428,6 +438,13 @@ public class ToolboxDSS extends javax.swing.JPanel {
         atmParamDialog.dispose();
     }//GEN-LAST:event_atmParametersButtonActionPerformed
 
+    private void userDisplaySettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userDisplaySettingsButtonActionPerformed
+        UserDisplaySettingsDialog userDisplaySettingsDialog = new UserDisplaySettingsDialog(mainWindow, true);
+        userDisplaySettingsDialog.setLocationRelativeTo(null);
+        userDisplaySettingsDialog.setVisible(true);
+        userDisplaySettingsDialog.dispose();
+    }//GEN-LAST:event_userDisplaySettingsButtonActionPerformed
+
 //    /**
 //     * Show a particular analysis period data
 //     *
@@ -529,6 +546,7 @@ public class ToolboxDSS extends javax.swing.JPanel {
 
         cfgATMPanel.setEnabled(false);
         atmParametersButton.setEnabled(false);
+        userDisplaySettingsButton.setEnabled(false);
     }
 
     /**
@@ -585,6 +603,7 @@ public class ToolboxDSS extends javax.swing.JPanel {
 
         cfgATMPanel.setEnabled(true);
         atmParametersButton.setEnabled(true);
+        userDisplaySettingsButton.setEnabled(true);
     }
 
     public void enableML() {
@@ -646,6 +665,7 @@ public class ToolboxDSS extends javax.swing.JPanel {
     private javax.swing.JToggleButton showOutputButton;
     private javax.swing.JButton singleRunButton;
     private javax.swing.JLabel timeLabel;
+    private javax.swing.JButton userDisplaySettingsButton;
     private javax.swing.JButton weatherEventButton;
     private javax.swing.JButton workZoneEventButton;
     // End of variables declaration//GEN-END:variables
