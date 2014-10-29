@@ -5,7 +5,9 @@
  */
 package GUI.major;
 
+import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
+import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -38,6 +40,15 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
         tableDisplaySegmentATM.setEditLock(lock);
         facilityATMJPanel.setEditLock(lock);
     }
+    public void updateTitle() {
+        TitledBorder border = (TitledBorder) this.getBorder();
+        int period = mainWindow.getActivePeriod();
+        border.setTitle("ATM Strategy Menus        " 
+                + "A.P. " + (period + 1) + "/" + seed.getValueInt(CEConst.IDS_NUM_PERIOD)
+                + "    "
+                + seed.getValueString(CEConst.IDS_PERIOD_TIME, 0, period));
+        this.repaint();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -48,31 +59,29 @@ public class UserIOTableDisplay extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        facilityATMJPanel = new GUI.major.FacilityATMJPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         tableDisplaySegmentATM = new GUI.major.TableDisplaySegmentATM();
-        facilityATMJPanel = new GUI.major.FacilityATMJPanel();
-
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ATM Strategy Menus", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
 
         jSplitPane1.setDividerLocation(153);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane1.setLeftComponent(tableDisplaySegmentATM);
-        jSplitPane1.setRightComponent(facilityATMJPanel);
+
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "ATM Strategy Menus", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 906, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(0, 0, 0)
+                .addComponent(tableDisplaySegmentATM, javax.swing.GroupLayout.DEFAULT_SIZE, 902, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addComponent(tableDisplaySegmentATM, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

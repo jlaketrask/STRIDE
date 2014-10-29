@@ -192,6 +192,18 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JLabel" name="timeLabel">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="-"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="periodLabel">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="A.P."/>
+      </Properties>
+    </Component>
     <Menu class="GUI.major.MenuBar" name="menuBar">
     </Menu>
   </NonVisualComponents>
@@ -286,8 +298,8 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane3" min="-2" pref="160" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="jScrollPane3" pref="160" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -340,14 +352,10 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="periodLabel" min="-2" pref="124" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="timeLabel" min="-2" pref="100" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="showInputButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="showOutputButton" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="242" max="-2" attributes="0"/>
                   <Component id="jPanel3" pref="636" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -356,8 +364,6 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="periodLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
-                  <Component id="timeLabel" alignment="3" min="-2" pref="42" max="-2" attributes="0"/>
                   <Component id="showOutputButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="showInputButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -366,18 +372,6 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="periodLabel">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="A.P."/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="timeLabel">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="-"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JToggleButton" name="showInputButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Input"/>

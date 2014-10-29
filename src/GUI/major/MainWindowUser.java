@@ -164,6 +164,7 @@ public class MainWindowUser extends MainWindow {
         graphicDisplay.setMainWindow(this);
         navigator.setMainWindow(this);
         userIOTableDisplay.activate(this);
+        userIOTableDisplay.updateTitle();
         tableDisplay.setMainWindow(this);
         tableDisplaySegmentATM.setMainWindow(this);
         tableDisplaySegmentATM.setScrollModel(tableDisplay.getScrollModel());
@@ -690,6 +691,7 @@ public class MainWindowUser extends MainWindow {
             if (activePeriod >= 0) {
                 printLog("Analysis period " + (period + 1) + " selected");
             }
+            userIOTableDisplay.updateTitle();
         }
     }
 
@@ -1175,6 +1177,8 @@ public class MainWindowUser extends MainWindow {
         lastButton = new javax.swing.JButton();
         jumpToButton = new javax.swing.JButton();
         jumpText = new javax.swing.JTextField();
+        timeLabel = new javax.swing.JLabel();
+        periodLabel = new javax.swing.JLabel();
         userIOTableDisplay = new GUI.major.UserIOTableDisplay();
         singleScenSplitPanel = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
@@ -1182,8 +1186,6 @@ public class MainWindowUser extends MainWindow {
         graphicDisplay = new GUI.major.GraphicDisplay();
         tableDisplay = new GUI.major.TableDisplay();
         jPanel2 = new javax.swing.JPanel();
-        periodLabel = new javax.swing.JLabel();
-        timeLabel = new javax.swing.JLabel();
         showInputButton = new javax.swing.JToggleButton();
         showOutputButton = new javax.swing.JToggleButton();
         jPanel3 = new javax.swing.JPanel();
@@ -1287,6 +1289,12 @@ public class MainWindowUser extends MainWindow {
         });
         APPanel.add(jumpText);
 
+        timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        timeLabel.setText("-");
+
+        periodLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        periodLabel.setText("A.P.");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1000, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1326,20 +1334,14 @@ public class MainWindowUser extends MainWindow {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
 
         singleScenSplitPanel.setLeftComponent(jPanel1);
         singleScenSplitPanel.setRightComponent(tableDisplay);
 
         jPanel2.setMaximumSize(new java.awt.Dimension(791, 42));
-
-        periodLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        periodLabel.setText("A.P.");
-
-        timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        timeLabel.setText("-");
 
         showInputButton.setText("Input");
         showInputButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1388,22 +1390,16 @@ public class MainWindowUser extends MainWindow {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showInputButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showOutputButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(242, 242, 242)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(showOutputButton)
                 .addComponent(showInputButton))
             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
