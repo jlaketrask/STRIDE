@@ -189,7 +189,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                     seriesTTIvTime_RL = new XYSeries("TTI - Before");
                     seriesTTIRL = new XYSeries("TTI - Before");
                     seriesTTIATDM = new XYSeries("TTI - After");
-                    chart1TitleString = "TTI Profile Accros Study Period";
+                    chart1TitleString = "TTI Profile Across Study Period";
                     chart1DomainString = "Analysis Period (15 min.)";
                     chart1RangeString =  "TTI";
                     chart2TitleString = "Cumulative  Distribution Function";
@@ -201,7 +201,7 @@ public class ATDMSetSummaryDialog extends javax.swing.JDialog {
                     seriesTTIvTime_RL = new XYSeries("Travel Time - Before");
                     seriesTTIRL = new XYSeries("Travel Time - Before");
                     seriesTTIATDM = new XYSeries("Travel Time - After");
-                    chart1TitleString = "Travel Time Profile Accros All Segments";
+                    chart1TitleString = "Travel Time Profile Across All Segments";
                     chart1DomainString = "Segment";
                     chart1RangeString =  "Travel Time";
                     chart2TitleString = "Cumulative  Distribution Function";

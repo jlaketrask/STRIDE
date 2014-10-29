@@ -168,9 +168,9 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         if (returnStatus == true) {
             this.atmParams.hsrCapacity = this.getHardShoulderCAFs();
             this.atmParams.incidentDurationReduction = this.getIncidentReductions();
-            this.atmParams.gp2MLDiversionEnabled = gp2MLDiversionCB.isSelected();
-            if (this.atmParams.gp2MLDiversionEnabled) {
-                this.atmParams.gp2MLDiversion = (int) gp2MLDiversionSpinner.getValue();
+            this.atmParams.GP2MLDiversionEnabled = gp2MLDiversionCB.isSelected();
+            if (this.atmParams.GP2MLDiversionEnabled) {
+                this.atmParams.GP2MLDiversion = (int) gp2MLDiversionSpinner.getValue();
             }
         } else {
             
@@ -305,8 +305,8 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         SpinnerNumberModel mlDiversionSpinnerModel = (SpinnerNumberModel) gp2MLDiversionSpinner.getModel();
         mlDiversionSpinnerModel.setMinimum(0);
         mlDiversionSpinnerModel.setMaximum(mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH));
-        mlDiversionSpinnerModel.setValue(atmParams.gp2MLDiversion);
-        gp2MLDiversionCB.setSelected(atmParams.gp2MLDiversionEnabled);
+        mlDiversionSpinnerModel.setValue(atmParams.GP2MLDiversion);
+        gp2MLDiversionCB.setSelected(atmParams.GP2MLDiversionEnabled);
         updateGP2MLDiversionPCTLabel();
         gp2MLDiversionCBActionPerformed(null);
     }

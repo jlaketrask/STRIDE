@@ -40,6 +40,27 @@ public class ATMUpdater {
     public void update(int currPeriod) {
         PeriodATM currATM = periodATM[currPeriod];
         PeriodATM nextATM = periodATM[currPeriod + 1];
+        
+        // GP to ML Demand Diversion.
+        if (currATM.getGP2MLDiversionUsed()) {
+            // Applying GP to ML Demand Diversion
+            atm.OAF().multiply(userParams.atm.getGP2MLDiversionFactor(), 0, currPeriod + 1);
+            atm.DAF().multiply(userParams.atm.getGP2MLDiversionFactor(), 0, currPeriod + 1);
+            
+            // Updating next PeriodATM Instance
+            if (currATM.getGP2MLDiversionDuration() > 1) {
+                nextATM.setGP2MLDiversionUsed(Boolean.TRUE);
+                nextATM.setGP2MLDiversionDuration(currATM.getGP2MLDiversionDuration() - 1);
+            }
+        }
+        
+        // Incident management
+        if (currATM.getIncidentManagementUsed()) {
+            // Applying Incident Management
+            
+            // Updating next PeriodATM Instance
+            
+        }
 
         for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
 
@@ -90,7 +111,29 @@ public class ATMUpdater {
                     nextATM.setHSRDuration(0, seg);
                 }
             }
-        }
+            
+            // Traffic Diversion Check
+            if (currATM.getDiversionUsed(seg)) {
+                // Assigning Traffic Diversion
+                if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_OFR) {
+                    //Off-ramp segment
+                    atm.DAF().multiply(userParams.atm.OFRdiversion[seg], seg, currPeriod + 1);
+                } else if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_ONR) {
+                    // On-Ramp Segment
+                    atm.OAF().multiply(userParams.atm.ONRdiversion[seg], seg, currPeriod + 1);
+                } else {
+                    // Weaving Segment
+                    atm.DAF().multiply(userParams.atm.OFRdiversion[seg], seg, currPeriod + 1);
+                    atm.OAF().multiply(userParams.atm.ONRdiversion[seg], seg, currPeriod + 1);
+                }
+                // Updating next PeriodATM Instance
+                if (currATM.getDiversionDuration(seg) > 1) {
+                    nextATM.setDiversionUsed(Boolean.TRUE, seg);
+                    nextATM.setDiversionDuration(currATM.getDiversionDuration(seg) - 1, seg);
+                }
+            }
+            
+        } //  End loop over all segments
 
     }
 

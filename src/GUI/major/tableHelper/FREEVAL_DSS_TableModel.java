@@ -32,7 +32,7 @@ import javax.swing.table.TableCellRenderer;
 public class FREEVAL_DSS_TableModel extends AbstractTableModel {
 
     //private String[] columnNames;
-    private final String[] rowNames = {"Enable Ramp Metering",
+    private final String[] rowNames = {"Ramp Metering",
         "Remaining Implementation Periods",
         "Ramp Metering Rate",
         "Enable Hard Shoulder Running",
@@ -258,11 +258,13 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             break;
                         case ROW_GP_TO_ML_DIVERSION_TOGGLE:
                             periodATM[currPeriod].setGP2MLDiversionUsed((boolean) value);
+                            this.fireTableCellUpdated(ROW_GP_TO_ML_DIVERSION_PERIODS, col);
                             break;
                         case ROW_GP_TO_ML_DIVERSION_PERIODS:
                             periodATM[currPeriod].setGP2MLDiversionDuration(Integer.parseInt((String) value));
                             break;
                         case ROW_INCIDENT_MANAGEMENT_TOGGLE:
+                            this.fireTableCellUpdated(ROW_INCIDENT_MANAGEMENT_PERIODS, col);
                             periodATM[currPeriod].setIncidentManagementUsed((boolean) value);
                             break;
                         case ROW_INCIDENT_MANAGEMENT_PERIODS:
@@ -456,7 +458,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
                 if (row == ROW_RM_TYPE) {
                     return rmComboBoxEditor;
-                } else if (row == ROW_HSR_TOGGLE || row == ROW_DIVERSION_TOGGLE || row == ROW_GP_TO_ML_DIVERSION_TOGGLE) {
+                } else if (row == ROW_HSR_TOGGLE || row == ROW_DIVERSION_TOGGLE || row == ROW_GP_TO_ML_DIVERSION_TOGGLE || row == ROW_INCIDENT_MANAGEMENT_TOGGLE) {
                     return checkBoxEditor;
                 } else {
                     return defaultCellEditor;
@@ -477,7 +479,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         this.mainWindow = mainWindow;
         this.seed = this.mainWindow.getActiveSeed();
         this.periodATM = mainWindow.getATMUpdater().getAllPeriodATM();
-        GP2MLDiversionEnabled = mainWindow.getUserLevelParameters().atm.gp2MLDiversionEnabled;
+        GP2MLDiversionEnabled = mainWindow.getUserLevelParameters().atm.GP2MLDiversionEnabled;
         fireTableStructureChanged();
     }
 }

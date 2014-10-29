@@ -23,8 +23,8 @@ public class ATMParameterSet {
     public float[] ONRdiversion;
     public int[] incidentDurationReduction;
     
-    public boolean gp2MLDiversionEnabled;
-    public int gp2MLDiversion;
+    public boolean GP2MLDiversionEnabled;
+    public int GP2MLDiversion;
 
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
@@ -69,7 +69,14 @@ public class ATMParameterSet {
         Arrays.fill(ONRdiversion, 0.0f);
         Arrays.fill(OFRdiversion, 0.0f);
         
-        gp2MLDiversionEnabled = false;
-        gp2MLDiversion = 0;
+        GP2MLDiversionEnabled = false;
+        GP2MLDiversion = 0;
+    }
+    
+    public float getGP2MLDiversionFactor() {
+        System.out.println(GP2MLDiversion);
+        System.out.println(seed.getValueFloat(CEConst.IDS_MAIN_DEMAND_VEH));
+        System.out.println(1.0f - GP2MLDiversion/((float) seed.getValueFloat(CEConst.IDS_MAIN_DEMAND_VEH)));
+        return 1.0f - GP2MLDiversion/((float) seed.getValueFloat(CEConst.IDS_MAIN_DEMAND_VEH));
     }
 }
