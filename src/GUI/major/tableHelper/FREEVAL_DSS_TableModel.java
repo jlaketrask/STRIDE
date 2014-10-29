@@ -38,6 +38,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         "Enable Hard Shoulder Running",
         "Remaining Implementation Periods",
         "Enable Traffic Diversion",
+        "Remaining Implementation Periods",
+        "Divert Traffic To Managed Lanes",
+        "Remaining Implementation Periods",
+        "Enable Incident Management",
         "Remaining Implementation Periods"};
     //"Hard Shoulder Capacity"};
 
@@ -47,6 +51,8 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
     private PeriodATM[] periodATM;
 
     private int currPeriod;
+    
+    private boolean GP2MLDiversionEnabled;
 
     private final CheckBoxRenderer checkBoxRenderer;
     private final DefaultTableCellRenderer centerRenderer;
@@ -72,6 +78,10 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
     private static final int ROW_HSR_IMPLEMENTATION_PERIODS = 4;
     private static final int ROW_DIVERSION_TOGGLE = 5;
     private static final int ROW_DIVERSION_PERIODS = 6;
+    private static final int ROW_GP_TO_ML_DIVERSION_TOGGLE = 7;
+    private static final int ROW_GP_TO_ML_DIVERSION_PERIODS = 8;
+    private static final int ROW_INCIDENT_MANAGEMENT_TOGGLE = 9;
+    private static final int ROW_INCIDENT_MANAGEMENT_PERIODS = 10;
     //private static final int ROW_HSR_CAPACITY = 5;
 
     public FREEVAL_DSS_TableModel(int tableType, JTable parentTable) {
@@ -80,6 +90,8 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         this.parentTable = parentTable;
         this.tableType = tableType;
         currPeriod = 0;
+        
+        GP2MLDiversionEnabled = false;
 
         checkBoxRenderer = new CheckBoxRenderer();
         checkBoxRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -178,6 +190,14 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         return periodATM[currPeriod].getDiversionUsed(col);
                     case ROW_DIVERSION_PERIODS:
                         return periodATM[currPeriod].getDiversionDuration(col);
+                    case ROW_GP_TO_ML_DIVERSION_TOGGLE:
+                        return periodATM[currPeriod].getGP2MLDiversionUsed();
+                    case ROW_GP_TO_ML_DIVERSION_PERIODS:
+                        return periodATM[currPeriod].getGP2MLDiversionDuration();
+                    case ROW_INCIDENT_MANAGEMENT_TOGGLE:
+                        return periodATM[currPeriod].getIncidentManagementUsed();
+                    case ROW_INCIDENT_MANAGEMENT_PERIODS:
+                        return periodATM[currPeriod].getIncidentManagementDuration();
                     default:
                         throw new RuntimeException("Invalid Row Index");
                 }
@@ -235,6 +255,19 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                             break;
                         case ROW_DIVERSION_PERIODS:
                             periodATM[currPeriod].setDiversionDuration(Integer.parseInt((String) value), col);
+                            break;
+                        case ROW_GP_TO_ML_DIVERSION_TOGGLE:
+                            periodATM[currPeriod].setGP2MLDiversionUsed((boolean) value);
+                            break;
+                        case ROW_GP_TO_ML_DIVERSION_PERIODS:
+                            periodATM[currPeriod].setGP2MLDiversionDuration(Integer.parseInt((String) value));
+                            break;
+                        case ROW_INCIDENT_MANAGEMENT_TOGGLE:
+                            periodATM[currPeriod].setIncidentManagementUsed((boolean) value);
+                            break;
+                        case ROW_INCIDENT_MANAGEMENT_PERIODS:
+                            periodATM[currPeriod].setIncidentManagementDuration(Integer.parseInt((String) value));
+                            break;
                         default:
                             throw new RuntimeException("Invalid Row Index");
                     }
@@ -268,6 +301,14 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         return periodATM[currPeriod].diversionAvailableAtSegment(col);
                     case ROW_DIVERSION_PERIODS:
                         return periodATM[currPeriod].getDiversionUsed(col);
+                    case ROW_GP_TO_ML_DIVERSION_TOGGLE:
+                        return (col == 0 && GP2MLDiversionEnabled);
+                    case ROW_GP_TO_ML_DIVERSION_PERIODS:
+                        return (col == 0 && periodATM[currPeriod].getGP2MLDiversionUsed());
+                    case ROW_INCIDENT_MANAGEMENT_TOGGLE:
+                        return (col  == 0);
+                    case ROW_INCIDENT_MANAGEMENT_PERIODS:
+                        return (col == 0 && periodATM[currPeriod].getIncidentManagementUsed());
                     default:
                         return false;
                 }
@@ -320,6 +361,8 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         }
                     case ROW_HSR_TOGGLE:
                     case ROW_DIVERSION_TOGGLE:
+                    case ROW_GP_TO_ML_DIVERSION_TOGGLE:
+                    case ROW_INCIDENT_MANAGEMENT_TOGGLE:
                         if (isCellEditable(row, col)) {
                             return checkBoxRenderer;
                         } else {
@@ -327,6 +370,8 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         }
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
                     case ROW_DIVERSION_PERIODS:
+                    case ROW_GP_TO_ML_DIVERSION_PERIODS:
+                    case ROW_INCIDENT_MANAGEMENT_PERIODS:
                         if (isCellEditable(row, col)) {
                             return centerRenderer;
                         } else {
@@ -411,7 +456,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
                 if (row == ROW_RM_TYPE) {
                     return rmComboBoxEditor;
-                } else if (row == ROW_HSR_TOGGLE || row == ROW_DIVERSION_TOGGLE) {
+                } else if (row == ROW_HSR_TOGGLE || row == ROW_DIVERSION_TOGGLE || row == ROW_GP_TO_ML_DIVERSION_TOGGLE) {
                     return checkBoxEditor;
                 } else {
                     return defaultCellEditor;
@@ -432,6 +477,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         this.mainWindow = mainWindow;
         this.seed = this.mainWindow.getActiveSeed();
         this.periodATM = mainWindow.getATMUpdater().getAllPeriodATM();
+        GP2MLDiversionEnabled = mainWindow.getUserLevelParameters().atm.gp2MLDiversionEnabled;
         fireTableStructureChanged();
     }
 }

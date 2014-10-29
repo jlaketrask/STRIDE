@@ -7,6 +7,8 @@ package GUI.major.ATMParamHelper;
 
 import DSS.DataStruct.ATMParameterSet;
 import GUI.major.MainWindow;
+import coreEngine.Helper.CEConst;
+import java.awt.Color;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
 
@@ -95,7 +97,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         });
 //</editor-fold>
 
-        laneMaxCapacity = 2000;
+        laneMaxCapacity = 2400;
 
         hsr1LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
         hsr2LPct.setModel(new SpinnerNumberModel(0, 0, laneMaxCapacity, 1));
@@ -113,10 +115,11 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         oneLaneCB.setModel(createIncidentReductionModel(6));
         twoLaneCB.setModel(createIncidentReductionModel(6));
         threeLaneCB.setModel(createIncidentReductionModel(6));
-        fourLaneCB.setModel(createIncidentReductionModel(6));
-
+        fourLaneCB.setModel(createIncidentReductionModel(6));     
+        
         updateHSRSpinnersVPH();
         updateComboBoxModels();
+        updateGP2MLDiversion();
     }
 
     public void setATMParameters(ATMParameterSet atmParams) {
@@ -165,6 +168,10 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         if (returnStatus == true) {
             this.atmParams.hsrCapacity = this.getHardShoulderCAFs();
             this.atmParams.incidentDurationReduction = this.getIncidentReductions();
+            this.atmParams.gp2MLDiversionEnabled = gp2MLDiversionCB.isSelected();
+            if (this.atmParams.gp2MLDiversionEnabled) {
+                this.atmParams.gp2MLDiversion = (int) gp2MLDiversionSpinner.getValue();
+            }
         } else {
             
         }
@@ -294,6 +301,21 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         fourLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[4]);
     }
     
+    private void updateGP2MLDiversion() {
+        SpinnerNumberModel mlDiversionSpinnerModel = (SpinnerNumberModel) gp2MLDiversionSpinner.getModel();
+        mlDiversionSpinnerModel.setMinimum(0);
+        mlDiversionSpinnerModel.setMaximum(mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH));
+        mlDiversionSpinnerModel.setValue(atmParams.gp2MLDiversion);
+        gp2MLDiversionCB.setSelected(atmParams.gp2MLDiversionEnabled);
+        updateGP2MLDiversionPCTLabel();
+        gp2MLDiversionCBActionPerformed(null);
+    }
+    
+    private void updateGP2MLDiversionPCTLabel() {
+        float pct = ((int) gp2MLDiversionSpinner.getValue()/((float) mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH)))*100.0f;
+        gp2MLDiversionPCTLabel.setText("("+String.format("%.1f", pct)+"%)");
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -342,6 +364,12 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         twoLaneCB = new javax.swing.JComboBox();
         threeLaneCB = new javax.swing.JComboBox();
         fourLaneCB = new javax.swing.JComboBox();
+        jPanel6 = new javax.swing.JPanel();
+        gp2MLDiversionCB = new javax.swing.JCheckBox();
+        jLabel16 = new javax.swing.JLabel();
+        gp2MLDiversionLabel = new javax.swing.JLabel();
+        gp2MLDiversionSpinner = new javax.swing.JSpinner();
+        gp2MLDiversionPCTLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("User Level ATM Parameter Defaults");
@@ -500,21 +528,72 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 .addGap(0, 9, Short.MAX_VALUE))
         );
 
+        gp2MLDiversionCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gp2MLDiversionCBActionPerformed(evt);
+            }
+        });
+
+        jLabel16.setText("GP to ML Traffic Diversion: ");
+
+        gp2MLDiversionLabel.setText("Amount of Traffic Diverted:");
+
+        gp2MLDiversionSpinner.setModel(new javax.swing.SpinnerNumberModel(200, 0, 2400, 1));
+        gp2MLDiversionSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                gp2MLDiversionSpinnerStateChanged(evt);
+            }
+        });
+
+        gp2MLDiversionPCTLabel.setText("% Label");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(gp2MLDiversionCB)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(gp2MLDiversionLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(gp2MLDiversionSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(gp2MLDiversionPCTLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(gp2MLDiversionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(gp2MLDiversionSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(gp2MLDiversionPCTLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(gp2MLDiversionCB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(hsrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(hsrPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -524,7 +603,9 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 .addComponent(hsrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -555,9 +636,29 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         divDialog.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void gp2MLDiversionSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_gp2MLDiversionSpinnerStateChanged
+        updateGP2MLDiversionPCTLabel();
+    }//GEN-LAST:event_gp2MLDiversionSpinnerStateChanged
+
+    private void gp2MLDiversionCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gp2MLDiversionCBActionPerformed
+        if (gp2MLDiversionCB.isSelected()) {
+            gp2MLDiversionSpinner.setEnabled(true);
+            gp2MLDiversionLabel.setForeground(Color.BLACK);
+            gp2MLDiversionPCTLabel.setForeground(Color.BLACK);
+        } else {
+            gp2MLDiversionSpinner.setEnabled(false);
+            gp2MLDiversionLabel.setForeground(Color.GRAY);
+            gp2MLDiversionPCTLabel.setForeground(Color.GRAY);
+        }
+    }//GEN-LAST:event_gp2MLDiversionCBActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JComboBox fourLaneCB;
+    private javax.swing.JCheckBox gp2MLDiversionCB;
+    private javax.swing.JLabel gp2MLDiversionLabel;
+    private javax.swing.JLabel gp2MLDiversionPCTLabel;
+    private javax.swing.JSpinner gp2MLDiversionSpinner;
     private javax.swing.JSpinner hsr1LPct;
     private javax.swing.JSpinner hsr1LVPH;
     private javax.swing.JSpinner hsr2LPct;
@@ -577,6 +678,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -590,6 +692,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JButton okButton;
     private javax.swing.JComboBox oneLaneCB;
     private javax.swing.JComboBox shoulderCB;

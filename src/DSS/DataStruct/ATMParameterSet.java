@@ -15,11 +15,16 @@ import java.util.Arrays;
  */
 public class ATMParameterSet {
 
+    private Seed seed;
+    
     public float hsrCapacity[];
     public Boolean[] diversionAtSeg;
     public float[] OFRdiversion;
     public float[] ONRdiversion;
     public int[] incidentDurationReduction;
+    
+    public boolean gp2MLDiversionEnabled;
+    public int gp2MLDiversion;
 
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
@@ -27,6 +32,8 @@ public class ATMParameterSet {
     private final static float[] HSR_Capacities = new float[]{0.82f, 0.88f, 0.89f, 1.0f};
 
     public ATMParameterSet(Seed seed) {
+        this.seed = seed;
+        
         hsrCapacity = new float[5];
         incidentDurationReduction = new int[5];
         if  (seed != null) {
@@ -61,5 +68,8 @@ public class ATMParameterSet {
         Arrays.fill(diversionAtSeg, Boolean.FALSE);
         Arrays.fill(ONRdiversion, 0.0f);
         Arrays.fill(OFRdiversion, 0.0f);
+        
+        gp2MLDiversionEnabled = false;
+        gp2MLDiversion = 0;
     }
 }

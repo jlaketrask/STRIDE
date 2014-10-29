@@ -35,6 +35,12 @@ public class PeriodATM {
 
     private final Boolean[] diversionUsed;
     private final int[] diversionDuration;
+    
+    private Boolean GP2MLDiversionUsed;
+    private int GP2MLDiversionDuration;
+    
+    private Boolean incidentManagementUsed;
+    private int incidentManagementDuration;
 
     private final ATMParameterSet ATMParams;
     // <editor-fold defaultstate="collapsed" desc="Indentifier Constants">
@@ -88,6 +94,12 @@ public class PeriodATM {
         Arrays.fill(diversionUsed, false);
         diversionDuration = new int[numSeg];
         Arrays.fill(diversionDuration, 0);
+        
+        GP2MLDiversionUsed = false;
+        GP2MLDiversionDuration = 0;
+        
+        incidentManagementUsed = false;
+        incidentManagementDuration = 0;
 
     }
 
@@ -237,7 +249,23 @@ public class PeriodATM {
     public void setDiversionUsed(Boolean value, int seg) {
         diversionUsed[seg] = value;
     }
+    
+    public void setGP2MLDiversionUsed(Boolean value) {
+        GP2MLDiversionUsed = value;
+    }
 
+    public void setGP2MLDiversionDuration(int GP2MLDiversionDuration) {
+        this.GP2MLDiversionDuration = GP2MLDiversionDuration;
+    }
+    
+    public void setIncidentManagementUsed(Boolean incidentManagementUsed) {
+        this.incidentManagementUsed = incidentManagementUsed;
+    }
+
+    public void setIncidentManagementDuration(int incidentManagementDuration) {
+        this.incidentManagementDuration = incidentManagementDuration;
+    }
+    
     //public void setHSRCapacity(float value, int seg) {
     //    hsrCapacity[seg] = value;
     //}
@@ -285,6 +313,22 @@ public class PeriodATM {
 
     public Boolean getDiversionUsed(int seg) {
         return diversionUsed[seg];
+    }
+    
+    public Boolean getGP2MLDiversionUsed() {
+        return GP2MLDiversionUsed;
+    }
+    
+    public int getGP2MLDiversionDuration() {
+        return GP2MLDiversionDuration;
+    }
+    
+    public Boolean getIncidentManagementUsed() {
+        return incidentManagementUsed;
+    }
+    
+    public int getIncidentManagementDuration() {
+        return incidentManagementDuration;
     }
 
     //public float getHSRCapacity(int seg) {

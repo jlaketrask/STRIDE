@@ -60,7 +60,7 @@ public class MainWindowUser extends MainWindow {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
-    private final UserLevelParameterSet userLevelParams;
+    private final UserLevelParameterSet userParams;
 
     private ATDMScenario activeATM;
     private final ATMUpdater atmUpdater;
@@ -99,19 +99,19 @@ public class MainWindowUser extends MainWindow {
         initComponents();
         activeSeed = seed;
         if (userParams != null) {
-            this.userLevelParams = userParams;
+            this.userParams = userParams;
         } else {
-            this.userLevelParams = new UserLevelParameterSet(seed);
+            this.userParams = new UserLevelParameterSet(seed);
             //this.userParams.useDefaults();
         }
         // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
         for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(activeSeed, per, userLevelParams.atm);
+            periodATM[per] = new PeriodATM(activeSeed, per, this.userParams.atm);
         }
 
-        atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM, userLevelParams);
+        atmUpdater = new ATMUpdater(activeSeed, activeATM, periodATM, this.userParams);
         if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
             // Adding blank scenario
             ArrayList<ScenarioInfo> scenarioInfos = new ArrayList();
@@ -1108,7 +1108,7 @@ public class MainWindowUser extends MainWindow {
 
         // Create new of each
         for (int per = 0; per < periodATM.length; per++) {
-            periodATM[per] = new PeriodATM(activeSeed, per, userLevelParams.atm);
+            periodATM[per] = new PeriodATM(activeSeed, per, userParams.atm);
         }
         activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
@@ -1120,6 +1120,11 @@ public class MainWindowUser extends MainWindow {
         //selectScenSeed
         selectPeriod(0);
     }
+    
+    @Override
+    public UserLevelParameterSet getUserLevelParameters() {
+        return userParams;
+    } 
 
 //    public void showATDMSummary() {
 //        if (checkATDMHasFullResult()) {
