@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package GUI.major.eventHelper;
+package GUI.DSS.eventHelper;
 
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;

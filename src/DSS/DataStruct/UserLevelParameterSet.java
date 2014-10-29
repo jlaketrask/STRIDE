@@ -6,14 +6,16 @@
 package DSS.DataStruct;
 
 import coreEngine.Seed;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  *
  * @author jltrask
  */
-public class UserLevelParameterSet {
-
+public class UserLevelParameterSet implements Serializable {
+    
+    private static final long serialVersionUID = 613281561348L;
     public ATMParameterSet atm;
 
     //<editor-fold defaultstate="collapsed" desc="Scenario Event Paremters">

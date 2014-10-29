@@ -1,9 +1,9 @@
 package GUI.major;
 
-import GUI.major.ATMParamHelper.ATMParameterDialog;
-import GUI.major.eventHelper.IncidentEventDialog;
-import GUI.major.eventHelper.WeatherEventDialog;
-import GUI.major.eventHelper.WorkZoneDialog;
+import GUI.DSS.ATMParamHelper.ATMParameterDialog;
+import GUI.DSS.eventHelper.IncidentEventDialog;
+import GUI.DSS.eventHelper.WeatherEventDialog;
+import GUI.DSS.eventHelper.WorkZoneDialog;
 
 /**
  * This class is the toolbox in main window. Most of the methods provide a link

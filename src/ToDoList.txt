@@ -1,24 +1,11 @@
-Selected Seed in Navigator doesn't hide scenario:
-    New Navigator - List of events added, etc.?
-    No navigator?
-
-Summary:
-    Multiple ATM Runs
-
+New Navigator
+ML Segments can only be basic
+Color by speed, not level of service
 Add exit (return to Admin/User selection) menu item to Project menu
- - Show dialog when closing Admin window?
-
-Disable table settings for User side
-    - Remove all demand rows
-    - Make non-editable
-    - Menubar
-
-Changes in seed file reflected in User side
-     - Change in number of periods/segments in PeriodATM
-
-Save PeriodATM to seed
-    - Change FREEVAL_DSS_TableModel setSeed funciton 
-
-Check num of periods to apply input to see if that many periods are available
-    - Show dialog
-    - Autocorrect to remaining number of periods if greater.
+Disable table settings (and menu bar) for User side
+New DSS file
+New Graphics for HSR, Message signs
+Summary:
+    Description of strategies used
+    Multiple ATM Runs
+    "costs"

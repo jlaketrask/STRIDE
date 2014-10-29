@@ -7,13 +7,16 @@ package DSS.DataStruct;
 
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  *
  * @author jltrask
  */
-public class ATMParameterSet {
+public class ATMParameterSet implements Serializable {
+    
+    private static final long serialVersionUID = 5431876531867L;
 
     private Seed seed;
     
