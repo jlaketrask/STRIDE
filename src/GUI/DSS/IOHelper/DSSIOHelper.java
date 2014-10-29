@@ -106,7 +106,7 @@ public class DSSIOHelper {
         if (option == JFileChooser.APPROVE_OPTION) {
             String openFileName = dssProjectFileChooser.getSelectedFile().getAbsolutePath();
 
-            //open seed from file
+            //open DSSProject from file
             try {
                 FileInputStream fis = new FileInputStream(openFileName);
                 GZIPInputStream gzis = new GZIPInputStream(fis);
