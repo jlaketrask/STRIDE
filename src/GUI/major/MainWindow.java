@@ -3,6 +3,8 @@ package GUI.major;
 import DSS.DataStruct.ATMParameterSet;
 import DSS.DataStruct.ScenarioEvent;
 import DSS.DataStruct.UserLevelParameterSet;
+import GUI.DSS.IOHelper.DSSIOHelper;
+import GUI.DSS.IOHelper.DSSProject;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -1097,7 +1099,7 @@ public class MainWindow extends javax.swing.JFrame {
         showOutputButton = new javax.swing.JToggleButton();
         toolboxSplitPanel = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        toolbox = new GUI.major.Toolbox();
+        toolbox = new GUI.major.ToolboxDSS();
         navigatorSplitPanel = new javax.swing.JSplitPane();
         logSplitPanel = new javax.swing.JSplitPane();
         navigator = new GUI.major.Navigator();
@@ -1515,6 +1517,31 @@ public class MainWindow extends javax.swing.JFrame {
         return isOutputEnabled;
     }
     // </editor-fold>
+    
+    public void exportDSSProject() {
+        printLog(DSSIOHelper.saveAsDSSProject(activeSeed, userParams));
+        update();
+    }
+    
+    public void openDSSProject() {
+        DSSProject dssProject  = DSSIOHelper.openDSSProject();
+        Seed seed = dssProject.getSeed();
+        if (seed != null) {
+            if (openedSeed(seed)) {
+                JOptionPane.showMessageDialog(this, "This seed file is already opened", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                addSeed(seed);
+                userParams = dssProject.getUserLevelParameterSet();
+            }
+        } else {
+            printLog("Fail to open seed");
+        }
+    }
+    
+    public void saveDSSProject() {
+        printLog(DSSIOHelper.saveDSSProject(activeSeed, userParams));
+        update();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel APPanel;
@@ -1544,7 +1571,7 @@ public class MainWindow extends javax.swing.JFrame {
     private GUI.major.TableDisplay tableDisplay;
     private javax.swing.JPanel tableDisplayOptionPanel;
     private javax.swing.JLabel timeLabel;
-    private GUI.major.Toolbox toolbox;
+    private GUI.major.ToolboxDSS toolbox;
     private javax.swing.JSplitPane toolboxSplitPanel;
     // End of variables declaration//GEN-END:variables
 }

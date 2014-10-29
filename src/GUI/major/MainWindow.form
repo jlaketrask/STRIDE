@@ -97,7 +97,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="GUI.major.Toolbox" name="toolbox">
+            <Component class="GUI.major.ToolboxDSS" name="toolbox">
             </Component>
           </SubComponents>
         </Container>

@@ -20,7 +20,7 @@ public class DSSProjectFileChooser extends JFileChooser {
         @Override
         public String getDescription() {
             // This description will be displayed in the dialog,
-            return "Seed files (*.dss)";
+            return "FREEVAL-DSS Project files (*.dss)";
         }
     }
 

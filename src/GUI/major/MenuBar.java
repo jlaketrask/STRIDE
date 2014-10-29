@@ -389,6 +389,41 @@ public class MenuBar extends JMenuBar {
         });
         settingMenu.add(createFloatingWindowItem);
         // </editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="Create Toolbox Menu">
+        toolboxMenu = new JMenu("Toolbox");
+        add(toolboxMenu);
+        
+        DSSToolboxMenu = new JMenu("FREEVAL-DSS");
+        toolboxMenu.add(DSSToolboxMenu);
+        
+        exportDSSProjectMenuItem = new JMenuItem("Export as DSS Project");
+        exportDSSProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public final void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportDSSProjectMenuItemActionPerformed(evt);
+            }
+        });
+        DSSToolboxMenu.add(exportDSSProjectMenuItem);
+        
+        openDSSProjectMenuItem = new JMenuItem("Open/Edit existing DSS Project");
+        openDSSProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public final void actionPerformed(java.awt.event.ActionEvent evt) {
+                openDSSProjectMenuItemActionPerformed(evt);
+            }
+        });
+        DSSToolboxMenu.add(openDSSProjectMenuItem);
+        
+        saveDSSProjectMenuItem = new JMenuItem("Save DSS Project");
+        saveDSSProjectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public final void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveDSSProjectMenuItemActionPerformed(evt);
+            }
+        });
+        DSSToolboxMenu.add(saveDSSProjectMenuItem);
+        //</editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="create Help menu">
         helpMenu = new JMenu("Help");
@@ -650,6 +685,20 @@ public class MenuBar extends JMenuBar {
         mainWindow.showAbout();
     }
     // </editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Toolbox menu actions">
+    private void exportDSSProjectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        mainWindow.exportDSSProject();
+    }
+    
+    private void openDSSProjectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        mainWindow.openDSSProject();
+    }
+    
+    private void saveDSSProjectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        mainWindow.saveDSSProject();
+    }
+    //</editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="setter and getters">
     /**
@@ -678,4 +727,7 @@ public class MenuBar extends JMenuBar {
     private final JMenuItem tableSettingMenuItem, graphicSettingMenuItem, createFloatingWindowItem;
 
     private final JMenuItem helpDocumentItem, aboutMenuItem;
+    
+    private final JMenu toolboxMenu, DSSToolboxMenu;
+    private final JMenuItem exportDSSProjectMenuItem, openDSSProjectMenuItem, saveDSSProjectMenuItem;
 }

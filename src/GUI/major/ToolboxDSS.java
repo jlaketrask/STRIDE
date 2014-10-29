@@ -11,14 +11,14 @@ import GUI.DSS.eventHelper.WorkZoneDialog;
  *
  * @author Shu Liu
  */
-public class Toolbox extends javax.swing.JPanel {
+public class ToolboxDSS extends javax.swing.JPanel {
 
     private MainWindow mainWindow;
 
     /**
      * Creates new form Toolbox
      */
-    public Toolbox() {
+    public ToolboxDSS() {
         initComponents();
     }
 

@@ -6,9 +6,9 @@
 package GUI.major;
 
 import DSS.DataStruct.UserLevelParameterSet;
+import GUI.DSS.IOHelper.DSSIOHelper;
+import GUI.DSS.IOHelper.DSSProject;
 import GUI.major.PasswordHelper.PassDialog;
-import GUI.seedEditAndIOHelper.SeedIOHelper;
-import coreEngine.Seed;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -147,10 +147,10 @@ public class MainWindowStart extends javax.swing.JDialog {
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void userButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userButtonActionPerformed
-        Seed seed = SeedIOHelper.openSeed();
-        if (seed != null) {
+        DSSProject dssProject = DSSIOHelper.openDSSProject();
+        if (dssProject != null) {
             this.setVisible(false);
-            MainWindowUser mainWindow = new MainWindowUser(this,seed, userLevelParams); 
+            MainWindowUser mainWindow = new MainWindowUser(this,dssProject); 
         }
     }//GEN-LAST:event_userButtonActionPerformed
 

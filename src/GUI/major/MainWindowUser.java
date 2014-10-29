@@ -4,6 +4,7 @@ import DSS.DataStruct.ATMUpdater;
 import DSS.DataStruct.PeriodATM;
 import DSS.DataStruct.UserLevelParameterSet;
 import GUI.ATDMHelper.summary.ATDMSetSummaryDialog;
+import GUI.DSS.IOHelper.DSSProject;
 import GUI.major.menuHelper.AboutDialog;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
@@ -82,10 +83,9 @@ public class MainWindowUser extends MainWindow {
      * Constructor. Creates new form mainWindow
      *
      * @param mainWindowStart
-     * @param seed
-     * @param userParams
+     * @param dssProject
      */
-    public MainWindowUser(MainWindowStart mainWindowStart, Seed seed, UserLevelParameterSet userParams) {
+    public MainWindowUser(MainWindowStart mainWindowStart, DSSProject dssProject) {
         super();
         mainWindow = this;
         this.mainWindowStart = mainWindowStart;
@@ -97,13 +97,10 @@ public class MainWindowUser extends MainWindow {
         }
 
         initComponents();
-        activeSeed = seed;
-        if (userParams != null) {
-            this.userParams = userParams;
-        } else {
-            this.userParams = new UserLevelParameterSet(seed);
-            //this.userParams.useDefaults();
-        }
+        
+        activeSeed = dssProject.getSeed();
+        this.userParams = dssProject.getUserLevelParameterSet();
+        
         // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
@@ -1168,7 +1165,7 @@ public class MainWindowUser extends MainWindow {
     private void initComponents() {
 
         navigator = new GUI.major.Navigator();
-        toolbox = new GUI.major.Toolbox();
+        toolbox = new GUI.major.ToolboxDSS();
         jScrollPane2 = new javax.swing.JScrollPane();
         toolboxSplitPanel = new javax.swing.JSplitPane();
         navigatorSplitPanel = new javax.swing.JSplitPane();
@@ -1718,7 +1715,7 @@ public class MainWindowUser extends MainWindow {
     private javax.swing.JPanel tableDisplayOptionPanel;
     private javax.swing.JButton takeActionButton;
     private javax.swing.JLabel timeLabel;
-    private GUI.major.Toolbox toolbox;
+    private GUI.major.ToolboxDSS toolbox;
     private javax.swing.JSplitPane toolboxSplitPanel;
     private GUI.major.UserIOTableDisplay userIOTableDisplay;
     // End of variables declaration//GEN-END:variables

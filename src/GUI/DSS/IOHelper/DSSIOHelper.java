@@ -34,18 +34,18 @@ public class DSSIOHelper {
             return "Failed to save";
         }
 
-        if (seed.getValueString(CEConst.IDS_SEED_FILE_NAME) == null) {
+        if (userParams.getProjectFileName() == null) {
             return saveAsDSSProject(seed, userParams);
         } else {
             //save seed to file
             try {
                 DSSProject dssProject = new DSSProject(seed, userParams);
-                FileOutputStream fos = new FileOutputStream(seed.getValueString(CEConst.IDS_SEED_FILE_NAME));
+                FileOutputStream fos = new FileOutputStream(userParams.getProjectFileName());
                 GZIPOutputStream gzos = new GZIPOutputStream(fos);
                 ObjectOutputStream oos = new ObjectOutputStream(gzos);
                 oos.writeObject(dssProject);
                 oos.close();
-                return "DSS Project saved to " + seed.getValueString(CEConst.IDS_SEED_FILE_NAME);
+                return "DSS Project saved to " + userParams.getProjectFileName();
             } catch (IOException e) {
                 e.printStackTrace();
                 return "Failed to save " + e.toString();
@@ -82,8 +82,8 @@ public class DSSIOHelper {
                 ObjectOutputStream oos = new ObjectOutputStream(gzos);
                 oos.writeObject(dssProject);
                 oos.close();
-                seed.setValue(CEConst.IDS_SEED_FILE_NAME, saveFileName);
-                return "DSS Project saved to " + seed.getValueString(CEConst.IDS_SEED_FILE_NAME);
+                userParams.setProjectFileName(saveFileName);
+                return "DSS Project saved to " + userParams.getProjectFileName();
             } catch (IOException e) {
                 e.printStackTrace();
                 return "Failed to save " + e.toString();
@@ -115,7 +115,7 @@ public class DSSIOHelper {
                 ois.close();
                 seed = dssProject.getSeed();
                 seed.resetSeedToInputOnly();
-                seed.setValue(CEConst.IDS_SEED_FILE_NAME, openFileName);
+                dssProject.getUserLevelParameterSet().setProjectFileName(openFileName);
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println(e.toString());
             }

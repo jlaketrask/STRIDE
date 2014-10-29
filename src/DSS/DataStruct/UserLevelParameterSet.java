@@ -57,6 +57,9 @@ public class UserLevelParameterSet implements Serializable {
     public final static String ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE = "ID_HSR_TYPE_PERCENT_OF_MAINLINE_LANE";
     public final static String ID_HSR_TYPE_VPH = "ID_HSR_TYPE_VPH";
 
+    private String DSSProjectName = "New Project";
+    private String projectFileName;
+    
     public UserLevelParameterSet(Seed seed) {
         //initArrays();
         if (seed != null) {
@@ -81,6 +84,22 @@ public class UserLevelParameterSet implements Serializable {
     public void setSeed(Seed seed) {
         setArraysBySeed(seed);
         updateATMParams(seed);
+    }
+
+    public String getDSSProjectName() {
+        return DSSProjectName;
+    }
+
+    public void setDSSProjectName(String DSSProjectName) {
+        this.DSSProjectName = DSSProjectName;
+    }
+
+    public String getProjectFileName() {
+        return projectFileName;
+    }
+
+    public void setProjectFileName(String projectFileName) {
+        this.projectFileName = projectFileName;
     }
     
     private void updateATMParams(Seed seed) {

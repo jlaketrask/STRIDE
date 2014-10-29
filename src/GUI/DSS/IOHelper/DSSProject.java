@@ -20,6 +20,8 @@ public class DSSProject implements Serializable {
     private final Seed seed;
     private final UserLevelParameterSet userParams;
     
+    //private String projectFileName;
+    
     public DSSProject(Seed seed, UserLevelParameterSet userParams) {
         this.seed = seed;
         this.userParams = userParams;
@@ -32,7 +34,13 @@ public class DSSProject implements Serializable {
     public UserLevelParameterSet getUserLevelParameterSet() {
         return userParams;
     }
-    
-    
+
+//    public String getProjectFileName() {
+//        return projectFileName;
+//    }
+//
+//    public void setProjectFileName(String projectFileName) {
+//        this.projectFileName = projectFileName;
+//    }  
     
 }
