@@ -8,6 +8,7 @@ package DSS.DataStruct;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.util.Arrays;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -337,6 +338,32 @@ public class PeriodATM {
 //</editor-fold>
     public boolean diversionAvailableAtSegment(int seg) {
         return ATMParams.diversionAtSeg[seg];
+    }
+    
+    public boolean checkEmpty() {
+        boolean isEmpty = true;
+        
+        for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+            if (rampMeteringUsed[seg] || hsrUsed[seg] || diversionUsed[seg]) {
+                isEmpty = false;
+                break;
+            }
+        }
+        
+        if (GP2MLDiversionUsed) {
+            isEmpty = false;
+        }
+        
+        if (incidentManagementUsed) {
+            isEmpty = false;
+        }
+        
+        if (!isEmpty) {
+            int status = JOptionPane.showConfirmDialog(null, "<HTML><Center>Warning: Currently selected strategies will be ignored.<br>"
+                    + "Proceed anyways?","Warning", JOptionPane.WARNING_MESSAGE);
+            isEmpty = (status == JOptionPane.OK_OPTION);
+        }
+        return isEmpty;
     }
 
     private int arrayMax(int[] arr) {

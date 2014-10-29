@@ -8,6 +8,7 @@ package DSS.DataStruct;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import coreEngine.atdm.DataStruct.ATDMScenario;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -137,6 +138,33 @@ public class ATMUpdater {
 
     }
 
+    public boolean validate(int currPeriod) {
+        PeriodATM currATM = periodATM[currPeriod];
+        boolean atmValid = true;
+        
+        // Checking non-continuous shoulder running
+        int numStarts = 0;
+        if (currATM.getHSRUsed(0)) {
+            numStarts++;
+        }
+        for (int seg = 1; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+            if (currATM.getHSRUsed(seg) && !currATM.getHSRUsed(seg - 1)) {
+                numStarts++;
+            }
+        }
+        if (numStarts >= 2) {
+            atmValid = false;
+        }
+        
+        if (!atmValid) {
+            int status = JOptionPane.showConfirmDialog(null, "<HTML><Center>Warning: Hard Shoulder Running is not applied over a continuous stretch of the facility<br>"
+                    + "Proceed anyways?","Warning", JOptionPane.WARNING_MESSAGE);
+            atmValid = (status == JOptionPane.OK_OPTION);
+        }
+        
+        return atmValid;
+    }
+    
     public PeriodATM[] getAllPeriodATM() {
         return periodATM;
     }

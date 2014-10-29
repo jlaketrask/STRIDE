@@ -178,6 +178,14 @@ public class MainWindowUser extends MainWindow {
         selectPeriod(activePeriod + 1);
         dssProgress += 1;
     }
+    
+    public boolean validateATM(int validationType) {
+        if (validationType == 1) {
+            return atmUpdater.validate(activePeriod);
+        } else {
+            return periodATM[activePeriod].checkEmpty();
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="FLOATING WINDOW">
     //private static final String TOOLBOX = "Toolbox";
@@ -1369,6 +1377,7 @@ public class MainWindowUser extends MainWindow {
             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        jSplitPane2.setDividerLocation(390);
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         userIOTableDisplay.setPreferredSize(new java.awt.Dimension(750, 503));
@@ -1403,7 +1412,7 @@ public class MainWindowUser extends MainWindow {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 
@@ -1427,7 +1436,7 @@ public class MainWindowUser extends MainWindow {
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                    .addComponent(singleScenSplitPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addContainerGap()))
         );
 
@@ -1445,7 +1454,7 @@ public class MainWindowUser extends MainWindow {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 836, Short.MAX_VALUE)
+                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1526,7 +1535,9 @@ public class MainWindowUser extends MainWindow {
         if (activePeriod < dssProgress) {
             showNextPeriod();
         } else if (activePeriod == dssProgress && activePeriod < activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD) - 1) {
-            proceedOnly();
+            if (validateATM(0)) {
+                proceedOnly();
+            }
         } else {
             generateSummary();
         }
@@ -1535,12 +1546,15 @@ public class MainWindowUser extends MainWindow {
     }//GEN-LAST:event_proceedOnlyButtonActionPerformed
 
     private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed
+        
         if (activePeriod == dssProgress) {
             if (this.resetReady) {
                 resetReady = false;
                 resetATM();
             } else {
-                applyATM();
+                if (validateATM(1)) {
+                    applyATM();
+                }
             }
         } else {
             selectPeriod(dssProgress);
