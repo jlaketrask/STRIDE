@@ -1,6 +1,7 @@
 package coreEngine.reliabilityAnalysis.DataStruct;
 
 import CompressArray.CA2DInt;
+import DSS.DataStruct.ScenarioEvent;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import coreEngine.atdm.DataStruct.ATDMDatabase;
@@ -161,6 +162,16 @@ public class ScenarioInfo implements Serializable {
      * ML Incident Types (0 - Shoulder closure, 1 - 1 lane closure, etc.).
      */
     private ArrayList<Integer> incidentMLEventTypes;
+
+    /**
+     * List of weather events
+     */
+    private ArrayList<ScenarioEvent> weatherEvents;
+
+    /**
+     * List of incident events
+     */
+    private ArrayList<ScenarioEvent> incidentEvents;
 
     /**
      * List of work zones.
@@ -359,6 +370,41 @@ public class ScenarioInfo implements Serializable {
             detail = detail + IncidentData.getIncidentTypeFull(incType) + ": At segment " + (segment + 1) + " starting in period " + (startPeriod + 1) + " for " + eventDuration + " period. ";
         }
         updateName();
+    }
+
+    /**
+     * Add a weather event to a scenario.
+     *
+     * @param wEvent ScenarioEvent instance of the weather event
+     */
+    public void addWeatherEvent(ScenarioEvent wEvent) {
+        if (!hasWeatherEvent) {
+            hasWeatherEvent = true;
+        }
+
+        // Updating weather event info
+        weatherEvents.add(wEvent);
+        if (weatherEvents.size() == 1) {
+            detail = detail + "\n\n Weather Events:\n  ";
+        } else {
+            detail = detail + "\n  ";
+        }
+
+        if (wEvent.getDuration() > 1) {
+            detail = detail + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + Math.min(wEvent.getDuration(), seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
+        } else {
+            detail = detail + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + wEvent.getDuration() + " period. ";
+        }
+        updateName();
+    }
+
+    /**
+     * Add an incident event to a scenario.
+     *
+     * @param incEvent
+     */
+    public void addIncidentEvent(ScenarioEvent incEvent) {
+
     }
     // </editor-fold>
 
