@@ -86,6 +86,24 @@ public abstract class ScenarioEvent implements Serializable {
     }
 
     /**
+     * Checks to see if the event is active in the input period.
+     *
+     * @param period Input period
+     * @return True if the event is active, false otherwise.
+     */
+    public boolean checkActiveInPeriod(int period) {
+        if (!hasPeriodWrapping()) {
+            return (period >= startPeriod && period <= getEndPeriod());
+        } else {
+            if (period < startPeriod) {
+                return (period <= getEndPeriod());
+            } else {
+                return true;
+            }
+        }
+    }
+
+    /**
      * Checks to see if the event overlaps with an event of the same type
      * (weather, incident, or work zone).
      *
