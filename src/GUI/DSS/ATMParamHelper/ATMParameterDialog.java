@@ -35,10 +35,10 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     public ATMParameterDialog(MainWindow parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         this.mainWindow = parent;
         atmParams = mainWindow.getUserLevelParameters().atm;
-        
+
         //<editor-fold defaultstate="collapsed" desc="Spinner Listeners">
         hsr1LPct.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -110,13 +110,13 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         hsr3LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr4LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
         hsr5LPct.setModel(new SpinnerNumberModel(50, 0, 100, 1));
-        
+
         shoulderCB.setModel(createIncidentReductionModel(6));
         oneLaneCB.setModel(createIncidentReductionModel(6));
         twoLaneCB.setModel(createIncidentReductionModel(6));
         threeLaneCB.setModel(createIncidentReductionModel(6));
-        fourLaneCB.setModel(createIncidentReductionModel(6));     
-        
+        fourLaneCB.setModel(createIncidentReductionModel(6));
+
         updateHSRSpinnersVPH();
         updateComboBoxModels();
         updateGP2MLDiversion();
@@ -149,7 +149,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
 
         return hsrCAFs;
     }
-    
+
     public int[] getIncidentReductions() {
         int[] tempArr = new int[5];
         tempArr[0] = shoulderCB.getSelectedIndex();
@@ -173,7 +173,7 @@ public class ATMParameterDialog extends javax.swing.JDialog {
                 this.atmParams.GP2MLDiversion = (int) gp2MLDiversionSpinner.getValue();
             }
         } else {
-            
+
         }
         this.setVisible(false);
     }
@@ -287,12 +287,13 @@ public class ATMParameterDialog extends javax.swing.JDialog {
     }
 
     private DefaultComboBoxModel createIncidentReductionModel(int maxNumPeriodsReduced) {
-        String[] itemArr = new String[maxNumPeriodsReduced+1]; 
+        String[] itemArr = new String[maxNumPeriodsReduced + 1];
         for (int i = 0; i <= maxNumPeriodsReduced; i++) {
-            itemArr[i] = i*15+" min";
+            itemArr[i] = i * 15 + " min";
         }
         return new DefaultComboBoxModel(itemArr);
     }
+
     private void updateComboBoxModels() {
         shoulderCB.setSelectedIndex(atmParams.incidentDurationReduction[0]);
         oneLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[1]);
@@ -300,8 +301,13 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         threeLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[3]);
         fourLaneCB.setSelectedIndex(atmParams.incidentDurationReduction[4]);
     }
-    
+
     private void updateGP2MLDiversion() {
+        if (!mainWindow.getActiveSeed().isManagedLaneUsed()) {
+            atmParams.GP2MLDiversionEnabled = false;
+            gp2MLDiversionCB.setEnabled(false);
+            gp2MLDiversionSpinner.setEnabled(false);
+        }
         SpinnerNumberModel mlDiversionSpinnerModel = (SpinnerNumberModel) gp2MLDiversionSpinner.getModel();
         mlDiversionSpinnerModel.setMinimum(0);
         mlDiversionSpinnerModel.setMaximum(mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH));
@@ -309,13 +315,16 @@ public class ATMParameterDialog extends javax.swing.JDialog {
         gp2MLDiversionCB.setSelected(atmParams.GP2MLDiversionEnabled);
         updateGP2MLDiversionPCTLabel();
         gp2MLDiversionCBActionPerformed(null);
+        if (!mainWindow.getActiveSeed().isManagedLaneUsed()) {
+            atmParams.GP2MLDiversionEnabled = false;
+        }
     }
-    
+
     private void updateGP2MLDiversionPCTLabel() {
-        float pct = ((int) gp2MLDiversionSpinner.getValue()/((float) mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH)))*100.0f;
-        gp2MLDiversionPCTLabel.setText("("+String.format("%.1f", pct)+"%)");
+        float pct = ((int) gp2MLDiversionSpinner.getValue() / ((float) mainWindow.getActiveSeed().getValueInt(CEConst.IDS_MAIN_DEMAND_VEH))) * 100.0f;
+        gp2MLDiversionPCTLabel.setText("(" + String.format("%.1f", pct) + "%)");
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
