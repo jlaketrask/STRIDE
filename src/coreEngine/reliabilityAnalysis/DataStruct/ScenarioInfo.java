@@ -470,6 +470,24 @@ public class ScenarioInfo implements Serializable {
     }
 
     /**
+     * Getter for the list of weather events for the scenario.
+     *
+     * @return List of WeatherEvent instances.
+     */
+    public ArrayList<WeatherEvent> getWeatherEventList() {
+        return weatherEvents;
+    }
+
+    /**
+     * Getter for the list of incident events for the scenario.
+     *
+     * @return List of IncidentEvent instances.
+     */
+    public ArrayList<IncidentEvent> getGPIncidentEventList() {
+        return incidentEvents_GP;
+    }
+
+    /**
      * Returns the month of the demand combination of the scenario. Indexing
      * starts at 0;
      *

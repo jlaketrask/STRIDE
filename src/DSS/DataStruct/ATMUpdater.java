@@ -8,6 +8,10 @@ package DSS.DataStruct;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import coreEngine.atdm.DataStruct.ATDMScenario;
+import coreEngine.reliabilityAnalysis.DataStruct.IncidentEvent;
+import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
+import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.JOptionPane;
 
 /**
@@ -41,28 +45,43 @@ public class ATMUpdater {
     public void update(int currPeriod) {
         PeriodATM currATM = periodATM[currPeriod];
         PeriodATM nextATM = periodATM[currPeriod + 1];
-        
+
         // GP to ML Demand Diversion.
         if (currATM.getGP2MLDiversionUsed()) {
             // Applying GP to ML Demand Diversion
             atm.OAF().multiply(userParams.atm.getGP2MLDiversionFactor(), 0, currPeriod + 1);
             atm.DAF().multiply(userParams.atm.getGP2MLDiversionFactor(), 0, currPeriod + 1);
-            
+
             // Updating next PeriodATM Instance
             if (currATM.getGP2MLDiversionDuration() > 1) {
                 nextATM.setGP2MLDiversionUsed(Boolean.TRUE);
                 nextATM.setGP2MLDiversionDuration(currATM.getGP2MLDiversionDuration() - 1);
             }
         }
-        
+
         // Incident management
         if (currATM.getIncidentManagementUsed()) {
             // Applying Incident Management
-            
+
             // Updating next PeriodATM Instance
-            
         }
 
+        // Checking for any incidents active in the next period
+        boolean activeIncident = false;
+        ArrayList<Integer> activeIncidentLocations = new ArrayList<>();
+        ScenarioInfo currScenarioInfo = seed.getRLScenarioInfo().get(1);
+        ArrayList<IncidentEvent> incidents = currScenarioInfo.getGPIncidentEventList();
+        // Checking if any incidents occur in time period
+        for (IncidentEvent inc : incidents) {
+            if (inc.checkActiveInPeriod(currPeriod + 1)) {
+                activeIncident = true;
+                activeIncidentLocations.add(inc.getSegment());
+            }
+        }
+        Collections.sort(activeIncidentLocations);
+        int finalActiveIncidentLocation = activeIncidentLocations.get(activeIncidentLocations.size() - 1);
+
+        // ONR Traffic Diversion Check
         for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
 
             // Ramp Metering Check
@@ -112,28 +131,37 @@ public class ATMUpdater {
                     nextATM.setHSRDuration(0, seg);
                 }
             }
-            
-            // Traffic Diversion Check
-            if (currATM.getDiversionUsed(seg)) {
-                // Assigning Traffic Diversion
-                if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_OFR) {
-                    //Off-ramp segment
-                    atm.DAF().multiply(userParams.atm.OFRdiversion[seg], seg, currPeriod + 1);
-                } else if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_ONR) {
-                    // On-Ramp Segment
-                    atm.OAF().multiply(userParams.atm.ONRdiversion[seg], seg, currPeriod + 1);
-                } else {
-                    // Weaving Segment
-                    atm.DAF().multiply(userParams.atm.OFRdiversion[seg], seg, currPeriod + 1);
-                    atm.OAF().multiply(userParams.atm.ONRdiversion[seg], seg, currPeriod + 1);
+
+            if (activeIncident) {
+                // Assigning OFR Traffic Diversion to all downstream segments up to incident
+                if (currATM.getOFRDiversionUsed(seg)) {
+                    for (int segIdx = seg; segIdx <= finalActiveIncidentLocation; segIdx++) {
+                        if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_OFR
+                                || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
+                            //Off-ramp segment
+                            atm.DAF().multiply((1.0f + userParams.atm.OFRdiversion[seg]), segIdx, currPeriod + 1);
+                        }
+                    }
                 }
-                // Updating next PeriodATM Instance
-                if (currATM.getDiversionDuration(seg) > 1) {
-                    nextATM.setDiversionUsed(Boolean.TRUE, seg);
-                    nextATM.setDiversionDuration(currATM.getDiversionDuration(seg) - 1, seg);
+
+                // Assigning ONR diversion if ONR is upstream of or at most downstream active incident
+                if (currATM.getONRDiversionUsed(seg)) {
+                    atm.OAF().multiply((1.0f - userParams.atm.ONRdiversion[seg]), seg, currPeriod + 1);
                 }
             }
-            
+
+            // Updating next PeriodATM Instance
+            // Downstream OFR diversion
+            if (currATM.getOFRDiversionDuration(seg) > 1) {
+                nextATM.setOFRDiversionUsed(Boolean.TRUE, seg);
+                nextATM.setOFRDiversionDuration(currATM.getOFRDiversionDuration(seg) - 1, seg);
+            }
+            // ONR diversion
+            if (currATM.getONRDiversionDuration(seg) > 1) {
+                nextATM.setONRDiversionUsed(Boolean.TRUE, seg);
+                nextATM.setONRDiversionDuration(currATM.getONRDiversionDuration(seg) - 1, seg);
+            }
+
         } //  End loop over all segments
 
     }
@@ -141,7 +169,7 @@ public class ATMUpdater {
     public boolean validate(int currPeriod) {
         PeriodATM currATM = periodATM[currPeriod];
         boolean atmValid = true;
-        
+
         // Checking non-continuous shoulder running
         int numStarts = 0;
         if (currATM.getHSRUsed(0)) {
@@ -155,16 +183,16 @@ public class ATMUpdater {
         if (numStarts >= 2) {
             atmValid = false;
         }
-        
+
         if (!atmValid) {
             int status = JOptionPane.showConfirmDialog(null, "<HTML><Center>Warning: Hard Shoulder Running is not applied over a continuous stretch of the facility<br>"
-                    + "Proceed anyways?","Warning", JOptionPane.WARNING_MESSAGE);
+                    + "Proceed anyways?", "Warning", JOptionPane.WARNING_MESSAGE);
             atmValid = (status == JOptionPane.OK_OPTION);
         }
-        
+
         return atmValid;
     }
-    
+
     public PeriodATM[] getAllPeriodATM() {
         return periodATM;
     }

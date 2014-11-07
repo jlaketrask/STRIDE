@@ -242,6 +242,24 @@ public class IncidentEvent extends ScenarioEvent {
         return false;
     }
 
+    /**
+     * Checks to see if the incident is active in the input period.
+     *
+     * @param period Input period
+     * @return True if the incident is active, false otherwise.
+     */
+    public boolean checkActiveInPeriod(int period) {
+        if (!hasPeriodWrapping()) {
+            return (period >= startPeriod && period <= getEndPeriod());
+        } else {
+            if (period < startPeriod) {
+                return (period <= getEndPeriod());
+            } else {
+                return true;
+            }
+        }
+    }
+
     @Override
     public float getEventCAF(int period, int segment) {
         int adjPeriod = mapPeriod(period);

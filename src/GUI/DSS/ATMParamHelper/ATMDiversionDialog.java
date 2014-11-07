@@ -6,7 +6,6 @@
 package GUI.DSS.ATMParamHelper;
 
 import GUI.major.MainWindow;
-import GUI.major.tableHelper.SplitTableJPanel;
 import GUI.major.tableHelper.TableSelectionCellEditor;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import coreEngine.Helper.CEConst;
@@ -30,60 +29,68 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
 
     private final MainWindow mainWindow;
     private boolean returnStatus = false;
-    private final Boolean[] setDiversionAvailable;
-    private final float[] OFRdiversion;
+    private final Boolean[] ofrDiversionAvailable;
+    private final Boolean[] onrDiversionAvailable;
+    private final float[] downstreamOFRDiversionPCT;
     private final float[] ONRdiversion;
+
+    private static final int ROW_OFR_DIVERSION_TOGGLE = 0;
+    private static final int ROW_OFR_DIVERSION_PCT = 1;
+    private static final int ROW_ONR_DIVERSION_TOGGLE = 2;
+    private static final int ROW_ONR_DIVERSION_PCT = 3;
 
     /**
      * Creates new form ATMDiversionDialog.
-     * 
+     *
      * @param parent
-     * @param modal 
+     * @param modal
      */
     public ATMDiversionDialog(MainWindow parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         this.mainWindow = parent;
-        
+
         // Creating diversionAvailable array
-        setDiversionAvailable = mainWindow.getUserLevelParameters().atm.diversionAtSeg.clone();
+        ofrDiversionAvailable = mainWindow.getUserLevelParameters().atm.ofrDiversionAvailable.clone();
+        onrDiversionAvailable = mainWindow.getUserLevelParameters().atm.onrDiversionAvailable.clone();
         ONRdiversion = mainWindow.getUserLevelParameters().atm.ONRdiversion.clone();
-        OFRdiversion = mainWindow.getUserLevelParameters().atm.OFRdiversion.clone();
-        
+        downstreamOFRDiversionPCT = mainWindow.getUserLevelParameters().atm.OFRdiversion.clone();
+
         // Setting up graphicDisplay
         graphicDisplay.setMainWindow(mainWindow);
         graphicDisplay.update();
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(mainWindow));
         graphicDisplay.selectSeedScenATDMPeriod(mainWindow.getActiveSeed(), 0, -1, mainWindow.getActivePeriod());
-        
+
         // Creating Table and Table Models
         JTable diversionTableFirst = new JTable();
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
         DiversionRowNamesModel diversionTableRowNames = new DiversionRowNamesModel();
         diversionTableFirst.setModel(diversionTableRowNames);
-        diversionTableFirst.setRowHeight(MainWindow.getTableFont().getSize()+2);
+        diversionTableFirst.setRowHeight(MainWindow.getTableFont().getSize() + 2);
         diversionTableFirst.setFont(MainWindow.getTableFont());
         diversionTableFirst.setDefaultRenderer(Object.class, rightRenderer);
         diversionTableFirst.getTableHeader().setReorderingAllowed(false);
-        
+
         JTable diversionTableRest = new DiversionSignLocationJTable();
         diversionTableRest.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //restColumnTable.getColumnModel().getColumn(0).setPreferredWidth(275);
         for (int colIdx = 0; colIdx < diversionTableRest.getModel().getColumnCount(); colIdx++) {
             diversionTableRest.getColumnModel().getColumn(colIdx).setPreferredWidth(75);
         }
-        
+
         diversionRowNameScrollPane.setViewportView(diversionTableFirst);
         diversionTableScrollPane.setViewportView(diversionTableRest);
-        diversionSplitPane.setDividerLocation(270);
+        diversionSplitPane.setDividerLocation(295);
     }
 
     private void doClose() {
         if (returnStatus) {
-            mainWindow.getUserLevelParameters().atm.diversionAtSeg = setDiversionAvailable.clone();
-            mainWindow.getUserLevelParameters().atm.OFRdiversion = OFRdiversion.clone();
+            mainWindow.getUserLevelParameters().atm.ofrDiversionAvailable = ofrDiversionAvailable.clone();
+            mainWindow.getUserLevelParameters().atm.OFRdiversion = downstreamOFRDiversionPCT.clone();
+            mainWindow.getUserLevelParameters().atm.onrDiversionAvailable = onrDiversionAvailable.clone();
             mainWindow.getUserLevelParameters().atm.ONRdiversion = ONRdiversion.clone();
         }
         this.setVisible(false);
@@ -91,13 +98,13 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
 
     //<editor-fold defaultstate="collapsed" desc="Table, Table Models, Renderers and Editors">
     private class DiversionSignLocationTableModel extends AbstractTableModel {
-        
+
         private final CheckBoxRenderer checkBoxRenderer;
         private final DefaultTableCellRenderer centerRenderer;
         private final DefaultTableCellRenderer blackOutRenderer;
         private final TableSelectionCellEditor defaultCellEditor;
         private final DefaultCellEditor checkBoxEditor;
-        
+
         public DiversionSignLocationTableModel() {
             centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -108,7 +115,7 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
             blackOutRenderer.setBackground(Color.DARK_GRAY);
             // Creating Default cell editor
             defaultCellEditor = new TableSelectionCellEditor(true);
-            
+
             // Creating CheckBox cell editor
             JCheckBox editorCB = new JCheckBox();
             editorCB.setHorizontalAlignment(JLabel.CENTER);
@@ -116,84 +123,87 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
             editorCB.setForeground(Color.WHITE);
             checkBoxEditor = new DefaultCellEditor(editorCB);
         }
-        
+
         @Override
         public int getColumnCount() {
             return mainWindow.getActiveSeed().getValueInt(CEConst.IDS_NUM_SEGMENT);
         }
-        
+
         @Override
         public int getRowCount() {
-            return 3;
+            return 4;
         }
-        
+
         @Override
         public String getColumnName(int col) {
-            return "Seg "+(col+1);
+            return "Seg " + (col + 1);
         }
-        
+
         @Override
         public Object getValueAt(int row, int col) {
             switch (row) {
                 default:
-                case 0:
-                    return setDiversionAvailable[col];
-                case 1:
-                    return OFRdiversion[col];
-                case 2:
+                case ROW_OFR_DIVERSION_TOGGLE:
+                    return ofrDiversionAvailable[col];
+                case ROW_OFR_DIVERSION_PCT:
+                    return downstreamOFRDiversionPCT[col];
+                case ROW_ONR_DIVERSION_TOGGLE:
+                    return onrDiversionAvailable[col];
+                case ROW_ONR_DIVERSION_PCT:
                     return ONRdiversion[col];
             }
-            
+
         }
-        
+
         @Override
         public void setValueAt(Object val, int row, int col) {
             switch (row) {
-                case 0:
-                    setDiversionAvailable[col] = (boolean) val;
-                    this.fireTableCellUpdated(row+1, col);
-                    this.fireTableCellUpdated(row+2, col);
+                case ROW_OFR_DIVERSION_TOGGLE:
+                    ofrDiversionAvailable[col] = (boolean) val;
+                    this.fireTableCellUpdated(ROW_OFR_DIVERSION_PCT, col);
                     break;
-                case 1:
-                    OFRdiversion[col] = Float.parseFloat((String) val);
+                case ROW_OFR_DIVERSION_PCT:
+                    downstreamOFRDiversionPCT[col] = Float.parseFloat((String) val);
                     break;
-                case 2:
+                case ROW_ONR_DIVERSION_TOGGLE:
+                    onrDiversionAvailable[col] = (boolean) val;
+                    this.fireTableCellUpdated(ROW_ONR_DIVERSION_PCT, col);
+                    break;
+                case ROW_ONR_DIVERSION_PCT:
                     ONRdiversion[col] = Float.parseFloat((String) val);
                     break;
             }
         }
-        
+
         @Override
         public boolean isCellEditable(int row, int col) {
             switch (row) {
-                case 0:
-                    return (mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR || 
-                            mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_OFR ||
-                            mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W);
-                case 1:
-                    return ((mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_OFR ||
-                            mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W) &&
-                            setDiversionAvailable[col]);
-                case 2:
-                    return ((mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR ||
-                            mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W) &&
-                            setDiversionAvailable[col]);
+                case ROW_OFR_DIVERSION_TOGGLE:
+                    return true;
+                case ROW_OFR_DIVERSION_PCT:
+                    return (boolean) getValueAt(row - 1, col);
+                case ROW_ONR_DIVERSION_TOGGLE:
+                    return (mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_ONR
+                            || mainWindow.getActiveSeed().getValueInt(CEConst.IDS_SEGMENT_TYPE, col) == CEConst.SEG_TYPE_W);
+                case ROW_ONR_DIVERSION_PCT:
+                    return onrDiversionAvailable[col];
                 default:
                     return false;
             }
         }
-        
+
         public TableCellRenderer getRenderer(int row, int col) {
             switch (row) {
-                case 0:
-                    if (isCellEditable(row,col)) {
+                case ROW_OFR_DIVERSION_TOGGLE:
+                case ROW_ONR_DIVERSION_TOGGLE:
+                    if (isCellEditable(row, col)) {
                         return checkBoxRenderer;
                     } else {
                         return blackOutRenderer;
                     }
-                case 1:
-                case 2:
-                    if (isCellEditable(row,col)) {
+                case ROW_OFR_DIVERSION_PCT:
+                case ROW_ONR_DIVERSION_PCT:
+                    if (isCellEditable(row, col)) {
                         return centerRenderer;
                     } else {
                         return blackOutRenderer;
@@ -201,83 +211,81 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
                 default:
                     return centerRenderer;
             }
-            
+
         }
-        
+
         public TableCellEditor getEditor(int row, int col) {
             switch (row) {
-                case 0:
+                case ROW_OFR_DIVERSION_TOGGLE:
+                case ROW_ONR_DIVERSION_TOGGLE:
                     return checkBoxEditor;
                 default:
+                case ROW_OFR_DIVERSION_PCT:
+                case ROW_ONR_DIVERSION_PCT:
                     return defaultCellEditor;
             }
         }
-        
+
     };
-    
+
     private class DiversionRowNamesModel extends AbstractTableModel {
-        
-        
+
+        private final String[] rowNames;
+
         public DiversionRowNamesModel() {
+            rowNames = new String[]{"Allow OFR Diversion Sign at Segment",
+                "Downstream Off-Ramp Diversion %",
+                "Allow ONR Diversion Sign at Segment",
+                "On-Ramp Diversion %"};
         }
-        
+
         @Override
         public int getColumnCount() {
             return 1;
         }
-        
+
         @Override
         public int getRowCount() {
-            return 3;
+            return rowNames.length;
         }
-        
+
         @Override
         public String getColumnName(int col) {
             return "Segment";
         }
-        
+
         @Override
         public Object getValueAt(int row, int col) {
-            switch (row) {
-                default:
-                case 0:
-                    return "Enable Diversion Sign Location";
-                case 1:
-                    return "Off-Ramp Diversion";
-                case 2:
-                    return "On-Ramp Diversion";
-            }
-            
+            return rowNames[row];
         }
-        
-        
+
         @Override
         public boolean isCellEditable(int row, int col) {
             return false;
         }
-        
+
     };
-    
-    
+
     private class DiversionSignLocationJTable extends JTable {
-        
+
         private final DiversionSignLocationTableModel tableModel;
-        
+
         public DiversionSignLocationJTable() {
             super();
             this.tableModel = new DiversionSignLocationTableModel();
             this.setModel(tableModel);
             this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
             this.setFont(MainWindow.getTableFont());
-            setRowHeight(MainWindow.getTableFont().getSize()+2);
+            setRowHeight(MainWindow.getTableFont().getSize() + 2);
             resetModel();
         }
-        
+
         private void resetModel() {
             getTableHeader().setReorderingAllowed(false);
             this.rowSelectionAllowed = false;
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
+
         /**
          * Highlight a column
          *
@@ -290,20 +298,20 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
                 //skip
             }
         }
-        
+
         @Override
         public TableCellEditor getCellEditor(int row, int col) {
-            return ((DiversionSignLocationTableModel) this.getModel()).getEditor(row,col);
+            return ((DiversionSignLocationTableModel) this.getModel()).getEditor(row, col);
         }
-        
+
         @Override
         public TableCellRenderer getCellRenderer(int row, int col) {
             return ((DiversionSignLocationTableModel) this.getModel()).getRenderer(row, col);
         }
     }
-    
+
     private class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
             try {
@@ -404,8 +412,8 @@ public class ATMDiversionDialog extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
                     .addComponent(cancelButton))

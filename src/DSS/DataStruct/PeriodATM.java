@@ -34,12 +34,15 @@ public class PeriodATM {
     //private final float[] hsrCapacity;
     private final Boolean[] hsrUsed;
 
-    private final Boolean[] diversionUsed;
-    private final int[] diversionDuration;
-    
+    private final Boolean[] ofrDiversionUsed;
+    private final int[] ofrDiversionDuration;
+
+    private final Boolean[] onrDiversionUsed;
+    private final int[] onrDiversionDuration;
+
     private Boolean GP2MLDiversionUsed;
     private int GP2MLDiversionDuration;
-    
+
     private Boolean incidentManagementUsed;
     private int incidentManagementDuration;
 
@@ -91,14 +94,19 @@ public class PeriodATM {
         hsrUsed = new Boolean[numSeg];
         Arrays.fill(hsrUsed, false);
 
-        diversionUsed = new Boolean[numSeg];
-        Arrays.fill(diversionUsed, false);
-        diversionDuration = new int[numSeg];
-        Arrays.fill(diversionDuration, 0);
-        
+        ofrDiversionUsed = new Boolean[numSeg];
+        Arrays.fill(ofrDiversionUsed, false);
+        ofrDiversionDuration = new int[numSeg];
+        Arrays.fill(ofrDiversionDuration, 0);
+
+        onrDiversionUsed = new Boolean[numSeg];
+        Arrays.fill(onrDiversionUsed, false);
+        onrDiversionDuration = new int[numSeg];
+        Arrays.fill(onrDiversionDuration, 0);
+
         GP2MLDiversionUsed = false;
         GP2MLDiversionDuration = 0;
-        
+
         incidentManagementUsed = false;
         incidentManagementDuration = 0;
 
@@ -129,7 +137,7 @@ public class PeriodATM {
             case ID_HSR_DURATION:
                 return hsrDuration[seg];
             case ID_DIVERSION_DURATION:
-                return diversionDuration[seg];
+                return ofrDiversionDuration[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -142,7 +150,7 @@ public class PeriodATM {
             case ID_HSR_USED:
                 return hsrUsed[seg];
             case ID_DIVERSION_USED:
-                return diversionUsed[seg];
+                return ofrDiversionUsed[seg];
             default:
                 throw new RuntimeException("Invalid Identifier");
         }
@@ -181,7 +189,7 @@ public class PeriodATM {
                 hsrDuration[seg] = value;
                 break;
             case ID_DIVERSION_DURATION:
-                diversionDuration[seg] = value;
+                ofrDiversionDuration[seg] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
@@ -197,7 +205,7 @@ public class PeriodATM {
                 hsrUsed[seg] = value;
                 break;
             case ID_DIVERSION_USED:
-                diversionUsed[seg] = value;
+                ofrDiversionUsed[seg] = value;
                 break;
             default:
                 throw new RuntimeException("Invalid Identifier");
@@ -243,14 +251,22 @@ public class PeriodATM {
         hsrUsed[seg] = value;
     }
 
-    public void setDiversionDuration(int value, int seg) {
-        diversionDuration[seg] = value;
+    public void setOFRDiversionDuration(int value, int seg) {
+        ofrDiversionDuration[seg] = value;
     }
 
-    public void setDiversionUsed(Boolean value, int seg) {
-        diversionUsed[seg] = value;
+    public void setOFRDiversionUsed(Boolean value, int seg) {
+        ofrDiversionUsed[seg] = value;
     }
-    
+
+    public void setONRDiversionDuration(int value, int seg) {
+        onrDiversionDuration[seg] = value;
+    }
+
+    public void setONRDiversionUsed(Boolean value, int seg) {
+        onrDiversionUsed[seg] = value;
+    }
+
     public void setGP2MLDiversionUsed(Boolean value) {
         GP2MLDiversionUsed = value;
     }
@@ -258,7 +274,7 @@ public class PeriodATM {
     public void setGP2MLDiversionDuration(int GP2MLDiversionDuration) {
         this.GP2MLDiversionDuration = GP2MLDiversionDuration;
     }
-    
+
     public void setIncidentManagementUsed(Boolean incidentManagementUsed) {
         this.incidentManagementUsed = incidentManagementUsed;
     }
@@ -266,7 +282,7 @@ public class PeriodATM {
     public void setIncidentManagementDuration(int incidentManagementDuration) {
         this.incidentManagementDuration = incidentManagementDuration;
     }
-    
+
     //public void setHSRCapacity(float value, int seg) {
     //    hsrCapacity[seg] = value;
     //}
@@ -308,26 +324,34 @@ public class PeriodATM {
         return hsrUsed[seg];
     }
 
-    public int getDiversionDuration(int seg) {
-        return diversionDuration[seg];
+    public int getOFRDiversionDuration(int seg) {
+        return ofrDiversionDuration[seg];
     }
 
-    public Boolean getDiversionUsed(int seg) {
-        return diversionUsed[seg];
+    public Boolean getOFRDiversionUsed(int seg) {
+        return ofrDiversionUsed[seg];
     }
-    
+
+    public int getONRDiversionDuration(int seg) {
+        return onrDiversionDuration[seg];
+    }
+
+    public Boolean getONRDiversionUsed(int seg) {
+        return onrDiversionUsed[seg];
+    }
+
     public Boolean getGP2MLDiversionUsed() {
         return GP2MLDiversionUsed;
     }
-    
+
     public int getGP2MLDiversionDuration() {
         return GP2MLDiversionDuration;
     }
-    
+
     public Boolean getIncidentManagementUsed() {
         return incidentManagementUsed;
     }
-    
+
     public int getIncidentManagementDuration() {
         return incidentManagementDuration;
     }
@@ -336,31 +360,35 @@ public class PeriodATM {
     //    return hsrCapacity[seg];
     //}
 //</editor-fold>
-    public boolean diversionAvailableAtSegment(int seg) {
-        return ATMParams.diversionAtSeg[seg];
+    public boolean ofrDiversionAvailableAtSegment(int seg) {
+        return ATMParams.ofrDiversionAvailable[seg];
     }
-    
+
+    public boolean onrDiversionAvailableAtSegment(int seg) {
+        return ATMParams.onrDiversionAvailable[seg];
+    }
+
     public boolean checkEmpty() {
         boolean isEmpty = true;
-        
+
         for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
-            if (rampMeteringUsed[seg] || hsrUsed[seg] || diversionUsed[seg]) {
+            if (rampMeteringUsed[seg] || hsrUsed[seg] || ofrDiversionUsed[seg]) {
                 isEmpty = false;
                 break;
             }
         }
-        
+
         if (GP2MLDiversionUsed) {
             isEmpty = false;
         }
-        
+
         if (incidentManagementUsed) {
             isEmpty = false;
         }
-        
+
         if (!isEmpty) {
             int status = JOptionPane.showConfirmDialog(null, "<HTML><Center>Warning: Currently selected strategies will be ignored.<br>"
-                    + "Proceed anyways?","Warning", JOptionPane.WARNING_MESSAGE);
+                    + "Proceed anyways?", "Warning", JOptionPane.WARNING_MESSAGE);
             isEmpty = (status == JOptionPane.OK_OPTION);
         }
         return isEmpty;
