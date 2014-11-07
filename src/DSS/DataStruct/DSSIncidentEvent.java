@@ -48,4 +48,5 @@ public class DSSIncidentEvent extends IncidentEvent {
     public int getEventLAF(int period, int segment) {
         return laf;
     }
+
 }

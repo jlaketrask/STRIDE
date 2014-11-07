@@ -29,7 +29,7 @@ public class ATMUpdater {
      * Constructor for the ATM Updater
      *
      * @param seed Seed for to which the updater is attached
-     * @param atmScenario ATDMScenario datastruct to hold applied ATM
+     * @param atmScenario ATDMScenario data structure to hold applied ATM
      * adjustments
      * @param periodATM Contains period by period specification of ATM
      * strategies
@@ -46,7 +46,8 @@ public class ATMUpdater {
         PeriodATM currATM = periodATM[currPeriod];
         PeriodATM nextATM = periodATM[currPeriod + 1];
 
-        // GP to ML Demand Diversion.
+        // Applying Facility Strategies
+// GP to ML Demand Diversion.
         if (currATM.getGP2MLDiversionUsed()) {
             // Applying GP to ML Demand Diversion
             atm.OAF().multiply(userParams.atm.getGP2MLDiversionFactor(), 0, currPeriod + 1);
@@ -59,29 +60,77 @@ public class ATMUpdater {
             }
         }
 
-        // Incident management
-        if (currATM.getIncidentManagementUsed()) {
-            // Applying Incident Management
-
-            // Updating next PeriodATM Instance
-        }
-
         // Checking for any incidents active in the next period
         boolean activeIncident = false;
-        ArrayList<Integer> activeIncidentLocations = new ArrayList<>();
+        boolean trafficDiversionApplicable = false;
+        ArrayList<IncidentEvent> activeIncidents = new ArrayList<>();
         ScenarioInfo currScenarioInfo = seed.getRLScenarioInfo().get(1);
         ArrayList<IncidentEvent> incidents = currScenarioInfo.getGPIncidentEventList();
         // Checking if any incidents occur in time period
         for (IncidentEvent inc : incidents) {
             if (inc.checkActiveInPeriod(currPeriod + 1)) {
                 activeIncident = true;
-                activeIncidentLocations.add(inc.getSegment());
+                activeIncidents.add(inc);
             }
         }
-        Collections.sort(activeIncidentLocations);
-        int finalActiveIncidentLocation = activeIncidentLocations.get(activeIncidentLocations.size() - 1);
+        Collections.sort(activeIncidents, IncidentEvent.Comparators.SEGMENT);
+        int finalActiveIncidentLocation = (activeIncidents.size() > 0) ? activeIncidents.get(activeIncidents.size() - 1).getSegment() : 0;
 
-        // ONR Traffic Diversion Check
+        // Incident management
+        if (activeIncident) {
+            if (currATM.getIncidentManagementUsed()) {
+                int incidentRemainingActive = -1;
+                for (IncidentEvent inc : activeIncidents) {
+                    // Check if the remaining incident duration <= to the incident duration reduction
+                    if (inc.getEndPeriod() - currPeriod > 0 && inc.getEndPeriod() - currPeriod <= userParams.atm.incidentDurationReduction[inc.severity]) {
+                        // If it is, apply Incident reduction
+                        atm.CAF().multiply(1.0f / inc.getEventCAF(currPeriod + 1, inc.getSegment()),
+                                inc.getSegment(),
+                                currPeriod + 1
+                        );
+                        atm.OAF().multiply(1.0f / inc.getEventOAF(currPeriod + 1, inc.getSegment()),
+                                inc.getSegment(),
+                                currPeriod + 1
+                        );
+                        atm.DAF().multiply(1.0f / inc.getEventDAF(currPeriod + 1, inc.getSegment()),
+                                inc.getSegment(),
+                                currPeriod + 1
+                        );
+                        atm.SAF().multiply(1.0f / inc.getEventSAF(currPeriod + 1, inc.getSegment()),
+                                inc.getSegment(),
+                                currPeriod + 1
+                        );
+                        atm.LAF().add(-1 * inc.getEventLAF(currPeriod + 1, inc.getSegment()),
+                                inc.getSegment(),
+                                currPeriod + 1
+                        );
+                    } else {
+                        // Signal that traffic (OFR/ONR) diversion is to be used
+                        if (inc.getSegment() > incidentRemainingActive) {
+                            incidentRemainingActive = inc.getSegment();
+                        }
+                        trafficDiversionApplicable = true;
+                    }
+                }
+
+                if (incidentRemainingActive < finalActiveIncidentLocation) {
+                    finalActiveIncidentLocation = incidentRemainingActive;
+                }
+
+            } else {
+                trafficDiversionApplicable = true;
+            }
+        }
+
+        // Updating next PeriodATM Instance
+        if (currATM.getIncidentManagementUsed()) {
+            if (currATM.getIncidentManagementDuration() > 1) {
+                nextATM.setIncidentManagementUsed(Boolean.TRUE);
+                nextATM.setIncidentManagementDuration(currATM.getIncidentManagementDuration() - 1);
+            }
+        }
+
+        // Applying Segment Strategies
         for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
 
             // Ramp Metering Check
@@ -132,22 +181,20 @@ public class ATMUpdater {
                 }
             }
 
-            if (activeIncident) {
-                // Assigning OFR Traffic Diversion to all downstream segments up to incident
-                if (currATM.getOFRDiversionUsed(seg)) {
-                    for (int segIdx = seg; segIdx <= finalActiveIncidentLocation; segIdx++) {
-                        if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_OFR
-                                || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
-                            //Off-ramp segment
-                            atm.DAF().multiply((1.0f + userParams.atm.OFRdiversion[seg]), segIdx, currPeriod + 1);
-                        }
+            // Assigning OFR Traffic Diversion to all downstream segments up to incident
+            if (currATM.getOFRDiversionUsed(seg) && trafficDiversionApplicable) {
+                for (int segIdx = seg; segIdx <= finalActiveIncidentLocation; segIdx++) {
+                    if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_OFR
+                            || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
+                        //Off-ramp segment
+                        atm.DAF().multiply((1.0f + userParams.atm.OFRdiversion[seg]), segIdx, currPeriod + 1);
                     }
                 }
+            }
 
-                // Assigning ONR diversion if ONR is upstream of or at most downstream active incident
-                if (currATM.getONRDiversionUsed(seg)) {
-                    atm.OAF().multiply((1.0f - userParams.atm.ONRdiversion[seg]), seg, currPeriod + 1);
-                }
+            // Assigning ONR diversion if ONR is upstream of or at most downstream active incident
+            if (currATM.getONRDiversionUsed(seg)) {
+                atm.OAF().multiply((1.0f - userParams.atm.ONRdiversion[seg]), seg, currPeriod + 1);
             }
 
             // Updating next PeriodATM Instance
