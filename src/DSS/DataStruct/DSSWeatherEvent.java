@@ -20,7 +20,7 @@ public class DSSWeatherEvent extends WeatherEvent {
     public int laf = 0;
 
     public DSSWeatherEvent(Seed seed, int severity, int startPeriod, int duration) {
-        super(seed, 0, severity, startPeriod, duration);
+        super(seed, seed.getRLScenarioInfo().get(0), severity, startPeriod, duration);
     }
 
     @Override

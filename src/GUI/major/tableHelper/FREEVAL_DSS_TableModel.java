@@ -37,7 +37,9 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
         "Ramp Metering Rate",
         "Enable Hard Shoulder Running",
         "Remaining Implementation Periods",
-        "Enable Traffic Diversion",
+        "Enable OFR Traffic Diversion",
+        "Remaining Implementation Periods",
+        "Enable ONR Traffic Diversion",
         "Remaining Implementation Periods",
         "Divert Traffic To Managed Lanes",
         "Remaining Implementation Periods",
@@ -265,9 +267,9 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         case ROW_ONR_DIVERSION_TOGGLE:
                             periodATM[currPeriod].setONRDiversionUsed((boolean) value, col);
                             if (periodATM[currPeriod].getONRDiversionUsed(col)) {
-                                parentTable.changeSelection(ROW_OFR_DIVERSION_PERIODS, col, false, false);
+                                parentTable.changeSelection(ROW_ONR_DIVERSION_PERIODS, col, false, false);
                             } else {
-                                this.fireTableCellUpdated(ROW_OFR_DIVERSION_PERIODS, col);
+                                this.fireTableCellUpdated(ROW_ONR_DIVERSION_PERIODS, col);
                             }
                             break;
                         case ROW_ONR_DIVERSION_PERIODS:
@@ -323,7 +325,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                     case ROW_ONR_DIVERSION_TOGGLE:
                         return periodATM[currPeriod].onrDiversionAvailableAtSegment(col);
                     case ROW_ONR_DIVERSION_PERIODS:
-                        return periodATM[currPeriod].getOFRDiversionUsed(col);
+                        return periodATM[currPeriod].getONRDiversionUsed(col);
                     case ROW_GP_TO_ML_DIVERSION_TOGGLE:
                         return (col == 0 && GP2MLDiversionEnabled);
                     case ROW_GP_TO_ML_DIVERSION_PERIODS:
@@ -384,6 +386,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         }
                     case ROW_HSR_TOGGLE:
                     case ROW_OFR_DIVERSION_TOGGLE:
+                    case ROW_ONR_DIVERSION_TOGGLE:
                     case ROW_GP_TO_ML_DIVERSION_TOGGLE:
                     case ROW_INCIDENT_MANAGEMENT_TOGGLE:
                         if (isCellEditable(row, col)) {
@@ -393,6 +396,7 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
                         }
                     case ROW_HSR_IMPLEMENTATION_PERIODS:
                     case ROW_OFR_DIVERSION_PERIODS:
+                    case ROW_ONR_DIVERSION_PERIODS:
                     case ROW_GP_TO_ML_DIVERSION_PERIODS:
                     case ROW_INCIDENT_MANAGEMENT_PERIODS:
                         if (isCellEditable(row, col)) {
@@ -477,16 +481,21 @@ public class FREEVAL_DSS_TableModel extends AbstractTableModel {
             case FREEVAL_DSS_TableModel.TYPE_ROW_NAMES:
                 return defaultCellEditor;
             case FREEVAL_DSS_TableModel.TYPE_ATM_INPUT:
-                if (row == ROW_RM_TYPE) {
-                    return rmComboBoxEditor;
-                } else if (row == ROW_HSR_TOGGLE || row == ROW_OFR_DIVERSION_TOGGLE || row == ROW_GP_TO_ML_DIVERSION_TOGGLE || row == ROW_INCIDENT_MANAGEMENT_TOGGLE) {
-                    return checkBoxEditor;
-                } else {
-                    return defaultCellEditor;
+                switch (row) {
+                    case ROW_RM_TYPE:
+                        return rmComboBoxEditor;
+                    case ROW_HSR_TOGGLE:
+                    case ROW_OFR_DIVERSION_TOGGLE:
+                    case ROW_ONR_DIVERSION_TOGGLE:
+                    case ROW_GP_TO_ML_DIVERSION_TOGGLE:
+                    case ROW_INCIDENT_MANAGEMENT_TOGGLE:
+                        return checkBoxEditor;
+                    default:
+                        return defaultCellEditor;
                 }
         }
     }
-    //</editor-fold>
+//</editor-fold>
 
     public int getTableType() {
         return this.tableType;

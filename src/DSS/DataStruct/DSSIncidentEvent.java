@@ -21,7 +21,7 @@ public class DSSIncidentEvent extends IncidentEvent {
     public int laf = 0;
 
     public DSSIncidentEvent(Seed seed, int severity, int startPeriod, int duration, int segment) {
-        super(seed, null, 0, severity, startPeriod, duration, segment, CEConst.SEG_TYPE_GP);
+        super(seed, seed.getRLScenarioInfo().get(1), severity, startPeriod, duration, segment, CEConst.SEG_TYPE_GP);
     }
 
     @Override

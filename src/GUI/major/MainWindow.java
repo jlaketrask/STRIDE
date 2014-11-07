@@ -68,8 +68,6 @@ public class MainWindow extends javax.swing.JFrame {
     private static final DefaultComboBoxModel INPUT_OUTPUT_MODEL = new DefaultComboBoxModel(new String[]{"Input", "Output"});
     private static final DefaultComboBoxModel INPUT_ONLY_MODEL = new DefaultComboBoxModel(new String[]{"Input"});
 
-    private Scenario scenario;
-
     private UserLevelParameterSet userParams;
 
     /**
@@ -126,6 +124,10 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
+
+        if (activeSeed != null && activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
+            initScenario();
+        }
 
         userParams = new UserLevelParameterSet(activeSeed);
 
@@ -277,9 +279,10 @@ public class MainWindow extends javax.swing.JFrame {
     public void addSeed(Seed seed) {
         seedList.add(seed);
         navigator.seedAdded(seed);
-        if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) != 0) {
-            selectSeedScen(activeSeed, 1);
+        if (activeSeed.getValueInt(CEConst.IDS_NUM_SCEN) == 0) {
+            initScenario();
         }
+        selectSeedScen(activeSeed, 1);
         userParams.setSeed(activeSeed);
     }
 
@@ -967,10 +970,16 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void initScenario() {
         if (activeSeed != null) {
-            scenario = new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
+            Scenario scenario = new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
+            Scenario mlScenario = new Scenario(1, activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
             ArrayList<ScenarioInfo> ScenarioInfos = new ArrayList<>();
-            ScenarioInfos.add(new ScenarioInfo());
-            activeSeed.setRLScenarios(scenario, null, ScenarioInfos);
+            ScenarioInfos.add(new ScenarioInfo(1.0f, 1, "DSS Scenario"));
+            ScenarioInfos.get(0).setDemandMultiplier(1.0f);
+            ScenarioInfos.get(0).setSeed(activeSeed);
+            ScenarioInfos.get(0).month = 1;
+            ScenarioInfos.get(0).day = 0;
+
+            activeSeed.setRLScenarios(scenario, mlScenario, ScenarioInfos);
         }
     }
 
@@ -1024,7 +1033,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void applyWeatherEvent(DSSWeatherEvent weatherEvent) {
 
         for (int period = weatherEvent.startPeriod; period <= weatherEvent.getEndPeriod(); period++) {
-            for (int segment = 0; segment <= activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
+            for (int segment = 0; segment < activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
                 activeSeed.setValue(CEConst.IDS_GP_RL_CAF,
                         weatherEvent.caf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_CAF, segment, period, 1, -1),
                         segment, period, 1, -1);
