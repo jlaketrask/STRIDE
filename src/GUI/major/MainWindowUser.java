@@ -14,7 +14,7 @@ import GUI.seedEditAndIOHelper.SeedGlobalDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
-import coreEngine.Helper.ASCIISeedFileAdapter;
+import coreEngine.Helper.ASCIISeedFileAdapter_GPMLFormat;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import coreEngine.atdm.DataStruct.ATDMScenario;
@@ -98,10 +98,10 @@ public class MainWindowUser extends MainWindow {
         }
 
         initComponents();
-        
+
         activeSeed = dssProject.getSeed();
         this.userParams = dssProject.getUserLevelParameterSet();
-        
+
         // Setting up ATM
         this.activeATM = new ATDMScenario(activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT), activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD));
         periodATM = new PeriodATM[activeSeed.getValueInt(CEConst.IDS_NUM_PERIOD)];
@@ -120,7 +120,7 @@ public class MainWindowUser extends MainWindow {
         HashMap<Integer, ATDMScenario[]> atmHolder = new HashMap();
         atmHolder.put(1, new ATDMScenario[]{activeATM, null});
         activeSeed.addATDMSet(atmHolder);
-        
+
         completedRunsPeriodATM = new ArrayList();
         completedRunsATDMScen = new ArrayList();
 
@@ -139,7 +139,7 @@ public class MainWindowUser extends MainWindow {
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.showIncidents(false);
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
-        
+
         graphicDisplay.setSegmentColorStyle(userParams.SEGMENT_COLOR_STYLE);
         int minFFS = 150;
         for (int seg = 0; seg < activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
@@ -147,7 +147,7 @@ public class MainWindowUser extends MainWindow {
                 minFFS = activeSeed.getValueInt(CEConst.IDS_MAIN_FREE_FLOW_SPEED, seg);
             }
         }
-        DSSGraphicHelper.setColorRange(Math.round(minFFS/2.0f), minFFS);
+        DSSGraphicHelper.setColorRange(Math.round(minFFS / 2.0f), minFFS);
 
         inOutCB.setSelectedIndex(1);
         inOutCB.setEnabled(false);
@@ -185,7 +185,7 @@ public class MainWindowUser extends MainWindow {
         selectPeriod(activePeriod + 1);
         dssProgress += 1;
     }
-    
+
     public boolean validateATM(int validationType) {
         if (validationType == 1) {
             return atmUpdater.validate(activePeriod);
@@ -298,14 +298,13 @@ public class MainWindowUser extends MainWindow {
     /**
      * Import a seed from ASCII file
      */
-    @Override
     public void importASCII() {
-        ASCIISeedFileAdapter textSeed = new ASCIISeedFileAdapter();
+        ASCIISeedFileAdapter_GPMLFormat textSeed = new ASCIISeedFileAdapter_GPMLFormat();
         Seed _seed = textSeed.importFromASCII();
         if (_seed != null) {
             printLog("Seed file added from ASCII file : " + _seed.getValueString(CEConst.IDS_SEED_FILE_NAME));
             _seed.setValue(CEConst.IDS_SEED_FILE_NAME, null);
-            //addSeed(_seed);
+            addSeed(_seed);
         } else {
             printLog("Fail to import ASCII file");
         }
@@ -314,10 +313,9 @@ public class MainWindowUser extends MainWindow {
     /**
      * Export active seed to ASCII file
      */
-    @Override
     public void exportASCII() {
         if (activeSeed != null) {
-            ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
+            ASCIISeedFileAdapter_GPMLFormat exporter = new ASCIISeedFileAdapter_GPMLFormat();
             String fileName = exporter.exportToASCII(activeSeed);
             //ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
             //String fileName = exporter.exportToFile(activeSeed);
@@ -1137,11 +1135,11 @@ public class MainWindowUser extends MainWindow {
         //selectScenSeed
         selectPeriod(0);
     }
-    
+
     @Override
     public UserLevelParameterSet getUserLevelParameters() {
         return userParams;
-    } 
+    }
 
 //    public void showATDMSummary() {
 //        if (checkATDMHasFullResult()) {
@@ -1553,7 +1551,7 @@ public class MainWindowUser extends MainWindow {
     }//GEN-LAST:event_proceedOnlyButtonActionPerformed
 
     private void takeActionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeActionButtonActionPerformed
-        
+
         if (activePeriod == dssProgress) {
             if (this.resetReady) {
                 resetReady = false;

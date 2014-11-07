@@ -5,9 +5,8 @@
  */
 package GUI.DSS.eventHelper;
 
-import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.DSSWeatherEvent;
 import DSS.DataStruct.UserLevelParameterSet;
-import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 
 /**
@@ -57,13 +56,14 @@ public class WeatherEventDialog extends javax.swing.JDialog {
 
     }
 
-    public ScenarioEvent getWeatherEvent() {
-        ScenarioEvent wEvent = new ScenarioEvent(ScenarioEvent.WEATHER_EVENT);
-        wEvent.severity = severityCB.getSelectedIndex() - 1;
-        wEvent.startSegment = 0;
-        wEvent.endSegment = seed.getValueInt(CEConst.IDS_NUM_SEGMENT) - 1;
-        wEvent.startPeriod = startPeriodCB.getSelectedIndex();
-        wEvent.endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+    public DSSWeatherEvent getWeatherEvent() {
+        int startPeriod = startPeriodCB.getSelectedIndex();
+        int endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+        int duration = endPeriod - startPeriod + 1;
+        DSSWeatherEvent wEvent = new DSSWeatherEvent(seed,
+                severityCB.getSelectedIndex() - 1,
+                startPeriod,
+                duration);
         wEvent.caf = Float.parseFloat(cafTextField.getText());
         wEvent.daf = Float.parseFloat(dafTextField.getText());
         wEvent.saf = Float.parseFloat(safTextField.getText());

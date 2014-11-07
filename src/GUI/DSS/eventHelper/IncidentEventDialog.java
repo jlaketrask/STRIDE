@@ -5,7 +5,7 @@
  */
 package GUI.DSS.eventHelper;
 
-import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.DSSIncidentEvent;
 import DSS.DataStruct.UserLevelParameterSet;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
@@ -62,13 +62,15 @@ public class IncidentEventDialog extends javax.swing.JDialog {
 
     }
 
-    public ScenarioEvent getIncidentEvent() {
-        ScenarioEvent incEvent = new ScenarioEvent(ScenarioEvent.INCIDENT_EVENT);
-        incEvent.severity = severityCB.getSelectedIndex() - 1;
-        incEvent.startSegment = segmentCB.getSelectedIndex();
-        incEvent.endSegment = segmentCB.getSelectedIndex();
-        incEvent.startPeriod = startPeriodCB.getSelectedIndex();
-        incEvent.endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+    public DSSIncidentEvent getIncidentEvent() {
+        int startPeriod = startPeriodCB.getSelectedIndex();
+        int endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+        int duration = endPeriod - startPeriod + 1;
+        DSSIncidentEvent incEvent = new DSSIncidentEvent(seed,
+                severityCB.getSelectedIndex() - 1,
+                startPeriod,
+                duration,
+                segmentCB.getSelectedIndex());
         incEvent.caf = Float.parseFloat(cafTextField.getText());
         incEvent.daf = Float.parseFloat(dafTextField.getText());
         incEvent.saf = Float.parseFloat(safTextField.getText());

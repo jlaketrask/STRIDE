@@ -1,7 +1,6 @@
 package coreEngine.reliabilityAnalysis.DataStruct;
 
 import CompressArray.CA2DInt;
-import DSS.DataStruct.ScenarioEvent;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import coreEngine.atdm.DataStruct.ATDMDatabase;
@@ -45,7 +44,7 @@ public class ScenarioInfo implements Serializable {
     /**
      * Detail containing event summary of a scenario.
      */
-    public String detail;
+    private String detail;
 
     /**
      * Month of the scenario. (1 - Jan, 2 - Feb, etc.)
@@ -64,26 +63,6 @@ public class ScenarioInfo implements Serializable {
     public int statusRL = CEConst.SCENARIO_INPUT_ONLY;
 
     /**
-     * Number of weather events for the scenario.
-     */
-    private int numWeatherEvents;
-
-    /**
-     * Number of incidents on general purpose segments.
-     */
-    private int numIncidentsGP;
-
-    /**
-     * Number of incidents on managed lane segments.
-     */
-    private int numIncidentsML;
-
-    /**
-     * Number of work zones occurring in the scenario.
-     */
-    private int numWorkZones;
-
-    /**
      * Name of demand pattern. (i.e. Jan - Mon)
      */
     private String demandPatternName;
@@ -94,89 +73,24 @@ public class ScenarioInfo implements Serializable {
     private float demandMultiplier;
 
     /**
-     * Whether this scenario has weather event.
-     */
-    private boolean hasWeatherEvent = false;
-
-    /**
-     * Whether this scenario has any GP incidents.
-     */
-    private boolean hasIncidentGP = false;
-
-    /**
-     * Whether this scenario has any ML incidents.
-     */
-    private boolean hasIncidentML = false;
-
-    /**
-     * Whether this scenario has a work zone.
-     */
-    private boolean hasWorkZone = false;
-
-    /**
-     * Start time (period index, start with 0) of weather event.
-     */
-    private ArrayList<Integer> weatherEventStartTimes;
-
-    /**
-     * Duration (number of periods) of weather event.
-     */
-    private ArrayList<Integer> weatherEventDurations;
-
-    /**
-     * Start time (period index, start with 0) of GP incidents.
-     */
-    private ArrayList<Integer> incidentGPEventStartTimes;
-
-    /**
-     * Duration (number of periods) of GP incidents.
-     */
-    private ArrayList<Integer> incidentGPEventDurations;
-
-    /**
-     * Location (segment index, start with 0) of GP incidents.
-     */
-    private ArrayList<Integer> incidentGPEventLocations;
-
-    /**
-     * GP Incident Types (0 - Shoulder closure, 1 - 1 lane closure, etc.).
-     */
-    private ArrayList<Integer> incidentGPEventTypes;
-
-    /**
-     * Start time (period index, start with 0) of ML incidents.
-     */
-    private ArrayList<Integer> incidentMLEventStartTimes;
-
-    /**
-     * Duration (number of periods) of ML incidents.
-     */
-    private ArrayList<Integer> incidentMLEventDurations;
-
-    /**
-     * Location (segment index, start with 0) of ML incidents.
-     */
-    private ArrayList<Integer> incidentMLEventLocations;
-
-    /**
-     * ML Incident Types (0 - Shoulder closure, 1 - 1 lane closure, etc.).
-     */
-    private ArrayList<Integer> incidentMLEventTypes;
-
-    /**
      * List of weather events
      */
-    private ArrayList<ScenarioEvent> weatherEvents;
+    private final ArrayList<WeatherEvent> weatherEvents;
 
     /**
-     * List of incident events
+     * List of GP incident events
      */
-    private ArrayList<ScenarioEvent> incidentEvents;
+    private final ArrayList<IncidentEvent> incidentEvents_GP;
+
+    /**
+     * List of GP incident events
+     */
+    private final ArrayList<IncidentEvent> incidentEvents_ML;
 
     /**
      * List of work zones.
      */
-    private ArrayList<WorkZoneData> workZones;
+    private final ArrayList<WorkZoneData> workZones;
 
     // </editor-fold>
     /**
@@ -217,28 +131,62 @@ public class ScenarioInfo implements Serializable {
         this.group = group;
         this.demandPatternName = name;
 
-        this.numWeatherEvents = 0;
-        this.numIncidentsGP = 0;
-        this.numIncidentsML = 0;
-        this.numWorkZones = 0;
-
-        weatherEventStartTimes = new ArrayList<>();  // Stored as AP # in which event begins
-        weatherEventDurations = new ArrayList<>();   // Stored as # of APs event lasts
-
-        incidentGPEventStartTimes = new ArrayList<>(); // Stored as AP # in which event begins
-        incidentGPEventDurations = new ArrayList<>();  // Stored as # of APs event lasts
-        incidentGPEventLocations = new ArrayList<>();  // Stored as index of segment at which it occurs
-        incidentGPEventTypes = new ArrayList<>();
-
-        incidentMLEventStartTimes = new ArrayList<>(); // Stored as AP # in which event begins
-        incidentMLEventDurations = new ArrayList<>();  // Stored as # of APs event lasts
-        incidentMLEventLocations = new ArrayList<>();  // Stored as index of segment at which it occurs
-        incidentMLEventTypes = new ArrayList<>();
-
+        weatherEvents = new ArrayList<>();
+        incidentEvents_GP = new ArrayList<>();
+        incidentEvents_ML = new ArrayList<>();
         workZones = new ArrayList<>();
 
         updateName();
     }
+
+    //<editor-fold defaultstate="collapsed" desc="Generate Detail String">
+    public String getDetail() {
+        // Generating detail from all scenario events
+        detail = " Seed Demand Multiplier: " + this.demandMultiplier + " ";
+        if (workZones.size() > 0) {
+            detail = detail + "\n\n Work Zones:  ";
+            for (WorkZoneData wz : workZones) {
+                detail = detail + "\n " + wz.getSeverityString() + " at segment(s) "
+                        + (wz.getStartSegment()) + " - " + (wz.getEndSegment())
+                        + " daily for periods " + (wz.getStartPeriod())
+                        + " - " + wz.getEndPeriod() + " ";
+            }
+        }
+
+        if (weatherEvents.size() > 0) {
+            detail = detail + "\n\n Weather Events:  ";
+            for (WeatherEvent wEvent : weatherEvents) {
+                if (wEvent.duration > 1) {
+                    detail = detail + "\n " + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + Math.min(wEvent.duration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
+                } else {
+                    detail = detail + "\n " + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + wEvent.duration + " period. ";
+                }
+            }
+        }
+
+        if (incidentEvents_GP.size() > 0) {
+            detail = detail + "\n\n Incidents (GP):  ";
+            for (IncidentEvent incEvent : incidentEvents_GP) {
+                if (incEvent.duration > 1) {
+                    detail = detail + "\n " + IncidentData.getIncidentTypeFull(incEvent.severity) + ": At segment " + (incEvent.getSegment() + 1) + " starting in period " + (incEvent.startPeriod + 1) + " for " + Math.min(incEvent.duration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
+                } else {
+                    detail = detail + "\n " + IncidentData.getIncidentTypeFull(incEvent.severity) + ": At segment " + (incEvent.getSegment() + 1) + " starting in period " + (incEvent.startPeriod + 1) + " for " + incEvent.duration + " period. ";
+                }
+            }
+        }
+        if (incidentEvents_ML.size() > 0) {
+            detail = detail + "\n\n Incidents (ML):  ";
+            for (IncidentEvent incEvent : incidentEvents_ML) {
+                if (incEvent.duration > 1) {
+                    detail = detail + "\n " + IncidentData.getIncidentTypeFull(incEvent.severity) + ": At segment " + (incEvent.getSegment() + 1) + " starting in period " + (incEvent.startPeriod + 1) + " for " + Math.min(incEvent.duration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
+                } else {
+                    detail = detail + "\n " + IncidentData.getIncidentTypeFull(incEvent.severity) + ": At segment " + (incEvent.getSegment() + 1) + " starting in period " + (incEvent.startPeriod + 1) + " for " + incEvent.duration + " period. ";
+                }
+            }
+        }
+        return detail;
+    }
+//</editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Adders">
     /**
@@ -247,128 +195,7 @@ public class ScenarioInfo implements Serializable {
      */
     public void addWorkZone(WorkZoneData workZone) {
         workZones.add(workZone);
-        numWorkZones++;
-        if (hasWorkZone == false) {
-            hasWorkZone = true;
-        }
 
-        // Making Spacing look nice
-        if (numWorkZones == 1) {
-            detail = detail + "\n\n Work Zones:\n  ";
-        } else {
-            detail = detail + "\n  ";
-        }
-
-        detail = detail + " " + workZone.getSeverityString() + " at segment(s) "
-                + (workZone.getStartSegment()) + " - " + (workZone.getEndSegment())
-                + " daily for periods " + (workZone.getStartPeriod())
-                + " - " + workZone.getEndPeriod();
-
-        updateName();
-    }
-
-    /**
-     * Add a weather event to a scenario
-     *
-     * @param weatherType type of the weather
-     * @param startPeriod start period (0 is the first period) of the weather
-     * event
-     * @param eventDuration duration (in number of periods) of the weather event
-     */
-    public void addWeatherEvent(int weatherType, int startPeriod, int eventDuration) {
-
-        if (!hasWeatherEvent) {
-            hasWeatherEvent = true;
-        }
-
-        // Updating weather event info
-        numWeatherEvents++;
-        weatherEventStartTimes.add(startPeriod);
-        weatherEventDurations.add(eventDuration);
-
-        if (numWeatherEvents == 1) {
-            detail = detail + "\n\n Weather Events:\n  ";
-        } else {
-            detail = detail + "\n  ";
-        }
-
-        if (eventDuration > 1) {
-            detail = detail + WeatherData.getWeatherTypeFull(weatherType) + ": Starting in period " + (startPeriod + 1) + " for " + Math.min(eventDuration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
-        } else {
-            detail = detail + WeatherData.getWeatherTypeFull(weatherType) + ": Starting in period " + (startPeriod + 1) + " for " + eventDuration + " period. ";
-        }
-        updateName();
-    }
-
-    /**
-     * Add an incident event to a scenario
-     *
-     * @param incType incident type
-     * @param startPeriod start period (0 is the first period) of the incident
-     * event
-     * @param eventDuration duration (in number of periods) of the incident
-     * event
-     * @param segment location of the incident event (0 is the first segment)
-     */
-    public void addIncidentGP(int incType, int startPeriod, int eventDuration, int segment) {
-        if (!hasIncidentGP) {
-            hasIncidentGP = true;
-        }
-
-        // Updating incident event info
-        numIncidentsGP++;
-        incidentGPEventStartTimes.add(startPeriod);
-        incidentGPEventDurations.add(eventDuration);
-        incidentGPEventLocations.add(segment);
-        incidentGPEventTypes.add(incType);
-
-        if (numIncidentsGP == 1) {
-            detail = detail + "\n\n Incidents (GP):\n  ";
-        } else {
-            detail = detail + "\n  ";
-        }
-
-        if (eventDuration > 1) {
-            detail = detail + IncidentData.getIncidentTypeFull(incType) + ": At segment " + (segment + 1) + " starting in period " + (startPeriod + 1) + " for " + Math.min(eventDuration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
-        } else {
-            detail = detail + IncidentData.getIncidentTypeFull(incType) + ": At segment " + (segment + 1) + " starting in period " + (startPeriod + 1) + " for " + eventDuration + " period. ";
-        }
-        updateName();
-    }
-
-    /**
-     * Add an incident event to a scenario
-     *
-     * @param incType incident type
-     * @param startPeriod start period (0 is the first period) of the incident
-     * event
-     * @param eventDuration duration (in number of periods) of the incident
-     * event
-     * @param segment location of the incident event (0 is the first segment)
-     */
-    public void addIncidentML(int incType, int startPeriod, int eventDuration, int segment) {
-        if (!hasIncidentML) {
-            hasIncidentML = true;
-        }
-
-        // Updating incident event info
-        numIncidentsML++;
-        incidentMLEventStartTimes.add(startPeriod);
-        incidentMLEventDurations.add(eventDuration);
-        incidentMLEventLocations.add(segment);
-        incidentMLEventTypes.add(incType);
-
-        if (numIncidentsML == 1) {
-            detail = detail + "\n\n Incidents (ML):\n  ";
-        } else {
-            detail = detail + "\n  ";
-        }
-
-        if (eventDuration > 1) {
-            detail = detail + IncidentData.getIncidentTypeFull(incType) + ": At segment " + (segment + 1) + " starting in period " + (startPeriod + 1) + " for " + Math.min(eventDuration, seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
-        } else {
-            detail = detail + IncidentData.getIncidentTypeFull(incType) + ": At segment " + (segment + 1) + " starting in period " + (startPeriod + 1) + " for " + eventDuration + " period. ";
-        }
         updateName();
     }
 
@@ -377,24 +204,11 @@ public class ScenarioInfo implements Serializable {
      *
      * @param wEvent ScenarioEvent instance of the weather event
      */
-    public void addWeatherEvent(ScenarioEvent wEvent) {
-        if (!hasWeatherEvent) {
-            hasWeatherEvent = true;
-        }
+    public void addWeatherEvent(WeatherEvent wEvent) {
 
         // Updating weather event info
         weatherEvents.add(wEvent);
-        if (weatherEvents.size() == 1) {
-            detail = detail + "\n\n Weather Events:\n  ";
-        } else {
-            detail = detail + "\n  ";
-        }
 
-        if (wEvent.getDuration() > 1) {
-            detail = detail + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + Math.min(wEvent.getDuration(), seed.getValueInt(CEConst.IDS_NUM_PERIOD)) + " periods. ";
-        } else {
-            detail = detail + WeatherData.getWeatherTypeFull(wEvent.severity) + ": Starting in period " + (wEvent.startPeriod + 1) + " for " + wEvent.getDuration() + " period. ";
-        }
         updateName();
     }
 
@@ -403,8 +217,20 @@ public class ScenarioInfo implements Serializable {
      *
      * @param incEvent
      */
-    public void addIncidentEvent(ScenarioEvent incEvent) {
+    public void addIncidentEventGP(IncidentEvent incEvent) {
 
+        // Updating incident event info
+        incidentEvents_GP.add(incEvent);
+
+        updateName();
+    }
+
+    public void addIncidentEventML(IncidentEvent incEvent) {
+
+        // Updating incident event info
+        incidentEvents_ML.add(incEvent);
+
+        updateName();
     }
     // </editor-fold>
 
@@ -415,7 +241,7 @@ public class ScenarioInfo implements Serializable {
      * @return Whether this scenario has weather event
      */
     public boolean hasWeatherEvent() {
-        return hasWeatherEvent;
+        return (weatherEvents.size() > 0);
     }
 
     /**
@@ -424,7 +250,7 @@ public class ScenarioInfo implements Serializable {
      * @return Whether this scenario has incident event
      */
     public boolean hasIncidentGP() {
-        return hasIncidentGP;
+        return (incidentEvents_GP.size() > 0);
     }
 
     /**
@@ -433,7 +259,7 @@ public class ScenarioInfo implements Serializable {
      * @return Whether this scenario has incident event
      */
     public boolean hasIncidentML() {
-        return hasIncidentML;
+        return (incidentEvents_ML.size() > 0);
     }
 
     /**
@@ -441,7 +267,7 @@ public class ScenarioInfo implements Serializable {
      * @return
      */
     public boolean hasWorkZone() {
-        return hasWorkZone;
+        return (workZones.size() > 0);
     }
     // </editor-fold>
 
@@ -449,119 +275,93 @@ public class ScenarioInfo implements Serializable {
     /**
      * Check whether weather event overlap previously assigned weather event
      *
-     * @param eventStartTime start period (0 is the first period) of the weather
-     * event
-     * @param eventDuration duration (in number of periods) of the weather event
+     * @param weatherEvent WeatherEvent instance
      * @return boolean overlap: false if event does not overlap any previously
      * assigned event, true otherwise.
      */
-    public boolean checkWeatherOverlap(int eventStartTime, int eventDuration) {
-        boolean overlap = false;
-        for (int event = 0; event < numWeatherEvents; event++) {
-            int assignedEventStartTime = weatherEventStartTimes.get(event);
-            int assignedEventDuration = weatherEventDurations.get(event);
-
-            if (eventStartTime <= assignedEventStartTime && eventStartTime + eventDuration > assignedEventStartTime) {
-                overlap = true;
-                break;
-            } else if (eventStartTime > assignedEventStartTime && eventStartTime < assignedEventStartTime + assignedEventDuration) {
-                overlap = true;
-                break;
-            } else if (eventStartTime < assignedEventStartTime && eventStartTime < ((assignedEventStartTime + assignedEventDuration) % seed.getValueInt(CEConst.IDS_NUM_PERIOD))) {
-                overlap = true;
-                break;
-            } else if (assignedEventDuration >= seed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
-                overlap = true;
-                break;
-            }
-        }
-
-        return overlap;
+    public boolean checkWeatherOverlap(WeatherEvent weatherEvent) {
+        return weatherEvents.stream().anyMatch((wEvent) -> (wEvent.hasOverlap(weatherEvent)));
     }
 
     /**
      * Check whether a GP incident event overlaps any previously assigned
      * incident event
      *
-     * @param eventStartTime start period (0 is the first period) of the
-     * incident event
-     * @param eventDuration duration (in number of periods) of the incident
-     * event
-     * @param location location of the incident event (0 is the first segment)
+     * @param incidentEvent IncidentEvent instance
      * @return boolean overlap: false if event does not overlap any previously
      * assigned event, true otherwise.
      */
-    public boolean checkGPIncidentOverlap(int eventStartTime, int eventDuration, int location) {
-        boolean overlap = false;
-        for (int event = 0; event < numIncidentsGP; event++) {
-            if (incidentGPEventLocations.get(event) == location) {
-                int assignedEventStartTime = incidentGPEventStartTimes.get(event);
-                int assignedEventDuration = incidentGPEventDurations.get(event);
-
-                if (eventStartTime <= assignedEventStartTime && eventStartTime + eventDuration > assignedEventStartTime) {
-                    overlap = true;
-                    break;
-                } else if (eventStartTime > assignedEventStartTime && eventStartTime < assignedEventStartTime + assignedEventDuration) {
-                    overlap = true;
-                    break;
-                } else if (eventStartTime < assignedEventStartTime && eventStartTime < ((assignedEventStartTime + assignedEventDuration) % seed.getValueInt(CEConst.IDS_NUM_PERIOD))) {
-                    overlap = true;
-                    break;
-                } else if (assignedEventDuration >= seed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
-                    overlap = true;
-                    break;
-                }
-            } else {
-                // If the incident does not occur in the same location, then temporal overlap is unimportant.
-            }
+    public boolean checkGPIncidentOverlap(IncidentEvent incidentEvent) {
+        if (incidentEvent.getSegmentType() == CEConst.SEG_TYPE_GP) {
+            return incidentEvents_GP.stream().anyMatch((incEvent) -> (incEvent.hasOverlap(incidentEvent)));
+        } else {
+            return false;
         }
-        return overlap;
+    }
+
+    /**
+     * Checks to see if there are any overlaps in existing GP incidents assigned
+     * to the scenario.
+     *
+     * @return True if there is overlap, false otherwise.
+     */
+    public boolean checkGPIncidentOverlap() {
+        if (incidentEvents_GP.size() > 1) {
+            for (int incIdx = 0; incIdx < incidentEvents_GP.size() - 1; incIdx++) {
+                for (int incIdx2 = incIdx + 1; incIdx2 < incidentEvents_GP.size(); incIdx2++) {
+                    if (incidentEvents_GP.get(incIdx).hasOverlap(incidentEvents_GP.get(incIdx2))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Check whether an ML incident event overlaps any previously assigned
      * incident event
      *
-     * @param eventStartTime start period (0 is the first period) of the
-     * incident event
-     * @param eventDuration duration (in number of periods) of the incident
-     * event
-     * @param location location of the incident event (0 is the first segment)
+     * @param incidentEvent IncidentEvent instance
      * @return boolean overlap: false if event does not overlap any previously
      * assigned event, true otherwise.
      */
-    public boolean checkMLIncidentOverlap(int eventStartTime, int eventDuration, int location) {
-        boolean overlap = false;
-        for (int event = 0; event < numIncidentsML; event++) {
-            if (incidentMLEventLocations.get(event) == location) {
-                int assignedEventStartTime = incidentMLEventStartTimes.get(event);
-                int assignedEventDuration = incidentMLEventDurations.get(event);
-
-                if (eventStartTime <= assignedEventStartTime && eventStartTime + eventDuration > assignedEventStartTime) {
-                    overlap = true;
-                    break;
-                } else if (eventStartTime > assignedEventStartTime && eventStartTime < assignedEventStartTime + assignedEventDuration) {
-                    overlap = true;
-                    break;
-                } else if (eventStartTime < assignedEventStartTime && eventStartTime < ((assignedEventStartTime + assignedEventDuration) % seed.getValueInt(CEConst.IDS_NUM_PERIOD))) {
-                    overlap = true;
-                    break;
-                } else if (assignedEventDuration >= seed.getValueInt(CEConst.IDS_NUM_PERIOD)) {
-                    overlap = true;
-                    break;
-                }
-            } else {
-                // If the incident does not occur in the same location, then temporal overlap is unimportant.
-            }
+    public boolean checkMLIncidentOverlap(IncidentEvent incidentEvent) {
+        if (incidentEvent.getSegmentType() == CEConst.SEG_TYPE_ML) {
+            return incidentEvents_ML.stream().anyMatch((incEvent) -> (incEvent.hasOverlap(incidentEvent)));
+        } else {
+            return false;
         }
-        return overlap;
     }
 
     /**
-     * Check whether a workzone event overlaps any previously assigned workzone
-     * event
+     * Checks to see if there are any overlaps in existing ML incidents assigned
+     * to the scenario.
      *
-     * @param workZone
+     * @return True if there is overlap, false otherwise.
+     */
+    public boolean checkMLIncidentOverlap() {
+        if (incidentEvents_ML.size() > 1) {
+            for (int incIdx = 0; incIdx < incidentEvents_ML.size() - 1; incIdx++) {
+                for (int incIdx2 = incIdx + 1; incIdx2 < incidentEvents_ML.size(); incIdx2++) {
+                    if (incidentEvents_ML.get(incIdx).hasOverlap(incidentEvents_ML.get(incIdx2))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check whether a work zone event overlaps any previously assigned work
+     * zone event.
+     *
+     * @param workZone WorkZoneData instance
      * @return
      */
     public boolean checkWorkZoneOverlap(WorkZoneData workZone) {
@@ -587,18 +387,18 @@ public class ScenarioInfo implements Serializable {
             name = name + " (" + String.format("%.3f", demandMultiplier) + ")";
         }
 
-        if (numWorkZones > 0) {
-            name = name + "  " + numWorkZones + "WZ";
+        if (workZones.size() > 0) {
+            name = name + "  " + workZones.size() + "WZ";
         }
 
-        if (numWeatherEvents > 0) {
-            name = name + "   " + numWeatherEvents + "W";
+        if (weatherEvents.size() > 0) {
+            name = name + "   " + weatherEvents.size() + "W";
         }
-        if (numIncidentsGP > 0) {
-            name = name + "   " + numIncidentsGP + "IGP";
+        if (incidentEvents_GP.size() > 0) {
+            name = name + "   " + incidentEvents_GP.size() + "IGP";
         }
-        if (numIncidentsML > 0) {
-            name = name + "   " + numIncidentsML + "IML";
+        if (incidentEvents_ML.size() > 0) {
+            name = name + "   " + incidentEvents_ML.size() + "IML";
         }
     }
 
@@ -628,7 +428,6 @@ public class ScenarioInfo implements Serializable {
      */
     public void setDemandMultiplier(float demandMultiplier) {
         this.demandMultiplier = demandMultiplier;
-        detail = " Seed Demand Multiplier: " + this.demandMultiplier + " ";
         updateName();
     }
     //</editor-fold>
@@ -640,7 +439,7 @@ public class ScenarioInfo implements Serializable {
      * @return number of weather events
      */
     public int getNumberOfWeatherEvents() {
-        return numWeatherEvents;
+        return weatherEvents.size();
     }
 
     /**
@@ -649,7 +448,7 @@ public class ScenarioInfo implements Serializable {
      * @return number of incident events
      */
     public int getNumberOfGPIncidentEvents() {
-        return numIncidentsGP;
+        return incidentEvents_GP.size();
     }
 
     /**
@@ -658,7 +457,7 @@ public class ScenarioInfo implements Serializable {
      * @return number of incident events
      */
     public int getNumberOfMLIncidentEvents() {
-        return numIncidentsML;
+        return incidentEvents_ML.size();
     }
 
     /**
@@ -667,7 +466,7 @@ public class ScenarioInfo implements Serializable {
      * @return number of incident events
      */
     public int getNumberOfWorkZones() {
-        return numWorkZones;
+        return workZones.size();
     }
 
     /**
@@ -704,8 +503,8 @@ public class ScenarioInfo implements Serializable {
      * @return
      */
     public String getWorkZoneDetail() {
-        if (numWorkZones > 0) {
-            return detail.split("\n\n")[1];
+        if (workZones.size() > 0) {
+            return this.getDetail().split("\n\n")[1];
         } else {
             return "";
         }
@@ -716,11 +515,11 @@ public class ScenarioInfo implements Serializable {
      * @return
      */
     public String getWeatherDetail() {
-        if (numWeatherEvents > 0) {
-            if (numWorkZones > 0) {
-                return detail.split("\n\n")[2];
+        if (weatherEvents.size() > 0) {
+            if (workZones.size() > 0) {
+                return this.getDetail().split("\n\n")[2];
             } else {
-                return detail.split("\n\n")[1];
+                return this.getDetail().split("\n\n")[1];
             }
         } else {
             return "";
@@ -732,18 +531,18 @@ public class ScenarioInfo implements Serializable {
      * @return
      */
     public String getGPIncidentDetail() {
-        if (numIncidentsGP > 0) {
-            if (numWorkZones > 0) {
-                if (numWeatherEvents > 0) {
-                    return detail.split("\n\n")[3];
+        if (incidentEvents_GP.size() > 0) {
+            if (workZones.size() > 0) {
+                if (weatherEvents.size() > 0) {
+                    return this.getDetail().split("\n\n")[3];
                 } else {
-                    return detail.split("\n\n")[2];
+                    return this.getDetail().split("\n\n")[2];
                 }
             } else {
-                if (numWeatherEvents > 0) {
-                    return detail.split("\n\n")[2];
+                if (weatherEvents.size() > 0) {
+                    return this.getDetail().split("\n\n")[2];
                 } else {
-                    return detail.split("\n\n")[1];
+                    return this.getDetail().split("\n\n")[1];
                 }
             }
         } else {
@@ -782,8 +581,8 @@ public class ScenarioInfo implements Serializable {
         // Applied as a diversion strategy.  Upstream mainline demand reduced as
         // well as fo any on ramp segments
         // Work Zone periods will never wrap
-        if (hasWorkZone) {
-            for (int wzIdx = 0; wzIdx < numWorkZones; wzIdx++) {
+        if (workZones.size() > 0) {
+            for (int wzIdx = 0; wzIdx < workZones.size(); wzIdx++) {
                 // Applying demand to upstream mainline demand
                 tempATDMScenario.OAF().multiply(atdmAdjFactors[3][0],
                         0,
@@ -808,12 +607,12 @@ public class ScenarioInfo implements Serializable {
 
                 // Applying non-diversion ATDM AFs to work zone segments
                 tempATDMScenario.SAF().multiply(atdmAdjFactors[3][1],
-                        workZones.get(wzIdx).getStartSegment(),
+                        workZones.get(wzIdx).getStartSegment() - 1,
                         workZones.get(wzIdx).getStartPeriod() - 1,
                         workZones.get(wzIdx).getEndSegment() - 1,
                         workZones.get(wzIdx).getEndPeriod() - 1);
                 tempATDMScenario.CAF().multiply(atdmAdjFactors[3][2],
-                        workZones.get(wzIdx).getStartSegment(),
+                        workZones.get(wzIdx).getStartSegment() - 1,
                         workZones.get(wzIdx).getStartPeriod() - 1,
                         workZones.get(wzIdx).getEndSegment() - 1,
                         workZones.get(wzIdx).getEndPeriod() - 1);
@@ -823,428 +622,396 @@ public class ScenarioInfo implements Serializable {
 
         // Weather applied only if weather event in period
         // (Does wrap time periods)
-        int startTime;
-        int dur;
-        if (hasWeatherEvent) {
-            for (int wIdx = 0; wIdx < numWeatherEvents; wIdx++) {
-                startTime = weatherEventStartTimes.get(wIdx);
-                dur = weatherEventDurations.get(wIdx);
-                if (startTime + dur <= numAnalysisPeriods) {
+        if (weatherEvents.size() > 0) {
+            for (WeatherEvent wEvent : weatherEvents) {
+                if (!wEvent.hasPeriodWrapping()) {
+                    // Event does not wrap
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                 } else {
-                    int endTime = (startTime + dur) % numAnalysisPeriods;
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
 
                 }
             }
         }
 
-        if (hasIncidentGP) {
+        if (incidentEvents_GP.size() > 0) {
             int seg;
-            int incType;
-            int adjNumLanes;
-            int endTime;
             int durReduction = atdmPlan.getIncidentDurationReduction();
-            for (int incIdx = 0; incIdx < numIncidentsGP; incIdx++) {
-                seg = incidentGPEventLocations.get(incIdx);
-                incType = incidentGPEventTypes.get(incIdx);
-                //numLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg);
-                startTime = incidentGPEventStartTimes.get(incIdx);
-                dur = incidentGPEventDurations.get(incIdx);
+            for (IncidentEvent incEvent : incidentEvents_GP) {
+                seg = incEvent.getSegment();
                 // Get list of upstream mainline and onramp segments
                 ArrayList<Integer> divSegments = new ArrayList<>();
                 divSegments.add(0);
-                for (int segIdx = 1; segIdx < seg; segIdx++) {
+                for (int segIdx = 1; segIdx < incEvent.getSegment(); segIdx++) {
                     if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_ONR || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
                         divSegments.add(segIdx);
                     }
                 }
 
-                if (dur <= durReduction) {                                        // Case 1: Duration is shorter than duration reduction
+                if (incEvent.duration <= durReduction) {                                        // Case 1: Duration is shorter than duration reduction
                     // Reverse adjustmentFactors applied to scenario
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 1a: incident does not wrap
-                        for (int per = startTime; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                    if (!incEvent.hasPeriodWrapping()) {                                        // Case 1a: incident does not wrap
+                        for (int per = incEvent.startPeriod; per <= incEvent.getEndPeriod(); per++) {
+                            //adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg, per), 6) - 2, 0);
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
                         }
-                        int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_GP);
-                        tempATDMScenario.LAF().add(newLAF,
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - 1);
+                                incEvent.getEndPeriod());
 
                     } else {                                                    // Case 1b: Incident wraps
-                        endTime = endTime % numAnalysisPeriods;
-                        for (int per = startTime; per <= numAnalysisPeriods - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                        //endTime = endTime % numAnalysisPeriods;
+                        for (int per = incEvent.startPeriod; per <= numAnalysisPeriods - 1; per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
-                                    seg,
-                                    per,
-                                    seg,
-                                    per);
-                        }
-
-                        for (int per = 0; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
-                                    seg,
-                                    per,
-                                    seg,
-                                    per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
-                                    seg,
-                                    per,
-                                    seg,
-                                    per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
-                                    seg,
-                                    per,
-                                    seg,
-                                    per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
                         }
 
-                        int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_GP);
-                        tempATDMScenario.LAF().add(newLAF,
+                        for (int per = 0; per <= incEvent.getEndPeriod(); per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
+                                    seg,
+                                    per,
+                                    seg,
+                                    per);
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
+                                    seg,
+                                    per,
+                                    seg,
+                                    per);
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
+                                    seg,
+                                    per,
+                                    seg,
+                                    per);
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
+                                    seg,
+                                    per,
+                                    seg,
+                                    per);
+                        }
+
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
                                 numAnalysisPeriods - 1);
-                        tempATDMScenario.LAF().add(newLAF,
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
                                 0,
                                 seg,
-                                endTime - 1);
-
+                                incEvent.getEndPeriod());
                     }
                 } else {                                                        // Case 2: Duration is greater than duration reduction
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 2a: incident does not wrap
+                    if (!incEvent.hasPeriodWrapping()) {                        // Case 2a: incident does not wrap
                         // Reversal of AFs for incident duration reduction
-                        for (int per = endTime - durReduction; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                        for (int per = incEvent.getEndPeriod() - (durReduction - 1); per <= incEvent.getEndPeriod(); per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
                         }
-                        int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_GP);
-                        tempATDMScenario.LAF().add(newLAF,
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
-                                endTime - durReduction,
+                                incEvent.getEndPeriod() - (durReduction - 1),
                                 seg,
-                                endTime - 1);
+                                incEvent.getEndPeriod());
 
                         // Application of non-diversion AFs to incident segments
                         tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
                         tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
                         tempATDMScenario.LAF().add(0,
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
 
                         // Application of AFs for incident diversion
                         for (int divSeg : divSegments) {
                             tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                     divSeg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     divSeg,
-                                    endTime - durReduction - 1);
-//                            tempATDMScenario.DAF().multiply(afArray[2][0],
-//                                    divSeg,
-//                                    startTime,
-//                                    divSeg,
-//                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                         }
                     } else {                                                    // Case 2b: incident wraps
-                        if ((endTime - durReduction) <= numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
-                            int wrappedEndTime = endTime % numAnalysisPeriods;
+                        if ((incEvent.startPeriod + incEvent.duration - durReduction) < numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
+                            //int wrappedEndTime = endTime % numAnalysisPeriods;
                             // Reversal of AFs for incident duration reduction
-                            for (int per = endTime - durReduction; per <= numAnalysisPeriods - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                            for (int per = incEvent.startPeriod + incEvent.duration - durReduction; per <= numAnalysisPeriods - 1; per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                            }
-                            for (int per = 0; per <= wrappedEndTime - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
-                                        seg,
-                                        0,
-                                        seg,
-                                        wrappedEndTime - 1);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
                             }
-
-                            int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_GP);
-                            tempATDMScenario.LAF().add(newLAF,
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
-                                    endTime - durReduction,
+                                    incEvent.startPeriod + incEvent.duration - durReduction,
                                     seg,
                                     numAnalysisPeriods - 1);
-                            tempATDMScenario.LAF().add(newLAF,
+                            for (int per = 0; per <= incEvent.getEndPeriod(); per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                            }
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
                                     0,
                                     seg,
-                                    wrappedEndTime - 1);
+                                    incEvent.getEndPeriod());
 
                             // Applying ATDM AFs for incident segments
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             tempATDMScenario.LAF().add(0,
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
 
                             // Applying Incident Diversion
                             for (int divSeg : divSegments) {
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
-                                        startTime,
+                                        incEvent.startPeriod,
                                         divSeg,
-                                        endTime - durReduction - 1);
+                                        incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             }
 
                         } else {                                                // Case 2b2: wrap occurs before duration reduction
-                            endTime = endTime % numAnalysisPeriods;
                             // Reversal of AFs for incident duration reduction
-                            for (int per = endTime - durReduction; per <= endTime - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 6) - 2, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                            for (int per = incEvent.getEndPeriod() - (durReduction - 1); per <= incEvent.getEndPeriod(); per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][adjNumLanes]),
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][adjNumLanes]),
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][adjNumLanes]),
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
                             }
-                            int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_GP);
-                            tempATDMScenario.LAF().add(newLAF,
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
-                                    endTime - durReduction,
+                                    incEvent.getEndPeriod() - (durReduction - 1),
                                     seg,
-                                    endTime - 1);
+                                    incEvent.getEndPeriod());
 
                             //Application of non-diversion AFs
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                             tempATDMScenario.LAF().add(0,
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.LAF().add(0,
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
 
                             // Application of incident diversion AFs
                             for (int divSeg : divSegments) {
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
-                                        startTime,
+                                        incEvent.startPeriod,
                                         divSeg,
                                         numAnalysisPeriods - 1);
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
                                         0,
                                         divSeg,
-                                        endTime - durReduction - 1);
+                                        incEvent.getEndPeriod() - durReduction);
                             }
 
                         }
@@ -1312,424 +1079,395 @@ public class ScenarioInfo implements Serializable {
 
         // Weather applied only if weather event in period
         // (Does wrap time periods)
-        int startTime;
-        int dur;
-        if (hasWeatherEvent) {
-            for (int wIdx = 0; wIdx < numWeatherEvents; wIdx++) {
-                startTime = weatherEventStartTimes.get(wIdx);
-                dur = weatherEventDurations.get(wIdx);
-                if (startTime + dur <= numAnalysisPeriods) {
+        if (weatherEvents.size() > 0) {
+            for (WeatherEvent wEvent : weatherEvents) {
+                if (!wEvent.hasPeriodWrapping()) {
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
+                            wEvent.getEndPeriod());
                 } else {
-                    int endTime = (startTime + dur) % numAnalysisPeriods;
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.OAF().multiply(atdmAdjFactors[1][0],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.DAF().multiply(atdmAdjFactors[1][0],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.SAF().multiply(atdmAdjFactors[1][1],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
-                            weatherEventStartTimes.get(wIdx),
+                            wEvent.startPeriod,
                             numSegments - 1,
                             numAnalysisPeriods - 1);
                     tempATDMScenario.CAF().multiply(atdmAdjFactors[1][2],
                             0,
                             0,
                             numSegments - 1,
-                            endTime - 1);
+                            wEvent.getEndPeriod());
 
                 }
             }
         }
 
-        if (hasIncidentML) {
+        if (incidentEvents_ML.size() > 0) {
             int seg;
-            int incType;
-            int adjNumLanes;
-            int endTime;
             int durReduction = atdmPlan.getIncidentDurationReduction();
-            for (int incIdx = 0; incIdx < numIncidentsML; incIdx++) {
-                seg = incidentMLEventLocations.get(incIdx);
-                incType = incidentMLEventTypes.get(incIdx);
-                //numLanes = seed.getValueInt(CEConst.IDS_ML_NUM_LANES,seg);
-                startTime = incidentMLEventStartTimes.get(incIdx);
-                dur = incidentMLEventDurations.get(incIdx);
+            for (IncidentEvent incEvent : incidentEvents_ML) {
+                seg = incEvent.getSegment();
                 // Get list of upstream mainline and onramp segments
                 ArrayList<Integer> divSegments = new ArrayList<>();
                 divSegments.add(0);
-                for (int segIdx = 1; segIdx < seg; segIdx++) {
-                    if (seed.getValueInt(CEConst.IDS_ML_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_ONR || seed.getValueInt(CEConst.IDS_ML_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
+                for (int segIdx = 1; segIdx < incEvent.getSegment(); segIdx++) {
+                    if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_ONR || seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, segIdx) == CEConst.SEG_TYPE_W) {
                         divSegments.add(segIdx);
                     }
                 }
 
-                if (dur <= durReduction) {                                        // Case 1: Duration is shorter than duration reduction
+                if (incEvent.duration <= durReduction) {                                        // Case 1: Duration is shorter than duration reduction
                     // Reverse adjustmentFactors applied to scenario
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 1a: incident does not wrap
-                        for (int per = startTime; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                    if (!incEvent.hasPeriodWrapping()) {                                        // Case 1a: incident does not wrap
+                        for (int per = incEvent.startPeriod; per <= incEvent.getEndPeriod(); per++) {
+                            //adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg, per), 6) - 2, 0);
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
+                                    seg,
                                     per,
-                                    startTime,
                                     seg,
                                     per);
-
-                            int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_ML);
-                            tempATDMScenario.LAF().add(newLAF,
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - 1);
                         }
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
+                                seg,
+                                incEvent.startPeriod,
+                                seg,
+                                incEvent.getEndPeriod());
 
                     } else {                                                    // Case 1b: Incident wraps
-                        endTime = endTime % numAnalysisPeriods;
-                        for (int per = startTime; per <= numAnalysisPeriods - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                        //endTime = endTime % numAnalysisPeriods;
+                        for (int per = incEvent.startPeriod; per <= numAnalysisPeriods - 1; per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
+                        }
 
-                        }
-                        for (int per = 0; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                        for (int per = 0; per <= incEvent.getEndPeriod(); per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
                         }
-                        int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_ML);
-                        tempATDMScenario.LAF().add(newLAF,
+
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
                                 numAnalysisPeriods - 1);
-                        tempATDMScenario.LAF().add(newLAF,
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
                                 0,
                                 seg,
-                                endTime - 1);
-
+                                incEvent.getEndPeriod());
                     }
                 } else {                                                        // Case 2: Duration is greater than duration reduction
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 2a: incident does not wrap
+                    if (!incEvent.hasPeriodWrapping()) {                        // Case 2a: incident does not wrap
                         // Reversal of AFs for incident duration reduction
-                        for (int per = endTime - durReduction; per <= endTime - 1; per++) {
-                            adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                        for (int per = incEvent.getEndPeriod() - (durReduction - 1); per <= incEvent.getEndPeriod(); per++) {
+                            tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                            tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                            tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                     seg,
                                     per,
                                     seg,
                                     per);
                         }
-                        int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_ML);
-                        tempATDMScenario.LAF().add(newLAF,
+                        tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                 seg,
-                                endTime - durReduction,
+                                incEvent.getEndPeriod() - (durReduction - 1),
                                 seg,
-                                endTime - 1);
+                                incEvent.getEndPeriod());
 
                         // Application of non-diversion AFs to incident segments
                         tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
                         tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
                         tempATDMScenario.LAF().add(0,
                                 seg,
-                                startTime,
+                                incEvent.startPeriod,
                                 seg,
-                                endTime - durReduction - 1);
+                                incEvent.getEndPeriod() - durReduction);
 
                         // Application of AFs for incident diversion
                         for (int divSeg : divSegments) {
                             tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                     divSeg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     divSeg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                         }
                     } else {                                                    // Case 2b: incident wraps
-                        if ((endTime - durReduction) <= numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
-                            int wrappedEndTime = endTime % numAnalysisPeriods;
+                        if ((incEvent.startPeriod + incEvent.duration - durReduction) < numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
+                            //int wrappedEndTime = endTime % numAnalysisPeriods;
                             // Reversal of AFs for incident duration reduction
-                            for (int per = endTime - durReduction; per <= numAnalysisPeriods - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            for (int per = incEvent.startPeriod + incEvent.duration - durReduction; per <= numAnalysisPeriods - 1; per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-
-                            }
-                            for (int per = 0; per <= wrappedEndTime - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
-                                        seg,
-                                        per,
-                                        seg,
-                                        per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
                             }
-
-                            int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_ML);
-                            tempATDMScenario.LAF().add(newLAF,
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
-                                    endTime - durReduction,
+                                    incEvent.startPeriod + incEvent.duration - durReduction,
                                     seg,
                                     numAnalysisPeriods - 1);
-                            tempATDMScenario.LAF().add(newLAF,
+                            for (int per = 0; per <= incEvent.getEndPeriod(); per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
+                                        seg,
+                                        per,
+                                        seg,
+                                        per);
+                            }
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
                                     0,
                                     seg,
-                                    wrappedEndTime - 1);
+                                    incEvent.getEndPeriod());
 
                             // Applying ATDM AFs for incident segments
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             tempATDMScenario.LAF().add(0,
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.startPeriod + incEvent.duration - durReduction - 1);
 
                             // Applying Incident Diversion
                             for (int divSeg : divSegments) {
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
-                                        startTime,
+                                        incEvent.startPeriod,
                                         divSeg,
-                                        endTime - durReduction - 1);
+                                        incEvent.startPeriod + incEvent.duration - durReduction - 1);
                             }
 
                         } else {                                                // Case 2b2: wrap occurs before duration reduction
-                            endTime = endTime % numAnalysisPeriods;
                             // Reversal of AFs for incident duration reduction
-                            for (int per = endTime - durReduction; per <= endTime - 1; per++) {
-                                adjNumLanes = Math.min(Math.max(seed.getValueInt(CEConst.IDS_ML_NUM_LANES, seg, per), 2) - 1, 0);
-                                tempATDMScenario.OAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                            for (int per = incEvent.getEndPeriod() - (durReduction - 1); per <= incEvent.getEndPeriod(); per++) {
+                                tempATDMScenario.OAF().multiply((1.0f / incEvent.getEventOAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.DAF().multiply((1.0f / seed.getMLIncidentDAF()[incType][adjNumLanes]),
+                                tempATDMScenario.DAF().multiply((1.0f / incEvent.getEventDAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.SAF().multiply((1.0f / seed.getMLIncidentSAF()[incType][adjNumLanes]),
+                                tempATDMScenario.SAF().multiply((1.0f / incEvent.getEventSAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
-                                tempATDMScenario.CAF().multiply((1.0f / seed.getMLIncidentCAF()[incType][adjNumLanes]),
+                                tempATDMScenario.CAF().multiply((1.0f / incEvent.getEventCAF(per, seg)),
                                         seg,
                                         per,
                                         seg,
                                         per);
                             }
-                            int newLAF = -1 * seed.getRLLAFI(group + 1, seg, startTime, CEConst.SEG_TYPE_ML);
-                            tempATDMScenario.LAF().add(newLAF,
+                            tempATDMScenario.LAF().add(incEvent.getEventLAF(incEvent.startPeriod, seg),
                                     seg,
-                                    endTime - durReduction,
+                                    incEvent.getEndPeriod() - (durReduction - 1),
                                     seg,
-                                    endTime - 1);
+                                    incEvent.getEndPeriod());
 
                             //Application of non-diversion AFs
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.SAF().multiply(atdmAdjFactors[2][1],
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.CAF().multiply(atdmAdjFactors[2][2],
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
                             tempATDMScenario.LAF().add(0,
                                     seg,
-                                    startTime,
+                                    incEvent.startPeriod,
                                     seg,
                                     numAnalysisPeriods - 1);
                             tempATDMScenario.LAF().add(0,
                                     seg,
                                     0,
                                     seg,
-                                    endTime - durReduction - 1);
+                                    incEvent.getEndPeriod() - durReduction);
 
                             // Application of incident diversion AFs
                             for (int divSeg : divSegments) {
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
-                                        startTime,
+                                        incEvent.startPeriod,
                                         divSeg,
                                         numAnalysisPeriods - 1);
                                 tempATDMScenario.OAF().multiply(atdmAdjFactors[2][0],
                                         divSeg,
                                         0,
                                         divSeg,
-                                        endTime - durReduction - 1);
+                                        incEvent.getEndPeriod() - durReduction);
                             }
 
                         }
@@ -1751,540 +1489,6 @@ public class ScenarioInfo implements Serializable {
     }
     //</editor-fold>
     //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Deprecated original ATDM without diversion for incidents">
-    /**
-     * Returns an ATDMScenario object that reflects the application of the
-     * strategies in the specified ATDM plan.
-     *
-     * @param atdmPlan
-     * @return
-     * @deprecated
-     */
-    public ATDMScenario generateATDMScenarioOrig(ATDMPlan atdmPlan) {
-        int numAnalysisPeriods = seed.getValueInt(CEConst.IDS_NUM_PERIOD);
-        int numSegments = seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
-
-        ATDMScenario tempATDMScenario = new ATDMScenario(numSegments, numAnalysisPeriods);
-        tempATDMScenario.setName(atdmPlan.getName());
-        tempATDMScenario.setDiscription(atdmPlan.getInfo());
-
-        float[][] afArray = atdmPlan.getATDMadjFactors();
-
-        // Demand management strategies (applied for all segments, all periods)
-        tempATDMScenario.DAF().set(afArray[0][0],
-                0, 0,
-                numSegments - 1, numAnalysisPeriods - 1);
-        tempATDMScenario.OAF().set(afArray[0][0],
-                0, 0,
-                numSegments - 1, numAnalysisPeriods - 1);
-
-        // Work Zone ATDM applied only if scenario has a work zone
-        // Applied as a diversion strategy.  Upstream mainline demand reduced as
-        // well as fo any on ramp segments
-        // Work zone periods will never wrap
-        if (hasWorkZone) {
-            for (int wzIdx = 0; wzIdx < numWorkZones; wzIdx++) {
-                if (false) { // Deprecated
-                    tempATDMScenario.OAF().multiply(afArray[3][0],
-                            workZones.get(wzIdx).getStartSegment(),
-                            workZones.get(wzIdx).getStartPeriod(),
-                            workZones.get(wzIdx).getEndSegment() - 1,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.DAF().multiply(afArray[3][0],
-                            workZones.get(wzIdx).getStartSegment(),
-                            workZones.get(wzIdx).getStartPeriod(),
-                            workZones.get(wzIdx).getEndSegment() - 1,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.SAF().multiply(afArray[3][1],
-                            workZones.get(wzIdx).getStartSegment(),
-                            workZones.get(wzIdx).getStartPeriod(),
-                            workZones.get(wzIdx).getEndSegment() - 1,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.CAF().multiply(afArray[3][2],
-                            workZones.get(wzIdx).getStartSegment(),
-                            workZones.get(wzIdx).getStartPeriod(),
-                            workZones.get(wzIdx).getEndSegment() - 1,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                } else {
-                    // Applying demand to upstream mainline demand
-                    tempATDMScenario.OAF().multiply(afArray[3][0],
-                            0,
-                            workZones.get(wzIdx).getStartPeriod() - 1,
-                            0,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.DAF().multiply(afArray[3][0],
-                            0,
-                            workZones.get(wzIdx).getStartPeriod() - 1,
-                            0,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.SAF().multiply(afArray[3][1],
-                            0,
-                            workZones.get(wzIdx).getStartPeriod() - 1,
-                            0,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-                    tempATDMScenario.CAF().multiply(afArray[3][2],
-                            0,
-                            workZones.get(wzIdx).getStartPeriod() - 1,
-                            0,
-                            workZones.get(wzIdx).getEndPeriod() - 1);
-
-                    // Applying to all upstream segments
-                    for (int seg = 1; seg < workZones.get(wzIdx).getStartSegment(); seg++) {
-                        if (seed.getValueInt(CEConst.IDS_SEGMENT_TYPE, seg) == CEConst.SEG_TYPE_ONR) {
-                            tempATDMScenario.OAF().multiply(afArray[3][0],
-                                    seg,
-                                    workZones.get(wzIdx).getStartPeriod() - 1,
-                                    seg,
-                                    workZones.get(wzIdx).getEndPeriod() - 1);
-                            tempATDMScenario.DAF().multiply(afArray[3][0],
-                                    seg,
-                                    workZones.get(wzIdx).getStartPeriod() - 1,
-                                    seg,
-                                    workZones.get(wzIdx).getEndPeriod() - 1);
-                            tempATDMScenario.SAF().multiply(afArray[3][1],
-                                    seg,
-                                    workZones.get(wzIdx).getStartPeriod() - 1,
-                                    seg,
-                                    workZones.get(wzIdx).getEndPeriod() - 1);
-                            tempATDMScenario.CAF().multiply(afArray[3][2],
-                                    seg,
-                                    workZones.get(wzIdx).getStartPeriod() - 1,
-                                    seg,
-                                    workZones.get(wzIdx).getEndPeriod() - 1);
-                        }
-                    }
-                }
-            }
-
-        }
-
-        // Weather applied only if weather event in period
-        // (Does wrap time periods)
-        int startTime;
-        int dur;
-        if (hasWeatherEvent) {;
-            for (int wIdx = 0; wIdx < numWeatherEvents; wIdx++) {
-                startTime = weatherEventStartTimes.get(wIdx);
-                dur = weatherEventDurations.get(wIdx);
-                if (startTime + dur <= numAnalysisPeriods) {
-                    tempATDMScenario.OAF().multiply(afArray[1][0],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
-                    tempATDMScenario.DAF().multiply(afArray[1][0],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
-                    tempATDMScenario.SAF().multiply(afArray[1][1],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
-                    tempATDMScenario.CAF().multiply(afArray[1][2],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            weatherEventStartTimes.get(wIdx) + dur - 1);
-                } else {
-                    int endTime = (startTime + dur) % numAnalysisPeriods;
-                    tempATDMScenario.OAF().multiply(afArray[1][0],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            numAnalysisPeriods - 1);
-                    tempATDMScenario.OAF().multiply(afArray[1][0],
-                            0,
-                            0,
-                            numSegments - 1,
-                            endTime - 1);
-                    tempATDMScenario.DAF().multiply(afArray[1][0],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            numAnalysisPeriods - 1);
-                    tempATDMScenario.DAF().multiply(afArray[1][0],
-                            0,
-                            0,
-                            numSegments - 1,
-                            endTime - 1);
-                    tempATDMScenario.SAF().multiply(afArray[1][1],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            numAnalysisPeriods - 1);
-                    tempATDMScenario.SAF().multiply(afArray[1][1],
-                            0,
-                            0,
-                            numSegments - 1,
-                            endTime - 1);
-                    tempATDMScenario.CAF().multiply(afArray[1][2],
-                            0,
-                            weatherEventStartTimes.get(wIdx),
-                            numSegments - 1,
-                            numAnalysisPeriods - 1);
-                    tempATDMScenario.CAF().multiply(afArray[1][2],
-                            0,
-                            0,
-                            numSegments - 1,
-                            endTime - 1);
-
-                }
-            }
-        }
-
-        if (hasIncidentGP) {
-            int seg;
-            int incType;
-            int numLanes;
-            int endTime;
-            int durReduction = atdmPlan.getIncidentDurationReduction();
-            for (int incIdx = 0; incIdx < numIncidentsGP; incIdx++) {
-                seg = incidentGPEventLocations.get(incIdx);
-                incType = incidentGPEventTypes.get(incIdx);
-                numLanes = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, seg);
-                startTime = incidentGPEventStartTimes.get(incIdx);
-                dur = incidentGPEventDurations.get(incIdx);
-                if (dur <= durReduction) {                                        // Case 1: Duration is shorter than duration reduction
-                    // Reverse adjustmentFactors applied to scenario
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 1a: incident does not wrap
-                        tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - 1);
-                        // Setting the new LAF to be that of just the workzone (equivalant to removing incident LAF)
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
-                        tempATDMScenario.LAF().add(newLAF,
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - 1);
-
-                    } else {                                                    // Case 1b: Incident wraps
-                        endTime = endTime % numAnalysisPeriods;
-                        tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                numAnalysisPeriods - 1);
-                        tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                0,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                numAnalysisPeriods - 1);
-                        tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                0,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                numAnalysisPeriods - 1);
-                        tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                seg,
-                                0,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                seg,
-                                startTime,
-                                seg,
-                                numAnalysisPeriods - 1);
-                        tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                seg,
-                                0,
-                                seg,
-                                endTime - 1);
-
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
-                        tempATDMScenario.LAF().add(newLAF,
-                                seg,
-                                startTime,
-                                seg,
-                                numAnalysisPeriods - 1);
-                        tempATDMScenario.LAF().add(newLAF,
-                                seg,
-                                0,
-                                seg,
-                                endTime - 1);
-
-                    }
-                } else {                                                        // Case 2: Duration is greater than duration reduction
-                    endTime = startTime + dur;
-                    if (endTime <= numAnalysisPeriods) {                        // Case 2a: incident does not wrap
-                        tempATDMScenario.OAF().multiply(afArray[2][0],
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - durReduction - 1);
-                        tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                endTime - durReduction,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.DAF().multiply(afArray[2][0],
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - durReduction - 1);
-                        tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                seg,
-                                endTime - durReduction,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.SAF().multiply(afArray[2][1],
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - durReduction - 1);
-                        tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                seg,
-                                endTime - durReduction,
-                                seg,
-                                endTime - 1);
-                        tempATDMScenario.CAF().multiply(afArray[2][2],
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - durReduction - 1);
-                        tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                seg,
-                                endTime - durReduction,
-                                seg,
-                                endTime - 1);
-
-                        int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
-                        tempATDMScenario.LAF().add(0,
-                                seg,
-                                startTime,
-                                seg,
-                                endTime - durReduction - 1);
-                        tempATDMScenario.LAF().add(newLAF,
-                                seg,
-                                endTime - durReduction,
-                                seg,
-                                endTime - 1);
-
-                    } else {                                                    // Case 2b: incident wraps
-                        if ((endTime - durReduction) <= numAnalysisPeriods) {     // Case 2b1: wrap occurs during duration reduction
-                            int wrappedEndTime = endTime % numAnalysisPeriods;
-                            tempATDMScenario.OAF().multiply(afArray[2][0],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    0,
-                                    seg,
-                                    wrappedEndTime - 1);
-                            tempATDMScenario.DAF().multiply(afArray[2][0],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    0,
-                                    seg,
-                                    wrappedEndTime - 1);
-                            tempATDMScenario.SAF().multiply(afArray[2][1],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                    seg,
-                                    0,
-                                    seg,
-                                    wrappedEndTime - 1);
-                            tempATDMScenario.CAF().multiply(afArray[2][2],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                    seg,
-                                    0,
-                                    seg,
-                                    wrappedEndTime - 1);
-
-                            int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
-                            tempATDMScenario.LAF().add(0,
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.LAF().add(newLAF,
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.LAF().add(newLAF,
-                                    seg,
-                                    0,
-                                    seg,
-                                    wrappedEndTime - 1);
-
-                        } else {                                                // Case 2b2: wrap occurs before duration reduction
-                            endTime = endTime % numAnalysisPeriods;
-                            tempATDMScenario.OAF().multiply(afArray[2][0],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.OAF().multiply(afArray[2][0],
-                                    seg,
-                                    0,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.OAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    endTime - 1);
-                            tempATDMScenario.DAF().multiply(afArray[2][0],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.DAF().multiply(afArray[2][0],
-                                    seg,
-                                    0,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.DAF().multiply((1.0f / seed.getGPIncidentDAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    endTime - 1);
-                            tempATDMScenario.SAF().multiply(afArray[2][1],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.SAF().multiply(afArray[2][1],
-                                    seg,
-                                    0,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.SAF().multiply((1.0f / seed.getGPIncidentSAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    endTime - 1);
-                            tempATDMScenario.CAF().multiply(afArray[2][2],
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.CAF().multiply(afArray[2][2],
-                                    seg,
-                                    0,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.CAF().multiply((1.0f / seed.getGPIncidentCAF()[incType][numLanes - 2]),
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    endTime - 1);
-
-                            int newLAF = Math.min((-1 * seed.getGPIncidentLAF()[incType][numLanes - 2]), numLanes - 1); //TODO: account for workzone lane closures
-                            tempATDMScenario.LAF().add(0,
-                                    seg,
-                                    startTime,
-                                    seg,
-                                    numAnalysisPeriods - 1);
-                            tempATDMScenario.LAF().add(0,
-                                    seg,
-                                    0,
-                                    seg,
-                                    endTime - durReduction - 1);
-                            tempATDMScenario.LAF().add(newLAF,
-                                    seg,
-                                    endTime - durReduction,
-                                    seg,
-                                    endTime - 1);
-
-                        }
-                    }
-                }
-            }
-        }
-
-        if (atdmPlan.hasShoulderOpening()) {
-            CA2DInt hsrMat = atdmPlan.getHSRMatrix();
-            int numLanesSegment;
-            for (int segment = 0; segment < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
-                //System.out.println(numLanesSegment);
-                for (int period = 0; period < seed.getValueInt(CEConst.IDS_NUM_PERIOD); period++) {
-                    if (hsrMat.get(segment, period) == 1) {
-                        numLanesSegment = seed.getValueInt(CEConst.IDS_MAIN_NUM_LANES_IN, segment);
-                        tempATDMScenario.LAF().add(1, segment, period); // Adding lane
-
-                        // Calculating new segment CAF using shoulder CAF
-                        float rlCAF = seed.getRLCAF(group + 1, segment, period, CEConst.SEG_TYPE_GP); //To Lake: Maybe need to switch between GP and ML
-                        //System.out.println(rlCAF);
-                        float newCAF = ((numLanesSegment * rlCAF * tempATDMScenario.CAF().get(segment, period)) + atdmPlan.getHSRCAF(numLanesSegment)) / (numLanesSegment + 1);
-                        //System.out.println(newCAF);
-                        tempATDMScenario.CAF().set((newCAF / rlCAF), segment, period);
-                    }
-                }
-            }
-        }
-
-        if (atdmPlan.hasRampMetering()) {
-            //tempATDMScenario.RM().deepCopyFrom(atdmPlan.getRMRate());
-        }
-        return tempATDMScenario;
-    }
-//</editor-fold>
 
     /**
      *

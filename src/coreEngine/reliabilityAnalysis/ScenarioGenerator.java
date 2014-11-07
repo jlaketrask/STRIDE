@@ -9,9 +9,11 @@ import coreEngine.Helper.CEDate;
 import coreEngine.Seed;
 import coreEngine.reliabilityAnalysis.DataStruct.DemandData;
 import coreEngine.reliabilityAnalysis.DataStruct.IncidentData;
+import coreEngine.reliabilityAnalysis.DataStruct.IncidentEvent;
 import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
 import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
 import coreEngine.reliabilityAnalysis.DataStruct.WeatherData;
+import coreEngine.reliabilityAnalysis.DataStruct.WeatherEvent;
 import coreEngine.reliabilityAnalysis.DataStruct.WorkZoneData;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -712,6 +714,7 @@ public class ScenarioGenerator {
         int sTime = 0;
         int scenarioIdx = 0;
         boolean scenarioFound;
+        WeatherEvent candEvent = new WeatherEvent(seed, 0, 0, 0, 0);
         ScenarioInfo currScenarioInfo = new ScenarioInfo();
 
         for (int weatherType = 0; weatherType < expMonthFreqWT.length; weatherType++) {
@@ -735,46 +738,83 @@ public class ScenarioGenerator {
                     // Retrieving ScenarioInfo
                     currScenarioInfo = scenarioInfos.get(prevScenarioInfoMarker + scenarioIdx);
 
+                    // Creating temporary WeatherEvent
+                    candEvent = new WeatherEvent(seed, currScenarioInfo.group, weatherType, sTime, weatherTypeDuration);
+
                     //Check to see if event will overlap with a previoulsy assigned event
                     if (currScenarioInfo.hasWeatherEvent()) {
-                        scenarioFound = !(currScenarioInfo.checkWeatherOverlap(sTime, weatherTypeDuration));
+                        scenarioFound = !(currScenarioInfo.checkWeatherOverlap(candEvent));
                     } else {
                         scenarioFound = true;
                     }
                 }
-                currScenarioInfo.addWeatherEvent(weatherType, sTime, weatherTypeDuration);
+                currScenarioInfo.addWeatherEvent(candEvent);
 
-                if (sTime + weatherTypeDuration <= seed.getValueInt(IDS_NUM_PERIOD)) {
-                    scenario.CAF().multiply(weatherData.getAdjustmentFactor(0, weatherType),
+                if (!candEvent.hasPeriodWrapping()) {
+                    scenario.CAF().multiply(candEvent.getEventCAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             sTime + weatherTypeDuration - 1);
 
-                    scenario.SAF().multiply(weatherData.getAdjustmentFactor(1, weatherType),
+                    scenario.SAF().multiply(candEvent.getEventSAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            sTime + weatherTypeDuration - 1);
+
+                    scenario.OAF().multiply(candEvent.getEventOAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            sTime + weatherTypeDuration - 1);
+
+                    scenario.DAF().multiply(candEvent.getEventDAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             sTime + weatherTypeDuration - 1);
                 } else {
                     // CAF
                     // Assigning up to end of RRP
-                    scenario.CAF().multiply(weatherData.getAdjustmentFactor(0, weatherType),
+                    scenario.CAF().multiply(candEvent.getEventCAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             seed.getValueInt(IDS_NUM_PERIOD) - 1);
                     // Wrapping back to beginning of RRP
-                    scenario.CAF().multiply(weatherData.getAdjustmentFactor(0, weatherType),
+                    scenario.CAF().multiply(candEvent.getEventCAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, 0,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             ((sTime + weatherTypeDuration) % seed.getValueInt(IDS_NUM_PERIOD)) - 1);
 
                     // SAF
                     // Assigning up to end of RRP
-                    scenario.SAF().multiply(weatherData.getAdjustmentFactor(1, weatherType),
+                    scenario.SAF().multiply(candEvent.getEventSAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             seed.getValueInt(IDS_NUM_PERIOD) - 1);
                     // Wrapping back to beginning of RRP
-                    scenario.SAF().multiply(weatherData.getAdjustmentFactor(1, weatherType),
+                    scenario.SAF().multiply(candEvent.getEventSAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, 0,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            ((sTime + weatherTypeDuration) % seed.getValueInt(IDS_NUM_PERIOD)) - 1);
+
+                    // OAF
+                    // Assigning up to end of RRP
+                    scenario.OAF().multiply(candEvent.getEventOAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            seed.getValueInt(IDS_NUM_PERIOD) - 1);
+                    // Wrapping back to beginning of RRP
+                    scenario.OAF().multiply(candEvent.getEventOAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, 0,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            ((sTime + weatherTypeDuration) % seed.getValueInt(IDS_NUM_PERIOD)) - 1);
+
+                    // DAF
+                    // Assigning up to end of RRP
+                    scenario.DAF().multiply(candEvent.getEventDAF(),
+                            (prevScenarioInfoMarker + scenarioIdx), 0, sTime,
+                            (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
+                            seed.getValueInt(IDS_NUM_PERIOD) - 1);
+                    // Wrapping back to beginning of RRP
+                    scenario.DAF().multiply(candEvent.getEventDAF(),
                             (prevScenarioInfoMarker + scenarioIdx), 0, 0,
                             (prevScenarioInfoMarker + scenarioIdx), seed.getValueInt(IDS_NUM_SEGMENT) - 1,
                             ((sTime + weatherTypeDuration) % seed.getValueInt(IDS_NUM_PERIOD)) - 1);
@@ -967,24 +1007,22 @@ public class ScenarioGenerator {
         ArrayList<Integer> distArr5 = createIntegerArrDist(tempDurs[4]);
         for (int incidentNum = 0; incidentNum < totalNumOfIncForRRP; incidentNum++) {
             int currIncType = listIncidentEvents[incidentNum][1];
-            //float currLNRand = generateLogNormalValue(randomGenerator, incidentData.getIncidentDuration(currIncType),incidentData.getIncidentDurationStdDev(currIncType));
-            //int currLNDur = generateLogNormalDuration(currLNRand, incidentData.getIncidentDurMin(currIncType), incidentData.getIncidentDurMax(currIncType));
             //listIncidentEvents[incidentNum][3]=currLNDur;
             switch (currIncType) {
                 case 0:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr1.remove(RNG.nextInt(distArr1.size()));   // RNG Changed
+                    listIncidentEvents[incidentNum][3] = distArr1.remove(RNG.nextInt(distArr1.size()));   // RNG Changed
                     break;
                 case 1:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr2.remove(RNG.nextInt(distArr2.size()));   // RNG Changed
+                    listIncidentEvents[incidentNum][3] = distArr2.remove(RNG.nextInt(distArr2.size()));   // RNG Changed
                     break;
                 case 2:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr3.remove(RNG.nextInt(distArr3.size()));   // RNG Changed
+                    listIncidentEvents[incidentNum][3] = distArr3.remove(RNG.nextInt(distArr3.size()));   // RNG Changed
                     break;
                 case 3:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr4.remove(RNG.nextInt(distArr4.size()));   // RNG Changed
+                    listIncidentEvents[incidentNum][3] = distArr4.remove(RNG.nextInt(distArr4.size()));   // RNG Changed
                     break;
                 case 4:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr5.remove(RNG.nextInt(distArr5.size()));   // RNG Changed
+                    listIncidentEvents[incidentNum][3] = distArr5.remove(RNG.nextInt(distArr5.size()));   // RNG Changed
                     break;
 
             }
@@ -1103,195 +1141,224 @@ public class ScenarioGenerator {
         }
 
         // Setting up variables for loops
-        //int randSTimeIdx;         // Variable to hold randomly generated index for selection of starting AP
-        int startAP;              // Variable to hold starting AP for incident
-        //int randLocIdx;           // Variable to hold randomly generated index for selection of location
-        int segmentNum = 0;           // Variable to hold location of incident
         int numPeriods = seed.getValueInt(IDS_NUM_PERIOD);
 
         int incidentIdx;
         ScenarioInfo currScenarioInfo;
-        //Scenario currScenario;
+        IncidentEvent candIncident = new IncidentEvent(seed, scenario, 0, 0, 0, 0, 0, CEConst.SEG_TYPE_GP);
+
         boolean overlap;
-        boolean isValidLocation;
-        int counter = 0;
-        int locCounter;
-        int numRandomizations = 0;
-        int maxRandomizations = 5;
+        boolean isValid;
+        boolean readyToBeAssigned;
+        ArrayList<IncidentEvent> assignedIncidents = new ArrayList<>();
         int numUnassignedIncidents = 0;
         while (selectionArrEvents.size() > 0) {
+            readyToBeAssigned = false;
             // Randomly select incident
-            //randIdx = rng.nextInt(selectionArrEvents.size());
             incidentIdx = selectionArrEvents.get(0); // index of incident event that has not been assigned a start time and duration
-
-            // Generate random start time and location
-            //randSTimeIdx = rng.nextInt(selectionArrSTimes.size());
-            startAP = selectionArrSTimes.get(counter);
-
-            // Search for a valid location
-            isValidLocation = false;
-            locCounter = 0;
-            while (!isValidLocation && (locCounter < selectionArrLoc.size())) {
-                //randLocIdx = rng.nextInt(selectionArrLoc.size());
-                segmentNum = selectionArrLoc.get(locCounter);
-                // Checking to see if location is valid (i.e. severity does not exceed segment lanes)
-                if (seed.getValueInt(IDS_MAIN_NUM_LANES_IN, segmentNum) <= listIncidentEvents[incidentIdx][1]) {
-                    locCounter++;
-                    //System.out.println("Looking for new incident location.");
-                } else {
-                    isValidLocation = true;
-                }
-            }
             currScenarioInfo = scenarioInfos.get(listIncidentEvents[incidentIdx][0]);
-            overlap = currScenarioInfo.checkGPIncidentOverlap(startAP, listIncidentEvents[incidentIdx][3] / 15, segmentNum);
-            if (!isValidLocation) { // No valid location can be found for the incident
-                System.out.println("Type 1 - Incident: " + selectionArrEvents.get(0) + ", Severity" + listIncidentEvents[selectionArrEvents.get(0)][1]);
-                numUnassignedIncidents++;
-                selectionArrEvents.remove(0);
-            } else if (overlap) { // Current location/time period overlaps with another incident
-                counter++; // Effectively move to new random start time
-                if (counter == selectionArrEvents.size() && selectionArrEvents.size() > 0) {
-                    // If all potential time periods checked, re-randomize events, locations, and start times
-                    if (numRandomizations < maxRandomizations) {
-                        numRandomizations++;
-                        Collections.shuffle(selectionArrEvents, RNG);
-                        Collections.shuffle(selectionArrLoc, RNG);
-                        Collections.shuffle(selectionArrSTimes, RNG);
-                        counter = 0;
-                    } else { // If re-randomizaiton fails 5 times, all remaining events will be discarded
-                        numUnassignedIncidents += selectionArrEvents.size();
-                        for (int loi = 0; loi < selectionArrEvents.size(); loi++) {
-                            int tempInc = selectionArrEvents.get(loi);
-                            System.out.println("Type 2 - Incident: " + tempInc + ", Severity:" + listIncidentEvents[tempInc][1]
-                                    + ", Scen: " + currScenarioInfo.group + ", Seg: " + selectionArrLoc.get(loi) + ", STime: " + selectionArrSTimes.get(loi)
-                                    + ", Dur: " + listIncidentEvents[tempInc][3]);
+            // Generate random start time and location
+            //startAP = selectionArrSTimes.get(counter);
+            //segmentNum = selectionArrLoc.get(locCounter);
+            for (Integer sTimeCand : selectionArrSTimes) {
+                for (Integer locCand : selectionArrLoc) {
+                    candIncident = new IncidentEvent(seed, scenario,
+                            currScenarioInfo.group,
+                            listIncidentEvents[incidentIdx][1],
+                            sTimeCand,
+                            Math.min(listIncidentEvents[incidentIdx][3], seed.getValueInt(CEConst.IDS_NUM_PERIOD)),
+                            locCand,
+                            CEConst.SEG_TYPE_GP);
+                    isValid = candIncident.isValid();
+                    if (isValid) {
+                        // Check overlap with existing incidents
+                        overlap = currScenarioInfo.checkGPIncidentOverlap(candIncident);
+                        if (!overlap) {
+                            readyToBeAssigned = true;
+                            break;
                         }
-                        break;
                     }
                 }
-            } else { // Found valid location with no overlap
-                incidentIdx = selectionArrEvents.remove(0); //selects and removes incident from list of unassigned incidents
-                selectionArrSTimes.remove(counter);
-                selectionArrLoc.remove(locCounter);
-                counter = 0;
-                listIncidentEvents[incidentIdx][2] = startAP;
-                listIncidentEvents[incidentIdx][4] = segmentNum;
-
-                // Add to currScenarioInfo and Scenario
-                currScenarioInfo.addIncidentGP(listIncidentEvents[incidentIdx][1], // Incident type (severity)
-                        listIncidentEvents[incidentIdx][2], // Incdient start period
-                        (listIncidentEvents[incidentIdx][3] / 15), // Incident duration (in Ap's)
-                        listIncidentEvents[incidentIdx][4]);   // Incident location
-
-                // Updating scenario
-                int numLanes = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, listIncidentEvents[incidentIdx][4]);
-                if (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15) <= numPeriods) {   // Changes < to <=
-                    scenario.CAF().multiply(incidentData_GP.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    scenario.OAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    scenario.DAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    scenario.SAF().multiply(incidentData_GP.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                } else {
-                    int endPeriod = (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15) - 1) % numPeriods;
-                    scenario.CAF().multiply(incidentData_GP.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    scenario.CAF().multiply(incidentData_GP.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    scenario.OAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    scenario.OAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    scenario.DAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    scenario.DAF().multiply(incidentData_GP.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    scenario.SAF().multiply(incidentData_GP.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    scenario.SAF().multiply(incidentData_GP.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                }
-
-                // update sCAF, sSAF, sOAF,SDaf and sLAF for all affected periods
-                int adjPeriod;
-                for (int period = 0; period < listIncidentEvents[incidentIdx][3] / 15; period++) {
-                    adjPeriod = (listIncidentEvents[incidentIdx][2] + period) % seed.getValueInt(IDS_NUM_PERIOD);
-                    int oldLAF = scenario.LAFI().get(listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
-                    int currWZLAF = scenario.LAFWZ().get(listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
-                    int newLAF = Math.max(oldLAF + incidentData_GP.getIncidentLAF(listIncidentEvents[incidentIdx][1], numLanes - 2), -1 * (numLanes + currWZLAF - 1));
-                    scenario.LAFI().add(newLAF, listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
+                if (readyToBeAssigned) {
+                    break;
                 }
             }
 
+            if (!readyToBeAssigned) {
+                // If no valid location/start time found in remaining choices,
+                // now check previously assigned incidents
+                for (IncidentEvent inc : assignedIncidents) {
+                    if (inc != null) {
+                        for (Integer sTimeCand : selectionArrSTimes) {
+                            for (Integer locCand : selectionArrLoc) {
+                                candIncident = new IncidentEvent(seed, scenario,
+                                        currScenarioInfo.group,
+                                        listIncidentEvents[incidentIdx][1],
+                                        sTimeCand,
+                                        Math.min(listIncidentEvents[incidentIdx][3], seed.getValueInt(CEConst.IDS_NUM_PERIOD)),
+                                        locCand,
+                                        CEConst.SEG_TYPE_GP);
+                                if (IncidentEvent.checkSegmentSwapGP(scenarioInfos, candIncident, inc)) {
+                                    // Swapping segments
+                                    int seg1 = candIncident.getSegment();
+                                    candIncident.setSegment(inc.getSegment());
+                                    inc.setSegment(seg1);
+                                    readyToBeAssigned = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!readyToBeAssigned) { // No valid set of parameters could be found for the incident
+                System.out.println("Type 1 - Incident: " + selectionArrEvents.get(0) + ", Severity" + listIncidentEvents[selectionArrEvents.get(0)][1]);
+                listIncidentEvents[incidentIdx][2] = -1;
+                listIncidentEvents[incidentIdx][4] = -1;
+                numUnassignedIncidents++;
+                assignedIncidents.add(null);  // Adds a null value as a place holder
+                selectionArrEvents.remove(0);
+            } else { // Found valid location with no overlap
+                currScenarioInfo.addIncidentEventGP(candIncident);
+                assignedIncidents.add(candIncident);
+                listIncidentEvents[incidentIdx][2] = candIncident.startPeriod;
+                listIncidentEvents[incidentIdx][4] = candIncident.getSegment();
+                selectionArrEvents.remove(0);           // Removes incident from list of unassigned incidents
+                selectionArrSTimes.remove((Integer) candIncident.startPeriod);      // Removes start time from list of unassigned incident start times
+                selectionArrLoc.remove((Integer) candIncident.getSegment());        // Removes location from list of unassigned incident locations
+            }
+        }  // Assigned all possible incidents
+
+        // Assigning adjustment factors to the Scenario
+        for (incidentIdx = 0; incidentIdx < assignedIncidents.size(); incidentIdx++) {
+            IncidentEvent inc = assignedIncidents.get(incidentIdx);
+            if (inc != null) {
+                // Updating scenario
+                if (inc.startPeriod + inc.duration <= numPeriods) {   // Incident does not wrap
+                    for (int per = inc.startPeriod; per <= inc.getEndPeriod(); per++) {
+                        scenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    scenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.startPeriod,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.getEndPeriod());
+                } else {
+                    for (int per = inc.startPeriod; per < numPeriods; per++) {
+                        scenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    for (int per = 0; per < inc.getEndPeriod(); per++) {
+                        scenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        scenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    scenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.startPeriod,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            numPeriods - 1);
+                    scenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            0,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.getEndPeriod());
+                }
+            }
         }
+
         if (numUnassignedIncidents > 0) {
             JOptionPane.showMessageDialog(null, "<HTML><CENTER>Failed to assign " + numUnassignedIncidents + " incident(s).<br>&nbsp<br>"
                     + "If the number of unassigned incidents is high, please ensure the inputs<br>"
                     + "(incidents frequencies, distributions, etc.) are valid<br>"
                     + "or retry Scenario Generation with a new random number generator seed.");
         }
+
         MainWindow.printLog((listIncidentEvents.length - numUnassignedIncidents) + " incident events assigned to scenarios.");
         return listIncidentEvents;
     }
@@ -1502,19 +1569,19 @@ public class ScenarioGenerator {
             //listIncidentEvents[incidentNum][3]=currLNDur;
             switch (currIncType) {
                 case 0:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr1.remove(RNG.nextInt(distArr1.size()));
+                    listIncidentEvents[incidentNum][3] = distArr1.remove(RNG.nextInt(distArr1.size()));
                     break;
                 case 1:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr2.remove(RNG.nextInt(distArr2.size()));
+                    listIncidentEvents[incidentNum][3] = distArr2.remove(RNG.nextInt(distArr2.size()));
                     break;
                 case 2:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr3.remove(RNG.nextInt(distArr3.size()));
+                    listIncidentEvents[incidentNum][3] = distArr3.remove(RNG.nextInt(distArr3.size()));
                     break;
                 case 3:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr4.remove(RNG.nextInt(distArr4.size()));
+                    listIncidentEvents[incidentNum][3] = distArr4.remove(RNG.nextInt(distArr4.size()));
                     break;
                 case 4:
-                    listIncidentEvents[incidentNum][3] = 15 * distArr5.remove(RNG.nextInt(distArr5.size()));
+                    listIncidentEvents[incidentNum][3] = distArr5.remove(RNG.nextInt(distArr5.size()));
                     break;
 
             }
@@ -1637,195 +1704,224 @@ public class ScenarioGenerator {
         }
 
         // Setting up variables for loops
-        //int randSTimeIdx;         // Variable to hold randomly generated index for selection of starting AP
-        int startAP;              // Variable to hold starting AP for incident
-        //int randLocIdx;           // Variable to hold randomly generated index for selection of location
-        int segmentNum = 0;           // Variable to hold location of incident
         int numPeriods = seed.getValueInt(CEConst.IDS_NUM_PERIOD);
 
         int incidentIdx;
         ScenarioInfo currScenarioInfo;
-        //Scenario currScenario;
+        IncidentEvent candIncident = new IncidentEvent(seed, mlScenario, 0, 0, 0, 0, 0, CEConst.SEG_TYPE_ML);
+
         boolean overlap;
-        boolean isValidLocation;
-        int counter = 0;
-        int locCounter;
-        int numRandomizations = 0;
-        int maxRandomizations = 5;
+        boolean isValid;
+        boolean readyToBeAssigned = false;
+        ArrayList<IncidentEvent> assignedIncidents = new ArrayList<>();
         int numUnassignedIncidents = 0;
         while (selectionArrEvents.size() > 0) {
-            // Select incident
+            // Randomly select incident
             incidentIdx = selectionArrEvents.get(0); // index of incident event that has not been assigned a start time and duration
-
-            // Select start time from randomized array
-            startAP = selectionArrSTimes.get(counter);
-
-            // Search for a valid location
-            isValidLocation = false;
-            locCounter = 0;
-            while (!isValidLocation && (locCounter < selectionArrLoc.size())) {
-                //randLocIdx = rng.nextInt(selectionArrLoc.size());
-                segmentNum = selectionArrLoc.get(locCounter);
-                // Checking to see if location is valid (i.e. severity does not exceed segment lanes)
-                if (seed.getValueInt(CEConst.IDS_ML_NUM_LANES, segmentNum) <= listIncidentEvents[incidentIdx][1]) {
-                    locCounter++;
-                    //System.out.println("Looking for new incident location.");
-                } else {
-                    isValidLocation = true;
-                }
-            }
             currScenarioInfo = scenarioInfos.get(listIncidentEvents[incidentIdx][0]);
-            overlap = currScenarioInfo.checkGPIncidentOverlap(startAP, listIncidentEvents[incidentIdx][3] / 15, segmentNum);
-            if (!isValidLocation) { // No valid location can be found for the incident
-                System.out.println("Type 1 - Incident: " + selectionArrEvents.get(0) + ", Severity" + listIncidentEvents[selectionArrEvents.get(0)][1]);
-                numUnassignedIncidents++;
-                selectionArrEvents.remove(0);
-            } else if (overlap) { // Current location/time period overlaps with another incident
-                counter++; // Effectively move to new random start time
-                if (counter == selectionArrSTimes.size() && selectionArrEvents.size() > 0) {
-                    // If all potential time periods checked, re-randomize events, locations, and start times
-                    if (numRandomizations < maxRandomizations) {
-                        numRandomizations++;
-                        Collections.shuffle(selectionArrEvents, RNG);
-                        Collections.shuffle(selectionArrLoc, RNG);
-                        Collections.shuffle(selectionArrSTimes, RNG);
-                        counter = 0;
-                    } else { // If re-randomizaiton fails 5 times, all remaining events will be discarded
-                        numUnassignedIncidents += selectionArrEvents.size();
-                        for (int loi = 0; loi < selectionArrEvents.size(); loi++) {
-                            int tempInc = selectionArrEvents.get(loi);
-                            System.out.println("Type 2 - Incident: " + tempInc + ", Severity:" + listIncidentEvents[tempInc][1]
-                                    + ", Scen: " + currScenarioInfo.group + ", Seg: " + selectionArrLoc.get(loi) + ", STime: " + selectionArrSTimes.get(loi)
-                                    + ", Dur: " + listIncidentEvents[tempInc][3]);
+            // Generate random start time and location
+            //startAP = selectionArrSTimes.get(counter);
+            //segmentNum = selectionArrLoc.get(locCounter);
+            for (Integer sTimeCand : selectionArrSTimes) {
+                for (Integer locCand : selectionArrLoc) {
+                    candIncident = new IncidentEvent(seed, mlScenario,
+                            currScenarioInfo.group,
+                            listIncidentEvents[incidentIdx][1],
+                            sTimeCand,
+                            Math.min(listIncidentEvents[incidentIdx][3], seed.getValueInt(CEConst.IDS_NUM_PERIOD)),
+                            locCand,
+                            CEConst.SEG_TYPE_ML);
+                    isValid = candIncident.isValid();
+                    if (isValid) {
+                        // Check overlap with existing incidents
+                        overlap = currScenarioInfo.checkGPIncidentOverlap(candIncident);
+                        if (!overlap) {
+                            readyToBeAssigned = true;
+                            break;
                         }
-                        break;
                     }
                 }
-            } else {
-                incidentIdx = selectionArrEvents.remove(0); // Selects and removes incident from list of unassigned incidents
-                selectionArrSTimes.remove(counter);          // Removes selected start time from selection array
-                selectionArrLoc.remove(locCounter);               // Removes selected location from location selection array
-                counter = 0;
-                listIncidentEvents[incidentIdx][2] = startAP;
-                listIncidentEvents[incidentIdx][4] = segmentNum;
-
-                // Add to currScenarioInfo and Scenario
-                currScenarioInfo.addIncidentML(listIncidentEvents[incidentIdx][1], // Incident type (severity)
-                        listIncidentEvents[incidentIdx][2], // Incdient start period
-                        (listIncidentEvents[incidentIdx][3] / 15), // Incident duration (in Ap's)
-                        listIncidentEvents[incidentIdx][4]);   // Incident location
-
-                // Updating scenario
-                int numLanes = seed.getValueInt(IDS_MAIN_NUM_LANES_IN, listIncidentEvents[incidentIdx][4]);
-                if (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15) <= numPeriods) {   // Changes < to <=
-                    mlScenario.CAF().multiply(incidentData_ML.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    mlScenario.OAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    mlScenario.DAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                    mlScenario.SAF().multiply(incidentData_ML.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15)) - 1);
-                } else {
-                    int endPeriod = (listIncidentEvents[incidentIdx][2] + (listIncidentEvents[incidentIdx][3] / 15) - 1) % numPeriods;
-                    mlScenario.CAF().multiply(incidentData_ML.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    mlScenario.CAF().multiply(incidentData_ML.getIncidentCAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    mlScenario.OAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    mlScenario.OAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    mlScenario.DAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    mlScenario.DAF().multiply(incidentData_ML.getIncidentDAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
-                    mlScenario.SAF().multiply(incidentData_ML.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            listIncidentEvents[incidentIdx][2],
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            numPeriods - 1);
-                    mlScenario.SAF().multiply(incidentData_ML.getIncidentFFSAF(listIncidentEvents[incidentIdx][1], numLanes - 2),
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            0,
-                            listIncidentEvents[incidentIdx][0],
-                            listIncidentEvents[incidentIdx][4],
-                            endPeriod);
+                if (readyToBeAssigned) {
+                    break;
                 }
-
-                // update sCAF, sSAF, sOAF,SDaf and sLAF for all affected periods
-                int adjPeriod;
-                for (int period = 0; period < listIncidentEvents[incidentIdx][3] / 15; period++) {
-                    adjPeriod = (listIncidentEvents[incidentIdx][2] + period) % seed.getValueInt(IDS_NUM_PERIOD);
-                    int oldLAF = mlScenario.LAFI().get(listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
-                    int currWZLAF = mlScenario.LAFWZ().get(listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
-                    int newLAF = Math.max(oldLAF + incidentData_ML.getIncidentLAF(listIncidentEvents[incidentIdx][1], numLanes - 2), -1 * (numLanes + currWZLAF - 1));
-                    mlScenario.LAFI().add(newLAF, listIncidentEvents[incidentIdx][0], listIncidentEvents[incidentIdx][4], adjPeriod);
-                }
-
             }
 
+            if (!readyToBeAssigned) {
+                // If no valid location/start time found in remaining choices,
+                // now check previously assigned incidents
+                for (IncidentEvent inc : assignedIncidents) {
+                    if (inc != null) {
+                        for (Integer sTimeCand : selectionArrSTimes) {
+                            for (Integer locCand : selectionArrLoc) {
+                                candIncident = new IncidentEvent(seed, mlScenario,
+                                        currScenarioInfo.group,
+                                        listIncidentEvents[incidentIdx][1],
+                                        sTimeCand,
+                                        Math.min(listIncidentEvents[incidentIdx][3], seed.getValueInt(CEConst.IDS_NUM_PERIOD)),
+                                        locCand,
+                                        CEConst.SEG_TYPE_ML);
+                                if (IncidentEvent.checkSegmentSwapML(scenarioInfos, candIncident, inc)) {
+                                    // Swapping segments
+                                    int seg1 = candIncident.getSegment();
+                                    candIncident.setSegment(inc.getSegment());
+                                    inc.setSegment(seg1);
+                                    readyToBeAssigned = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!readyToBeAssigned) { // No valid set of parameters could be found for the incident
+                System.out.println("Type 1 - Incident: " + selectionArrEvents.get(0) + ", Severity" + listIncidentEvents[selectionArrEvents.get(0)][1]);
+                listIncidentEvents[incidentIdx][2] = -1;
+                listIncidentEvents[incidentIdx][4] = -1;
+                numUnassignedIncidents++;
+                assignedIncidents.add(null);  // Adds a null value as a place holder
+                selectionArrEvents.remove(0);
+            } else { // Found valid location with no overlap
+                currScenarioInfo.addIncidentEventML(candIncident);
+                assignedIncidents.add(candIncident);
+                listIncidentEvents[incidentIdx][2] = candIncident.startPeriod;
+                listIncidentEvents[incidentIdx][4] = candIncident.getSegment();
+                selectionArrEvents.remove(0);           // Removes incident from list of unassigned incidents
+                selectionArrSTimes.remove((Integer) candIncident.startPeriod);      // Removes start time from list of unassigned incident start times
+                selectionArrLoc.remove((Integer) candIncident.getSegment());        // Removes location from list of unassigned incident locations
+            }
+        }  // Assigned all possible incidents
+
+        // Assigning adjustment factors to the Scenario
+        for (incidentIdx = 0; incidentIdx < assignedIncidents.size(); incidentIdx++) {
+            IncidentEvent inc = assignedIncidents.get(incidentIdx);
+            if (inc != null) {
+                // Updating scenario
+                if (inc.startPeriod + inc.duration <= numPeriods) {   // Incident does not wrap
+                    for (int per = inc.startPeriod; per <= inc.getEndPeriod(); per++) {
+                        mlScenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    mlScenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.startPeriod,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.getEndPeriod());
+                } else {
+                    for (int per = inc.startPeriod; per < numPeriods; per++) {
+                        mlScenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    for (int per = 0; per < inc.getEndPeriod(); per++) {
+                        mlScenario.CAF().multiply(inc.getEventCAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.OAF().multiply(inc.getEventOAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.DAF().multiply(inc.getEventDAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                        mlScenario.SAF().multiply(inc.getEventSAF(per, inc.getSegment()),
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per,
+                                inc.scenarioIdx,
+                                inc.getSegment(),
+                                per);
+                    }
+                    mlScenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.startPeriod,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            numPeriods - 1);
+                    mlScenario.LAFI().add(inc.getEventLAF(inc.startPeriod, inc.getSegment()),
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            0,
+                            inc.scenarioIdx,
+                            inc.getSegment(),
+                            inc.getEndPeriod());
+                }
+            }
         }
+
         if (numUnassignedIncidents > 0) {
             JOptionPane.showMessageDialog(null, "<HTML><CENTER>Failed to assign " + numUnassignedIncidents + " incident(s).<br>&nbsp<br>"
                     + "If the number of unassigned incidents is high, please ensure the inputs<br>"
                     + "(incidents frequencies, distributions, etc.) are valid<br>"
                     + "or retry Scenario Generation with a new random number generator seed.");
         }
-        MainWindow.printLog(listIncidentEvents.length + " incident events assigned to scenarios.");
+
+        MainWindow.printLog((listIncidentEvents.length - numUnassignedIncidents) + " incident events assigned to scenarios.");
         return listIncidentEvents;
     }
     // </editor-fold>
@@ -2130,26 +2226,46 @@ public class ScenarioGenerator {
             sigma = (float) Math.sqrt(Math.log(1 + (Math.pow(durationInfo[incType][1], 2) / Math.pow(durationInfo[incType][0], 2))));
             //System.out.println(mu+", "+sigma);
             numInc = numIncOfEachType[incType];
-            probArrayList.add(new ArrayList<Float>());
+            probArrayList.add(new ArrayList<>());
             probArrayList.get(incType).add(0.0f);
             descending = false;
             //currProb = 1.0f;
             lastProb = 0.0f;
             counter = 1;
-            while (!(Math.round(lastProb * numInc) == 0 && descending)) {
-                //currProb = generateLogNormalProbability(counter*15,mu,sigma);
-                if (counter == 1) {
-                    currProb = logNormCDF(0.001f, (counter * 15 + 7.5f), 0.001f, mu, sigma);
-                } else {
-                    currProb = logNormCDF((counter * 15 - 7.5f), (counter * 15 + 7.5f), 0.001f, mu, sigma);
+            boolean useFullRange = false;
+            if (useFullRange) {
+                while (!(Math.round(lastProb * numInc) == 0 && descending)) {
+                    //currProb = generateLogNormalProbability(counter*15,mu,sigma);
+                    if (counter == 1) {
+                        currProb = logNormCDF(0.001f, (counter * 15 + 7.5f), 0.001f, mu, sigma);
+                    } else {
+                        currProb = logNormCDF((counter * 15 - 7.5f), (counter * 15 + 7.5f), 0.001f, mu, sigma);
+                    }
+                    //System.out.println(incType+" "+(counter*15)+" "+currProb);
+                    probArrayList.get(incType).add(currProb);
+                    if (currProb < lastProb) {
+                        descending = true;
+                    }
+                    lastProb = currProb;
+                    counter++;
                 }
-                //System.out.println(incType+" "+(counter*15)+" "+currProb);
-                probArrayList.get(incType).add(currProb);
-                if (currProb < lastProb) {
-                    descending = true;
+            } else {
+                float incType_min_dur = incidentData_GP.getIncidentDurMin(incType);
+                float incType_max_dur = incidentData_GP.getIncidentDurMax(incType);
+                //System.out.println("Min: " + incType_min_dur);
+                //System.out.println("Max: " + incType_max_dur);
+                while (counter * 15 - 7.5f < incType_max_dur) {
+                    if (counter * 15 + 7.5f < incType_min_dur) {
+                        currProb = 0.0f;
+                    } else {
+                        float val1 = Math.max((counter * 15) - 7.5f, incType_min_dur);
+                        float val2 = Math.min((counter * 15) + 7.5f, incType_max_dur);
+                        currProb = logNormCDF(val1, val2, 0.001f, mu, sigma);
+                    }
+                    //System.out.println(currProb);
+                    probArrayList.get(incType).add(currProb);
+                    counter++;
                 }
-                lastProb = currProb;
-                counter++;
             }
         }
 
@@ -2161,10 +2277,23 @@ public class ScenarioGenerator {
             }
         }
 
+        // Creating 2D array
+        float[] sumList = new float[numIncOfEachType.length];
         float[][] probArray = new float[numIncOfEachType.length][max];
         for (int incType = 0; incType < probArray.length; incType++) {
+            sumList[incType] = 0.0f;
             for (int i = 0; i < probArray[incType].length; i++) {
                 probArray[incType][i] = (i < probArrayList.get(incType).size()) ? probArrayList.get(incType).get(i) : 0;
+                sumList[incType] += probArray[incType][i];
+            }
+        }
+
+        // Normalizing the probability vectors
+        for (int incType = 0; incType < probArray.length; incType++) {
+            //System.out.println("Incident type: " + incType);
+            for (int i = 0; i < probArray[incType].length; i++) {
+                probArray[incType][i] = probArray[incType][i] / sumList[incType];
+                //System.out.println((i * 15) + ": " + Math.round(probArray[incType][i] * numIncOfEachType[incType]) + "- " + probArray[incType][i]);
             }
         }
 
@@ -2323,6 +2452,7 @@ public class ScenarioGenerator {
      */
     private void resetRNG(long factor) {
         this.RNG = new Random(this.rngSeed * factor);
+
     }
     //</editor-fold>
 

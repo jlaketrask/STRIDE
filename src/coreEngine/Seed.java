@@ -187,9 +187,17 @@ public class Seed implements Serializable {
      */
     private float[] RL_WeatherAverageDuration;
     /**
-     * Weather event adjustment factors
+     * Weather event capacity adjustment factors
      */
-    private float[][] RL_WeatherAdjustmentFactors;
+    private float[] RL_WeatherCAF;
+    /**
+     * Weather event demand adjustment factors
+     */
+    private float[] RL_WeatherDAF;
+    /**
+     * Weather event speed adjustment factors
+     */
+    private float[] RL_WeatherSAF;
     /**
      * GP Incident frequency
      */
@@ -203,19 +211,23 @@ public class Seed implements Serializable {
      */
     private float[] RL_IncidentDistribution_GP;
     /**
-     * GP Incident CAF
+     * GP Incident CAF. First index is incident type/severity, second is number
+     * of lanes (2 lanes is 0, 3 is 1, etc.).
      */
     private float[][] RL_IncidentCAF_GP;
     /**
-     * GP Incident DAF
+     * GP Incident DAF. First index is incident type/severity, second is number
+     * of lanes (2 lanes is 0, 3 is 1, etc.).
      */
     private float[][] RL_IncidentDAF_GP;
     /**
-     * GP Incident SAF
+     * GP Incident SAF. First index is incident type/severity, second is number
+     * of lanes (2 lanes is 0, 3 is 1, etc.).
      */
     private float[][] RL_IncidentSAF_GP;
     /**
-     * GP Incident LAF
+     * GP Incident LAF. First index is incident type/severity, second is number
+     * of lanes (2 lanes is 0, 3 is 1, etc.).
      */
     private int[][] RL_IncidentLAF_GP;
     /**
@@ -236,19 +248,23 @@ public class Seed implements Serializable {
      */
     private float[] RL_IncidentDistribution_ML;
     /**
-     * ML Incident CAF
+     * ML Incident CAF. First index is incident type/severity, second is number
+     * of lanes (1 lanes is 0, 2 lanes is 1).
      */
     private float[][] RL_IncidentCAF_ML;
     /**
-     * ML Incident DAF
+     * ML Incident DAF. First index is incident type/severity, second is number
+     * of lanes (1 lanes is 0, 2 lanes is 1).
      */
     private float[][] RL_IncidentDAF_ML;
     /**
-     * ML Incident SAF
+     * ML Incident SAF. First index is incident type/severity, second is number
+     * of lanes (1 lanes is 0, 2 lanes is 1).
      */
     private float[][] RL_IncidentSAF_ML;
     /**
-     * ML Incident LAF
+     * ML Incident LAF. First index is incident type/severity, second is number
+     * of lanes (1 lanes is 0, 2 lanes is 1).
      */
     private int[][] RL_IncidentLAF_ML;
     /**
@@ -407,7 +423,7 @@ public class Seed implements Serializable {
      * @param segType segment GP/ML type
      * @return reliability analysis adjustment factor
      */
-    private int getRLLAFWZ(int scen, int seg, int period, int segType) {
+    public int getRLLAFWZ(int scen, int seg, int period, int segType) {
         if (scen == 0) {
             return 0;
         } else {
@@ -1810,7 +1826,7 @@ public class Seed implements Serializable {
 
         for (int period = 0; period < inNumPeriod; period++) {
 
-            if (false) {
+            if (isUnderSatGP(period)) {
                 //run under sat for this period
                 for (GPMLSegment segment : GPSegments) {
                     segment.runUndersaturated(scen, atdm, period);
@@ -1832,7 +1848,7 @@ public class Seed implements Serializable {
             }
 
             if (inManagedLaneUsed) {
-                if (false) {
+                if (isUnderSatML(period)) {
                     //run under sat for this period
                     for (GPMLSegment segment : MLSegments) {
                         segment.runUndersaturated(scen, atdm, period);
@@ -2443,11 +2459,11 @@ public class Seed implements Serializable {
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
-                    getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
+                    getRampMetering(scen, -1, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_RAMP_METERING_TYPE:
-                    getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().set(Integer.parseInt(value.toString()), seg, period);
+                    getRampMetering(scen, -1, CEConst.SEG_TYPE_GP).getRampMeteringType().set(Integer.parseInt(value.toString()), seg, period);
                     fireDataChanged(CHANGE_SEED);
                     break;
                 case CEConst.IDS_OFF_RAMP_SIDE:
@@ -2634,7 +2650,14 @@ public class Seed implements Serializable {
                     break;
                 case CEConst.IDS_GP_ATDM_RM:
                     if (atdm >= 0) {
-                        ATDMSets.get(atdm).get(scen)[0].RM().getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
+                        getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().set(Integer.parseInt(value.toString()), seg, period);
+                        ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
+                        fireDataChanged(CHANGE_ATDM);
+                    }
+                    break;
+                case CEConst.IDS_ATDM_RAMP_METERING_TYPE:
+                    if (atdm >= 0) {
+                        getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().set(Integer.parseInt(value.toString()), seg, period);
                         ATDMSets.get(atdm).get(scen)[0].setStatus(CEConst.SCENARIO_INPUT_ONLY);
                         fireDataChanged(CHANGE_ATDM);
                     }
@@ -2971,8 +2994,10 @@ public class Seed implements Serializable {
                     return GPSegments.get(seg).inOnDemand_veh.get(period);
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
                     return GPSegments.get(seg).inOnFFS.get(period);
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                    return getRampMetering(scen, -1, CEConst.SEG_TYPE_GP).getRampMeteringType().get(seg, period);
                 case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
-                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().get(seg, period);
+                    return getRampMetering(scen, -1, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().get(seg, period);
                 case CEConst.IDS_OFF_RAMP_SIDE:
                     return GPSegments.get(seg).inOffSide;
                 case CEConst.IDS_NUM_OFF_RAMP_LANES:
@@ -2993,9 +3018,6 @@ public class Seed implements Serializable {
                     return GPSegments.get(seg).inNWL;
                 case CEConst.IDS_RAMP_TO_RAMP_DEMAND_VEH:
                     return GPSegments.get(seg).inRRDemand_veh.get(period);
-                case CEConst.IDS_RAMP_METERING_TYPE:
-                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().get(seg, period);
-
                 case CEConst.IDS_TYPE_USED:
                     checkInBuffer(scen, atdm);
                     return GPSegments.get(seg).scenType[period];
@@ -3009,8 +3031,10 @@ public class Seed implements Serializable {
                     return getRLLAFI(scen, seg, period, CEConst.SEG_TYPE_ML);
                 case CEConst.IDS_GP_ATDM_LAF:
                     return getATDMLAF(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                case CEConst.IDS_ATDM_RAMP_METERING_TYPE:
+                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringType().get(seg, period);
                 case CEConst.IDS_GP_ATDM_RM:
-                    return getATDMRM(scen, atdm, seg, period, CEConst.SEG_TYPE_GP);
+                    return getRampMetering(scen, atdm, CEConst.SEG_TYPE_GP).getRampMeteringFixRate().get(seg, period);
 
                 //maganged lane parameters
                 case CEConst.IDS_ML_SEGMENT_TYPE:
@@ -4113,6 +4137,9 @@ public class Seed implements Serializable {
                 case CEConst.IDS_NUM_ON_RAMP_LANES:
                 case CEConst.IDS_ON_RAMP_FREE_FLOW_SPEED:
                 case CEConst.IDS_ON_RAMP_METERING_RATE_FIX:
+                case CEConst.IDS_RAMP_METERING_TYPE:
+                case CEConst.IDS_GP_ATDM_RM:
+                case CEConst.IDS_ATDM_RAMP_METERING_TYPE:
                 case CEConst.IDS_ON_RAMP_CAPACITY:
                 case CEConst.IDS_ON_RAMP_DELAY:
                 case CEConst.IDS_ON_QUEUE_VEH:
@@ -4123,7 +4150,6 @@ public class Seed implements Serializable {
                 case CEConst.IDS_ADJUSTED_ON_RAMP_DEMAND:
                 case CEConst.IDS_ON_RAMP_DEMAND_VEH:
                 case CEConst.IDS_ON_RAMP_VOLUME_SERVED:
-                case CEConst.IDS_RAMP_METERING_TYPE:
                     if (GPSegments.get(seg).inType != CEConst.SEG_TYPE_ONR && GPSegments.get(seg).inType != CEConst.SEG_TYPE_W && GPSegments.get(seg).inType != CEConst.SEG_TYPE_ACS) {
                         return CEConst.IDS_NA;
                     }
@@ -4278,7 +4304,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_SCEN_NAME:
                     return RL_ScenarioInfo.get(scen).name;
                 case CEConst.IDS_SCEN_DETAIL:
-                    return RL_ScenarioInfo.get(scen).detail;
+                    return RL_ScenarioInfo.get(scen).getDetail();
                 case CEConst.IDS_ATDM_NAME:
                     return ATDMSets.get(atdm).get(scen)[0].getName();
                 case CEConst.IDS_ATDM_DETAIL:
@@ -4327,6 +4353,7 @@ public class Seed implements Serializable {
                 case CEConst.IDS_CROSS_WEAVE_LC_MIN:
                 case CEConst.IDS_CROSS_WEAVE_VOLUME:
                 case CEConst.IDS_RAMP_METERING_TYPE:
+                case CEConst.IDS_ATDM_RAMP_METERING_TYPE:
 
                 case CEConst.IDS_TYPE_USED:
                 case CEConst.IDS_SCENARIO_STATUS:
@@ -4915,21 +4942,57 @@ public class Seed implements Serializable {
     }
 
     /**
-     * Getter for weather adjustment factors
+     * Getter for weather capacity adjustment factors.
      *
-     * @return weather adjustment factors
+     * @return Array of weather capacity adjustment factors.
      */
-    public float[][] getWeatherAdjustmentFactors() {
-        return RL_WeatherAdjustmentFactors;
+    public float[] getWeatherCAF() {
+        return RL_WeatherCAF;
     }
 
     /**
-     * Setter for weather adjustment factors
+     * Setter for weather capacity adjustment factors.
      *
-     * @param weatherAdjustmentFactors weather adjustment factors
+     * @param RL_WeatherCAF Array of weather capacity adjustment factors.
      */
-    public void setWeatherAdjustmentFactors(float[][] weatherAdjustmentFactors) {
-        this.RL_WeatherAdjustmentFactors = weatherAdjustmentFactors;
+    public void setWeatherCAF(float[] RL_WeatherCAF) {
+        this.RL_WeatherCAF = RL_WeatherCAF;
+    }
+
+    /**
+     * Getter for weather demand adjustment factors.
+     *
+     * @return Array of weather demand adjustment factors.
+     */
+    public float[] getWeatherDAF() {
+        return RL_WeatherDAF;
+    }
+
+    /**
+     * Setter for weather demand adjustment factors.
+     *
+     * @param RL_WeatherDAF Array of weather demand adjustment factors.
+     */
+    public void setWeatherDAF(float[] RL_WeatherDAF) {
+        this.RL_WeatherDAF = RL_WeatherDAF;
+    }
+
+    /**
+     * Getter for weather speed adjustment factors.
+     *
+     * @return Array of weather speed adjustment factors.
+     */
+    public float[] getWeatherSAF() {
+        return RL_WeatherSAF;
+    }
+
+    /**
+     * Setter for weather speed adjustment factors.
+     *
+     * @param RL_WeatherSAF Array of weather speed adjustment factors.
+     */
+    public void setWeatherSAF(float[] RL_WeatherSAF) {
+        this.RL_WeatherSAF = RL_WeatherSAF;
     }
 
     /**

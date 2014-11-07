@@ -20,7 +20,7 @@ import javax.swing.JFileChooser;
  *
  * @author Shu Liu
  */
-public class ASCIISeedFileAdapter {
+public class ASCIISeedFileAdapter_GPMLFormat {
 
     /**
      * The output formatter
@@ -877,7 +877,7 @@ public class ASCIISeedFileAdapter {
     /**
      * Constructor
      */
-    public ASCIISeedFileAdapter() {
+    public ASCIISeedFileAdapter_GPMLFormat() {
         buildIDMap();
         buildGPList();
         buildMLList();

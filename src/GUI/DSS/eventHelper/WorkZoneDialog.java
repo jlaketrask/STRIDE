@@ -5,7 +5,7 @@
  */
 package GUI.DSS.eventHelper;
 
-import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.DSSWorkZoneEvent;
 import DSS.DataStruct.UserLevelParameterSet;
 import coreEngine.Seed;
 import javax.swing.JOptionPane;
@@ -61,13 +61,13 @@ public class WorkZoneDialog extends javax.swing.JDialog {
         okButton.setEnabled(false);
     }
 
-    public ScenarioEvent getWorkZoneEvent() {
-        ScenarioEvent wzEvent = new ScenarioEvent(ScenarioEvent.WORK_ZONE_EVENT);
-        wzEvent.severity = severityCB.getSelectedIndex() - 1;
-        wzEvent.startSegment = startSegmentCB.getSelectedIndex();
-        wzEvent.endSegment = Integer.parseInt((String) endSegmentCB.getSelectedItem()) - 1;
-        wzEvent.startPeriod = startPeriodCB.getSelectedIndex();
-        wzEvent.endPeriod = Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1;
+    public DSSWorkZoneEvent getWorkZoneEvent() {
+        DSSWorkZoneEvent wzEvent = new DSSWorkZoneEvent(
+                startSegmentCB.getSelectedIndex(),
+                Integer.parseInt((String) endSegmentCB.getSelectedItem()) - 1,
+                startPeriodCB.getSelectedIndex(),
+                Integer.parseInt(((String) endPeriodCB.getSelectedItem()).split(" ")[0]) - 1,
+                severityCB.getSelectedIndex() - 1);
         wzEvent.caf = Float.parseFloat(cafTextField.getText());
         wzEvent.daf = Float.parseFloat(dafTextField.getText());
         wzEvent.saf = Float.parseFloat(safTextField.getText());

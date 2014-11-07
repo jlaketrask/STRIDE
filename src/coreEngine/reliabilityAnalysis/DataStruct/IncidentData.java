@@ -58,10 +58,10 @@ public class IncidentData {
         incidentDurationInfo = new float[5][4];
 
         // 0 - Shoulder, 1 - 1 lane closure, 2 - 2 lane closure, 3 - 3 lane closure, 4 - 4 lane closure
-        incidentFFSAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
-        incidentCAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
-        incidentDAFs = new float[5][7]; // 5 is incident type, 8 is number of lanes
-        incidentLAFs = new int[5][7]; // 5 is incident type, 8 is number of lanes
+        incidentFFSAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes
+        incidentCAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes
+        incidentDAFs = new float[5][7]; // 5 is incident type, 7 is number of lanes
+        incidentLAFs = new int[5][7]; // 5 is incident type, 7 is number of lanes
 
         crashRateRatio = 4.9f;
 

@@ -10,39 +10,75 @@ import coreEngine.Seed;
  */
 public class DemandData {
 
+    /**
+     * 2D Array holding demand multipliers for each demand combination (month -
+     * day of week).
+     */
     private final float[][] demands = new float[12][7];
 
+    /**
+     * Array indicating which day types are active. 0 - Monday, 1 - Tuesday, 2 -
+     * Wednesday, 3 - Thursday, 4 - Friday, 5 - Saturday, 6 - Sunday
+     */
     private final boolean[] activeDays = new boolean[7];
 
+    /**
+     * Array indicating which months are active in the Reliability Reporting
+     * Period. 0 - January to 11 - December
+     */
     private final boolean[] activeMonths = new boolean[12];
 
+    /**
+     * Year of the Reliability Reporting Period.
+     */
     private int year;
 
+    /**
+     * Starting month of the Reliability Reporting Period.
+     */
     private int startMonth;
 
+    /**
+     * Starting day of the starting month Reliability Reporting Period.
+     */
     private int startDay;
 
+    /**
+     * Ending month of the Reliability Reporting Period.
+     */
     private int endMonth;
 
+    /**
+     * Ending day of the ending month of the Reliability Reporting Period.
+     */
     private int endDay;
 
+    /**
+     * Seed instance for the Reliability Analysis.
+     */
     private Seed seed;
 
+    /**
+     * Type indicating whether the instance is associated with General Purpose
+     * (GP) demand or Managed Lane (ML) demand.
+     */
     private final int type;
 
     /**
-     *
+     * Identifier for General Purpose (GP) type.
      */
     public static final int TYPE_GP = 21654321;
 
     /**
-     *
+     * Identifier for Managed Lane (ML) type.
      */
     public static final int TYPE_ML = 41981659;
 
     /**
+     * Constructor for empty DemandData instance. All months and all days of the
+     * week (day types) are active.
      *
-     * @param type
+     * @param type Indicates GP or ML type.
      */
     public DemandData(int type) {
         //useAllDays();
@@ -52,6 +88,8 @@ public class DemandData {
     }
 
     /**
+     * Constructor specifying the Reliability Reporting Period. Only weekday day
+     * types (Mon - Fri) are active by default.
      *
      * @param year
      * @param startMonth

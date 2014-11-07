@@ -1,7 +1,9 @@
 package GUI.major;
 
 import DSS.DataStruct.ATMParameterSet;
-import DSS.DataStruct.ScenarioEvent;
+import DSS.DataStruct.DSSIncidentEvent;
+import DSS.DataStruct.DSSWeatherEvent;
+import DSS.DataStruct.DSSWorkZoneEvent;
 import DSS.DataStruct.UserLevelParameterSet;
 import GUI.DSS.IOHelper.DSSIOHelper;
 import GUI.DSS.IOHelper.DSSProject;
@@ -13,13 +15,11 @@ import GUI.seedEditAndIOHelper.SeedGlobalDialog;
 import GUI.seedEditAndIOHelper.SeedIOHelper;
 import GUI.settingHelper.GraphicSettingDialog;
 import GUI.settingHelper.TableSettingDialog;
-import coreEngine.Helper.ASCIISeedFileAdapter;
+import coreEngine.Helper.ASCIISeedFileAdapter_GPMLFormat;
 import coreEngine.Helper.CEConst;
-import coreEngine.Helper.CEDate;
 import coreEngine.Seed;
 import coreEngine.reliabilityAnalysis.DataStruct.Scenario;
 import coreEngine.reliabilityAnalysis.DataStruct.ScenarioInfo;
-import coreEngine.reliabilityAnalysis.DataStruct.WorkZoneData;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -126,7 +126,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         tableDisplay.setCellSettings(ConfigIO.loadTableConfig(this));
         graphicDisplay.setScaleColors(ConfigIO.loadGraphicConfig(this));
-        
+
         userParams = new UserLevelParameterSet(activeSeed);
 
     }
@@ -241,7 +241,7 @@ public class MainWindow extends javax.swing.JFrame {
      * Import a seed from ASCII file
      */
     public void importASCII() {
-        ASCIISeedFileAdapter textSeed = new ASCIISeedFileAdapter();
+        ASCIISeedFileAdapter_GPMLFormat textSeed = new ASCIISeedFileAdapter_GPMLFormat();
         Seed _seed = textSeed.importFromASCII();
         if (_seed != null) {
             printLog("Seed file added from ASCII file : " + _seed.getValueString(CEConst.IDS_SEED_FILE_NAME));
@@ -257,7 +257,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void exportASCII() {
         if (activeSeed != null) {
-            ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
+            ASCIISeedFileAdapter_GPMLFormat exporter = new ASCIISeedFileAdapter_GPMLFormat();
             String fileName = exporter.exportToASCII(activeSeed);
             //ASCIISeedFileAdapter exporter = new ASCIISeedFileAdapter();
             //String fileName = exporter.exportToFile(activeSeed);
@@ -974,106 +974,94 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    public void addWeatherEvent(ScenarioEvent weatherEvent) {
+    public void addWeatherEvent(DSSWeatherEvent weatherEvent) {
         if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
             initScenario();
         }
         selectSeedScen(activeSeed, 1);
         ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
-        if (!currScenario.checkWeatherOverlap(weatherEvent.startPeriod, weatherEvent.getDuration())) {
-            currScenario.addWeatherEvent(weatherEvent.severity, weatherEvent.startPeriod, weatherEvent.getDuration());
-            addScenarioEvent(weatherEvent, ScenarioEvent.WEATHER_EVENT);
+        if (!currScenario.checkWeatherOverlap(weatherEvent)) {
+            currScenario.addWeatherEvent(weatherEvent);
+            applyWeatherEvent(weatherEvent);
         } else {
             JOptionPane.showMessageDialog(this, "Weather Event conflicts with existing weather event and could not be added.", "Error: Weather Event Overlap", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void addIncidentEvent(ScenarioEvent incidentEvent) {
+    public void addIncidentEvent(DSSIncidentEvent incidentEvent) {
         if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
             initScenario();
         }
         selectSeedScen(activeSeed, 1);
         ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
-        if (!currScenario.checkGPIncidentOverlap(incidentEvent.startPeriod, incidentEvent.getDuration(), incidentEvent.startSegment)) {
-            currScenario.addIncidentGP(incidentEvent.severity, incidentEvent.startPeriod, incidentEvent.getDuration(), incidentEvent.startSegment);
-            addScenarioEvent(incidentEvent, ScenarioEvent.INCIDENT_EVENT);
+        if (!currScenario.checkGPIncidentOverlap(incidentEvent)) {
+            currScenario.addIncidentEventGP(incidentEvent);
+            applyIncidentEvent(incidentEvent);
         } else {
             JOptionPane.showMessageDialog(this, "Incident Event conflicts with existing incident event and could not be added.", "Error: Incident Event Overlap", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void addWorkZone(ScenarioEvent workZone) {
-        if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
-            initScenario();
-        }
-        selectSeedScen(activeSeed, 1);
-        WorkZoneData candWorkZone = new WorkZoneData(new CEDate[]{new CEDate(), new CEDate()},
-                new int[]{workZone.startSegment + 1, workZone.endSegment + 1},
-                new int[]{workZone.startPeriod + 1, workZone.endPeriod + 1},
-                workZone.severity
-        );
-        ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
-        if (!currScenario.checkWorkZoneOverlap(candWorkZone)) {
-            currScenario.addWorkZone(candWorkZone);
-            addScenarioEvent(workZone, ScenarioEvent.WORK_ZONE_EVENT);
-        } else {
-            JOptionPane.showMessageDialog(this, "Work zone conflicts with existing work zone and could not be added.", "Error: Work Zone Overlap", JOptionPane.ERROR_MESSAGE);
-        }
+    public void addWorkZone(DSSWorkZoneEvent workZone) {
+//        if (activeSeed.getValueFloat(CEConst.IDS_NUM_SCEN) == 0) {
+//            initScenario();
+//        }
+//        selectSeedScen(activeSeed, 1);
+//        WorkZoneData candWorkZone = new WorkZoneData(new CEDate[]{new CEDate(), new CEDate()},
+//                new int[]{workZone.startSegment + 1, workZone.endSegment + 1},
+//                new int[]{workZone.startPeriod + 1, workZone.endPeriod + 1},
+//                workZone.severity
+//        );
+//        ScenarioInfo currScenario = activeSeed.getRLScenarioInfo().get(1);
+//        if (!currScenario.checkWorkZoneOverlap(candWorkZone)) {
+//            currScenario.addWorkZone(candWorkZone);
+//            addScenarioEvent(workZone, DSSWeatherEvent.WORK_ZONE_EVENT);
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Work zone conflicts with existing work zone and could not be added.", "Error: Work Zone Overlap", JOptionPane.ERROR_MESSAGE);
+//        }
     }
 
-    private void addScenarioEvent(ScenarioEvent scenEvent, String type) {
+    private void applyWeatherEvent(DSSWeatherEvent weatherEvent) {
 
-        for (int period = scenEvent.startPeriod; period <= scenEvent.endPeriod; period++) {
-            for (int segment = scenEvent.startSegment; segment <= scenEvent.endSegment; segment++) {
-
+        for (int period = weatherEvent.startPeriod; period <= weatherEvent.getEndPeriod(); period++) {
+            for (int segment = 0; segment <= activeSeed.getValueInt(CEConst.IDS_NUM_SEGMENT); segment++) {
                 activeSeed.setValue(CEConst.IDS_GP_RL_CAF,
-                        scenEvent.caf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_CAF, segment, period, 1, -1),
+                        weatherEvent.caf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_CAF, segment, period, 1, -1),
                         segment, period, 1, -1);
                 activeSeed.setValue(CEConst.IDS_GP_RL_DAF,
-                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_DAF, segment, period, 1, -1),
+                        weatherEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_DAF, segment, period, 1, -1),
                         segment, period, 1, -1);
                 activeSeed.setValue(CEConst.IDS_GP_RL_OAF,
-                        scenEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_OAF, segment, period, 1, -1),
+                        weatherEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_OAF, segment, period, 1, -1),
                         segment, period, 1, -1);
                 activeSeed.setValue(CEConst.IDS_GP_RL_SAF,
-                        scenEvent.saf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_SAF, segment, period, 1, -1),
+                        weatherEvent.saf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_SAF, segment, period, 1, -1),
                         segment, period, 1, -1);
-
-                if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_GP_RL_LAFI,
-                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_GP_RL_LAFI, segment, period, 1, -1),
-                            segment, period, 1, -1);
-                } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
-                    activeSeed.setValue(CEConst.IDS_GP_RL_LAFWZ,
-                            scenEvent.laf + activeSeed.getValueInt(CEConst.IDS_GP_RL_LAFWZ, segment, period, 1, -1),
-                            segment, period, 1, -1);
-                }
             }
         }
+        numPeriodChanged = true;
+        selectPeriod(activePeriod);
+    }
 
-        //<editor-fold defaultstate="collapsed" desc="Deprecated code">
-//        scenario.CAF().multiply(scenEvent.caf,
-//                0, scenEvent.startSegment, scenEvent.startPeriod,
-//                0, scenEvent.endSegment, scenEvent.endPeriod);
-//        scenario.DAF().multiply(scenEvent.daf,
-//                0, scenEvent.startSegment, scenEvent.startPeriod,
-//                0, scenEvent.endSegment, scenEvent.endPeriod);
-//        scenario.OAF().multiply(scenEvent.daf,
-//                0, scenEvent.startSegment, scenEvent.startPeriod,
-//                0, scenEvent.endSegment, scenEvent.endPeriod);
-//        scenario.SAF().multiply(scenEvent.saf,
-//                0, scenEvent.startSegment, scenEvent.startPeriod,
-//                0, scenEvent.endSegment, scenEvent.endPeriod);
-//        if (type.equalsIgnoreCase(ScenarioEvent.INCIDENT_EVENT)) {
-//            scenario.LAFI().add(scenEvent.laf,
-//                    0, scenEvent.startSegment, scenEvent.startPeriod,
-//                    0, scenEvent.endSegment, scenEvent.endPeriod);
-//        } else if (type.equalsIgnoreCase(ScenarioEvent.WORK_ZONE_EVENT)) {
-//            scenario.LAFWZ().add(scenEvent.laf,
-//                    0, scenEvent.startSegment, scenEvent.startPeriod,
-//                    0, scenEvent.endSegment, scenEvent.endPeriod);
-//        }
-//</editor-fold>
+    private void applyIncidentEvent(DSSIncidentEvent incidentEvent) {
+
+        for (int period = incidentEvent.startPeriod; period <= incidentEvent.getEndPeriod(); period++) {
+            activeSeed.setValue(CEConst.IDS_GP_RL_CAF,
+                    incidentEvent.caf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_CAF, incidentEvent.getSegment(), period, 1, -1),
+                    incidentEvent.getSegment(), period, 1, -1);
+            activeSeed.setValue(CEConst.IDS_GP_RL_DAF,
+                    incidentEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_DAF, incidentEvent.getSegment(), period, 1, -1),
+                    incidentEvent.getSegment(), period, 1, -1);
+            activeSeed.setValue(CEConst.IDS_GP_RL_OAF,
+                    incidentEvent.daf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_OAF, incidentEvent.getSegment(), period, 1, -1),
+                    incidentEvent.getSegment(), period, 1, -1);
+            activeSeed.setValue(CEConst.IDS_GP_RL_SAF,
+                    incidentEvent.saf * activeSeed.getValueFloat(CEConst.IDS_GP_RL_SAF, incidentEvent.getSegment(), period, 1, -1),
+                    incidentEvent.getSegment(), period, 1, -1);
+            activeSeed.setValue(CEConst.IDS_GP_RL_LAFI,
+                    incidentEvent.laf + activeSeed.getValueInt(CEConst.IDS_GP_RL_LAFI, incidentEvent.getSegment(), period, 1, -1),
+                    incidentEvent.getSegment(), period, 1, -1);
+        }
         numPeriodChanged = true;
         selectPeriod(activePeriod);
     }
@@ -1517,14 +1505,14 @@ public class MainWindow extends javax.swing.JFrame {
         return isOutputEnabled;
     }
     // </editor-fold>
-    
+
     public void exportDSSProject() {
         printLog(DSSIOHelper.saveAsDSSProject(activeSeed, userParams));
         update();
     }
-    
+
     public void openDSSProject() {
-        DSSProject dssProject  = DSSIOHelper.openDSSProject();
+        DSSProject dssProject = DSSIOHelper.openDSSProject();
         Seed seed = dssProject.getSeed();
         if (seed != null) {
             if (openedSeed(seed)) {
@@ -1537,7 +1525,7 @@ public class MainWindow extends javax.swing.JFrame {
             printLog("Fail to open seed");
         }
     }
-    
+
     public void saveDSSProject() {
         printLog(DSSIOHelper.saveDSSProject(activeSeed, userParams));
         update();

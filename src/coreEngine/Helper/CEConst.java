@@ -780,7 +780,7 @@ public class CEConst {
     /**
      * ATDM ramp metering type
      */
-    public final static String IDS_ATDM_RAMP_METERING_TYPE = "IDS_RAMP_METERING_TYPE";
+    public final static String IDS_ATDM_RAMP_METERING_TYPE = "IDS_ATDM_RAMP_METERING_TYPE";
 
     //Cross Weave Parameters
     /**

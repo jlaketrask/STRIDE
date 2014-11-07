@@ -1,6 +1,8 @@
 package coreEngine.reliabilityAnalysis.DataStruct;
 
+import coreEngine.Helper.CEConst;
 import coreEngine.Helper.CETime;
+import coreEngine.Seed;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -70,23 +72,23 @@ public class WeatherData {
     /**
      *
      */
-    public static final int DefaultCAF = 0;
+    public static final int AF_TYPE_CAF = 0;
 
     /**
      *
      */
-    public static final int DefaultFFSAF = 1;
+    public static final int AF_TYPE_DAF = 1;
 
-    /**
-     *
-     */
-    public static final int DAF = 2;
+    public static final int AF_TYPE_SAF = 2;
 
     private final float[][] weatherProbability;
 
     private final float[] averageDuration;
 
-    private final float[][] adjustmentFactors;
+    //private final float[][] adjustmentFactors;
+    private final float[] weatherCAFs;
+    private final float[] weatherDAFs;
+    private final float[] weatherSAFs;
 
     private final float[] defaultCAF;
 
@@ -103,7 +105,10 @@ public class WeatherData {
 
         weatherProbability = new float[12][11];
         averageDuration = new float[10];
-        adjustmentFactors = new float[3][11];
+        //adjustmentFactors = new float[3][11];
+        weatherCAFs = new float[11];
+        weatherDAFs = new float[11];
+        weatherSAFs = new float[11];
         //defaultCAF = new float[] {92.76f, 85.87f, 95.71f, 91.34f, 88.96f, 77.57f, 91.55f, 90.33f, 88.33f, 89.51f, 100.0f};
         defaultCAF = new float[11];
         monthActive = new boolean[12];
@@ -112,6 +117,44 @@ public class WeatherData {
 
         initializeFields();
 
+    }
+
+    public void initializeBySeed(Seed seed) {
+        int speedSum = 0;
+        for (int seg = 0; seg < seed.getValueInt(CEConst.IDS_NUM_SEGMENT); seg++) {
+            //System.out.println(seed.getValueInt(CEConst.IDS_MAIN_FREE_FLOW_SPEED, seg));
+            speedSum += seed.getValueInt(CEConst.IDS_MAIN_FREE_FLOW_SPEED, seg);
+        }
+        float avgFFS = speedSum / seed.getValueInt(CEConst.IDS_NUM_SEGMENT);
+        int rnddAvgFFS = Math.round(avgFFS);
+        this.setSeedDefaultFFS(rnddAvgFFS);
+        this.setProbability(seed.getWeatherProbability());
+        this.setAdjustmentFactorsBySeed(seed);
+        this.setAverageDurations(seed.getWeatherAverageDuration());
+        this.setNearestMetroArea(seed.getWeatherLocation());
+    }
+
+    private void setAdjustmentFactorsBySeed(Seed seed) {
+        // Extracting any existing CAFs
+        if (seed.getWeatherCAF() != null) {
+            this.setAdjustmentFactors(AF_TYPE_CAF, seed.getWeatherCAF());
+        } else {
+            setDefaultCAFs();
+        }
+
+        // Extracting any existing DAFs
+        if (seed.getWeatherDAF() != null) {
+            this.setAdjustmentFactors(AF_TYPE_DAF, seed.getWeatherDAF());
+        } else {
+            setDefaultDAFs();
+        }
+
+        // Extracting any existing SAFs
+        if (seed.getWeatherSAF() != null) {
+            this.setAdjustmentFactors(AF_TYPE_SAF, seed.getWeatherSAF());
+        } else {
+            setDefaultSAFs(seedDefaultFFS);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
@@ -223,26 +266,117 @@ public class WeatherData {
     }
 
     /**
+     * Returns the adjustment factor of the specified type for the input weather
+     * type/severity.
      *
-     * @param factorType
-     * @param weatherType
-     * @return
+     * @param factorType Adjustment factor type identifier (AF_TYPE_CAF,
+     * AF_TYPE_DAF, AF_TYPE_SAF).
+     * @param weatherType Weather type/severity identifier.
+     * @return Adjustment factor
      */
     public float getAdjustmentFactor(int factorType, int weatherType) {
-        if (factorType >= 0 && factorType < 3) {
-            if (weatherType >= 0 && weatherType < 11) {
-                return adjustmentFactors[factorType][weatherType];
-            }
+        switch (factorType) {
+            case AF_TYPE_CAF:
+                return getWeatherCAF(weatherType);
+            case AF_TYPE_DAF:
+                return getWeatherDAF(weatherType);
+            case AF_TYPE_SAF:
+                return getWeatherSAF(weatherType);
+            default:
+                throw new InvalidAdjustmentFactorTypeException();
         }
-        return 0.0f;
     }
 
     /**
+     * Returns the adjustment factor array of the specified type.
      *
-     * @return
+     * @param factorType Adjustment factor type identifier (AF_TYPE_CAF,
+     * AF_TYPE_DAF, AF_TYPE_SAF).
+     * @return Adjustment factor array.
      */
-    public float[][] getAdjustmentFactors() {
-        return adjustmentFactors;
+    public float[] getAdjustmentFactorArray(int factorType) {
+        switch (factorType) {
+            case AF_TYPE_CAF:
+                return getWeatherCAFArray();
+            case AF_TYPE_DAF:
+                return getWeatherDAFArray();
+            case AF_TYPE_SAF:
+                return getWeatherSAFArray();
+            default:
+                throw new InvalidAdjustmentFactorTypeException();
+        }
+    }
+
+    /**
+     * Returns the Capacity Adjustment Factor (CAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity)
+     * @return Capacity adjustment factor of weather type.
+     */
+    public float getWeatherCAF(int weatherType) {
+        if (weatherType < 11) {
+            return weatherCAFs[weatherType];
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
+
+    /**
+     * Returns the array of Capacity Adjustment Factors (CAFs).
+     *
+     * @return Array of capacity adjustment factors.
+     */
+    public float[] getWeatherCAFArray() {
+        return weatherCAFs;
+    }
+
+    /**
+     * Returns the Demand Adjustment Factor (DAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity)
+     * @return Demand adjustment factor of weather type.
+     */
+    public float getWeatherDAF(int weatherType) {
+        if (weatherType < 11) {
+            return weatherDAFs[weatherType];
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
+
+    /**
+     * Returns the array of Demand Adjustment Factors (DAFs).
+     *
+     * @return Array of demand adjustment factors.
+     */
+    public float[] getWeatherDAFArray() {
+        return weatherDAFs;
+    }
+
+    /**
+     * Returns the Speed Adjustment Factor (SAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity)
+     * @return Speed adjustment factor of weather type.
+     */
+    public float getWeatherSAF(int weatherType) {
+        if (weatherType < 11) {
+            return weatherSAFs[weatherType];
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
+
+    /**
+     * Returns the array of Speed Adjustment Factors (SAFs).
+     *
+     * @return Array of speed adjustment factors.
+     */
+    public float[] getWeatherSAFArray() {
+        return weatherSAFs;
     }
 
     /**
@@ -380,32 +514,141 @@ public class WeatherData {
     }
 
     /**
+     * Sets the adjustment factor for the specified weather type.
      *
-     * @param adjFactorType
-     * @param weatherType
-     * @param value
+     * @param adjFactorType Adjustment factor type identifier (AF_TYPE_CAF,
+     * AF_TYPE_DAF, AF_TYPE_SAF).
+     * @param weatherType Weather type/severity identifier/
+     * @param value New adjustment factor value.
      */
-    public void setAdjFactor(int adjFactorType, int weatherType, float value) {
-        if (adjFactorType >= 0 && adjFactorType < 3) {
-            if (weatherType >= 0 && weatherType < 11) {
-                adjustmentFactors[adjFactorType][weatherType] = value;
-            }
+    public void setAdjustmentFactor(int adjFactorType, int weatherType, float value) {
+        switch (adjFactorType) {
+            case AF_TYPE_CAF:
+                setWeatherCAF(weatherType, value);
+                break;
+            case AF_TYPE_DAF:
+                setWeatherDAF(weatherType, value);
+                break;
+            case AF_TYPE_SAF:
+                setWeatherSAF(weatherType, value);
+                break;
+            default:
+                throw new InvalidAdjustmentFactorTypeException();
         }
     }
 
     /**
+     * Sets the adjustment factor array for the specified adjustment factor
+     * type.
      *
-     * @param seedAdjFactors
+     * @param adjFactorType Adjustment factor type identifier (AF_TYPE_CAF,
+     * AF_TYPE_DAF, AF_TYPE_SAF).
+     * @param values New adjustment factor array.
      */
-    public void setAdjustmentFactors(float[][] seedAdjFactors) {
+    public void setAdjustmentFactors(int adjFactorType, float[] values) {
+        switch (adjFactorType) {
+            case AF_TYPE_CAF:
+                setWeatherCAFArray(values);
+                break;
+            case AF_TYPE_DAF:
+                setWeatherDAFArray(values);
+                break;
+            case AF_TYPE_SAF:
+                setWeatherSAFArray(values);
+                break;
+            default:
+                throw new InvalidAdjustmentFactorTypeException();
+        }
+    }
 
-        if (seedAdjFactors != null) {
-            for (int adjFactorType = 0; adjFactorType < 3; adjFactorType++) {
-                for (int weatherType = 0; weatherType < 11; weatherType++) {
-                    adjustmentFactors[adjFactorType][weatherType] = seedAdjFactors[adjFactorType][weatherType];
+    /**
+     * Sets the Capacity Adjustment Factor (CAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity).
+     * @param newCAF New capacity adjustment factor for the weather
+     * type/severity.
+     */
+    public void setWeatherCAF(int weatherType, float newCAF) {
+        if (weatherType < 11) {
+            weatherCAFs[weatherType] = newCAF;
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
 
-                }
+    /**
+     * Sets the array of Capacity Adjustment Factors (CAFs).
+     *
+     * @param newCAFArray
+     */
+    public void setWeatherCAFArray(float[] newCAFArray) {
+        if (newCAFArray.length == weatherCAFs.length) {
+            for (int wType = 0; wType < weatherCAFs.length; wType++) {
+                weatherCAFs[wType] = newCAFArray[wType];
             }
+        } else {
+            throw new RuntimeException("Invalid length of new Capacity Adjustment Factor array.");
+        }
+    }
+
+    /**
+     * Sets the Demand Adjustment Factor (DAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity).
+     * @param newDAF New demand adjustment factor for the weather type/severity.
+     */
+    public void setWeatherDAF(int weatherType, float newDAF) {
+        if (weatherType < 11) {
+            weatherDAFs[weatherType] = newDAF;
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
+
+    /**
+     * Sets the array of Demand Adjustment Factors (DAFs).
+     *
+     * @param newDAFArray
+     */
+    public void setWeatherDAFArray(float[] newDAFArray) {
+        if (newDAFArray.length == weatherDAFs.length) {
+            for (int wType = 0; wType < weatherDAFs.length; wType++) {
+                weatherDAFs[wType] = newDAFArray[wType];
+            }
+        } else {
+            throw new RuntimeException("Invalid length of new Demand Adjustment Factor array.");
+        }
+    }
+
+    /**
+     * Sets the Speed Adjustment Factor (SAF) for the specified weather
+     * type/severity.
+     *
+     * @param weatherType Weather event type (also called severity).
+     * @param newSAF New speed adjustment factor for the weather type/severity.
+     */
+    public void setWeatherSAF(int weatherType, float newSAF) {
+        if (weatherType < 11) {
+            weatherSAFs[weatherType] = newSAF;
+        } else {
+            throw new InvalidWeatherTypeException();
+        }
+    }
+
+    /**
+     * Sets the array of Speed Adjustment Factors (CAFs).
+     *
+     * @param newSAFArray
+     */
+    public void setWeatherSAFArray(float[] newSAFArray) {
+        if (newSAFArray.length == weatherSAFs.length) {
+            for (int wType = 0; wType < weatherSAFs.length; wType++) {
+                weatherSAFs[wType] = newSAFArray[wType];
+            }
+        } else {
+            throw new RuntimeException("Invalid length of new Speed Adjustment Factor array.");
         }
     }
 
@@ -462,14 +705,10 @@ public class WeatherData {
         }
 
         // Default adjustment factors
-        for (int adj = 0; adj < 3; ++adj) {
-            for (int weather = 0; weather < 11; ++weather) {
-                if (adj == 0) {
-                    adjustmentFactors[adj][weather] = defaultCAF[weather];
-                } else {
-                    adjustmentFactors[adj][weather] = 1.0f;
-                }
-            }
+        for (int weather = 0; weather < 11; ++weather) {
+            weatherCAFs[weather] = defaultCAF[weather];
+            weatherDAFs[weather] = 1.0f;
+            weatherSAFs[weather] = 1.0f;
         }
 
         for (int month = 0; month < 12; ++month) {
@@ -483,38 +722,6 @@ public class WeatherData {
             sum += weatherProbability[month][weather];
         }
         weatherProbability[month][10] = 100.0f - sum;
-    }
-
-    // FOR TESTING ONLY
-    /**
-     *
-     */
-    public void createRandomWeatherData() {
-
-        // Random probabilities
-        for (int month = 0; month < 12; ++month) {
-            float sum = 0.0f;
-            for (int weather = 0; weather < 10; ++weather) {
-                // Random values between 0.0 and 2.0 percent
-                weatherProbability[month][weather] = (2.0f * (float) Math.random());
-                sum += weatherProbability[month][weather];
-            }
-            weatherProbability[month][10] = 100.0f - sum;
-        }
-
-        // Random durations
-        for (int weather = 0; weather < 10; ++weather) {
-            // Random values between 0 and 50 minutes
-            averageDuration[weather] = 50.0f * (float) Math.random();
-        }
-
-        // Random adjustment factors
-        for (int adj = 0; adj < 3; ++adj) {
-            for (int weather = 0; weather < 11; ++weather) {
-                // Random values between 90 and 100 percent
-                adjustmentFactors[adj][weather] = 90.0f + 10.0f * (float) Math.random();
-            }
-        }
     }
 
     /**
@@ -689,75 +896,78 @@ public class WeatherData {
         }
 
         // Setting default Capacity Adjustment Factors
-        setCapacityAdjFactors();
+        setDefaultCAFs();
 
         // Setting default FFS Adjustment Factors
-        setFFSpeedAdjFactors(seedDefaultFFS);
+        setDefaultSAFs(seedDefaultFFS);
 
         // Setting default Demand Adjustment Factors
-        setDemandAdjFactors();
+        setDefaultDAFs();
 
     } //end of extractFromWeatherDB
 
-    private void setCapacityAdjFactors() {
+    private void setDefaultCAFs() {
         // Setting default Capacity Adjustment Factors
-        //adjustmentFactors[0][0] = 92.76f;
-        //adjustmentFactors[0][1] = 85.87f;
-        //adjustmentFactors[0][2] = 95.71f;
-        //adjustmentFactors[0][3] = 91.34f;
-        //adjustmentFactors[0][4] = 88.96f;
-        //adjustmentFactors[0][5] = 77.57f;
-        //adjustmentFactors[0][6] = 91.55f;
-        //adjustmentFactors[0][7] = 90.33f;
-        //adjustmentFactors[0][8] = 88.33f;
-        //adjustmentFactors[0][9] = 89.51f;
-        //adjustmentFactors[0][10] = 100.00f;
-
-        adjustmentFactors[0][0] = .9276f;
-        adjustmentFactors[0][1] = .8587f;
-        adjustmentFactors[0][2] = .9571f;
-        adjustmentFactors[0][3] = .9134f;
-        adjustmentFactors[0][4] = .8896f;
-        adjustmentFactors[0][5] = .7757f;
-        adjustmentFactors[0][6] = .9155f;
-        adjustmentFactors[0][7] = .9033f;
-        adjustmentFactors[0][8] = .8833f;
-        adjustmentFactors[0][9] = .8951f;
-        adjustmentFactors[0][10] = 1.0f;
+        boolean usePercentage = false;
+        if (usePercentage) {
+            weatherCAFs[0] = 92.76f;
+            weatherCAFs[1] = 85.87f;
+            weatherCAFs[2] = 95.71f;
+            weatherCAFs[3] = 91.34f;
+            weatherCAFs[4] = 88.96f;
+            weatherCAFs[5] = 77.57f;
+            weatherCAFs[6] = 91.55f;
+            weatherCAFs[7] = 90.33f;
+            weatherCAFs[8] = 88.33f;
+            weatherCAFs[9] = 89.51f;
+            weatherCAFs[10] = 100.00f;
+        } else {
+            weatherCAFs[0] = .9276f;
+            weatherCAFs[1] = .8587f;
+            weatherCAFs[2] = .9571f;
+            weatherCAFs[3] = .9134f;
+            weatherCAFs[4] = .8896f;
+            weatherCAFs[5] = .7757f;
+            weatherCAFs[6] = .9155f;
+            weatherCAFs[7] = .9033f;
+            weatherCAFs[8] = .8833f;
+            weatherCAFs[9] = .8951f;
+            weatherCAFs[10] = 1.0f;
+        }
     }
 
-    private void setFFSpeedAdjFactors(int defaultFFS) {
+    private void setDefaultSAFs(int defaultFFS) {
         // Setting the FFS adjustment factors
 
         switch (defaultFFS) {
             case 55:
-                //adjustmentFactors[1] = new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
+                //setWeatherSAFArray(new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
+                setWeatherSAFArray(new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f});
                 break;
             case 60:
-                //adjustmentFactors[1] = new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
+                //setWeatherSAFArray(new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
+                setWeatherSAFArray(new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f});
                 break;
             case 65:
-                //adjustmentFactors[1] = new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
+                //setWeatherSAFArray(new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
+                setWeatherSAFArray(new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f});
                 break;
             case 70:
-                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
+                //setWeatherSAFArray(new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
+                setWeatherSAFArray(new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f});
                 break;
             case 75:
-                //adjustmentFactors[1] = new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
+                //setWeatherSAFArray(new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
+                setWeatherSAFArray(new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f});
                 break;
             default:
                 //Interpolate
                 if (defaultFFS < 55) {
-                    adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
+                    setWeatherSAFArray(new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f});
                 } else if (defaultFFS > 75) {
-                    adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
+                    setWeatherSAFArray(new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f});
                 } else {
-                    adjustmentFactors[1] = new float[11];
+                    //setWeatherSAFArray(new float[11]);
                     float x1 = 0;
                     float[] lsafs = new float[11];
                     float[] usafs = new float[11];
@@ -782,47 +992,17 @@ public class WeatherData {
                         float m = (usafs[weatherType] - lsafs[weatherType]) / 5.0f;
                         float b = lsafs[weatherType] - m * x1;
                         float interpValue = m * defaultFFS + b;
-                        adjustmentFactors[1][weatherType] = interpValue;
+                        weatherSAFs[weatherType] = interpValue;
                     }
                 }
                 break;
         }
     }
 
-    private void setFFSpeedAdjFactorsOld(int defaultFFS) {
-        // Setting the FFS adjustment factors
-        switch (defaultFFS) {
-            case 55:
-                //adjustmentFactors[1] = new float[]{96.0f, 94.0f, 94.0f, 92.0f, 90.0f, 88.0f, 95.0f, 96.0f, 95.0f, 95.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.96f, 0.94f, 0.94f, 0.92f, 0.90f, 0.88f, 0.95f, 0.96f, 0.95f, 0.95f, 1.0f};
-                break;
-            case 60:
-                //adjustmentFactors[1] = new float[]{95.0f, 93.0f, 92.0f, 90.0f, 88.0f, 86.0f, 95.0f, 95.0f, 94.0f, 94.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.95f, 0.93f, 0.92f, 0.90f, 0.88f, 0.86f, 0.95f, 0.95f, 0.94f, 0.94f, 1.0f};
-                break;
-            case 65:
-                //adjustmentFactors[1] = new float[]{94.0f, 93.0f, 89.0f, 88.0f, 86.0f, 85.0f, 94.0f, 94.0f, 93.0f, 93.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.94f, 0.93f, 0.89f, 0.88f, 0.86f, 0.85f, 0.94f, 0.94f, 0.93f, 0.93f, 1.0f};
-                break;
-            case 70:
-                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
-                break;
-            case 75:
-                //adjustmentFactors[1] = new float[]{93.0f, 91.0f, 84.0f, 83.0f, 82.0f, 81.0f, 92.0f, 93.0f, 91.0f, 91.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.93f, 0.91f, 0.84f, 0.83f, 0.82f, 0.81f, 0.92f, 0.93f, 0.91f, 0.91f, 1.0f};
-                break;
-            default:
-                //adjustmentFactors[1] = new float[]{93.0f, 92.0f, 87.0f, 86.0f, 84.0f, 83.0f, 93.0f, 94.0f, 92.0f, 92.0f, 100.0f};
-                adjustmentFactors[1] = new float[]{0.93f, 0.92f, 0.87f, 0.86f, 0.84f, 0.83f, 0.93f, 0.94f, 0.92f, 0.92f, 1.0f};
-                break;
-        }
-    }
-
-    private void setDemandAdjFactors() {
+    private void setDefaultDAFs() {
         // Setting default Demand Adjustment Factors
         for (int weather = 0; weather < 11; ++weather) {
-            adjustmentFactors[2][weather] = 1.00f;
+            weatherDAFs[weather] = 1.00f;
         }
     }
 
@@ -849,14 +1029,27 @@ public class WeatherData {
         }
 
         // Checking to make sure none of the adjustment Factors are negative
-        for (int i = 0; i < adjustmentFactors.length; i++) {
-            for (int j = 0; j < adjustmentFactors[i].length; j++) {
-                if (adjustmentFactors[i][j] < 0) {
-                    return false;
-                }
+        for (int j = 0; j < weatherCAFs.length; j++) {
+            if (weatherCAFs[j] < 0 || weatherDAFs[j] < 0 || weatherSAFs[j] < 0) {
+                return false;
             }
         }
 
         return true;
+    }
+
+    public class InvalidWeatherTypeException extends RuntimeException {
+
+        public InvalidWeatherTypeException() {
+            super("Invalid Weather Type Specified.");
+        }
+
+    }
+
+    public class InvalidAdjustmentFactorTypeException extends RuntimeException {
+
+        public InvalidAdjustmentFactorTypeException() {
+            super("Invalid Adjustment Factor Type Identifier.");
+        }
     }
 }

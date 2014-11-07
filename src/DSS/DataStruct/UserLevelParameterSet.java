@@ -15,7 +15,7 @@ import java.util.Arrays;
  * @author jltrask
  */
 public class UserLevelParameterSet implements Serializable {
-    
+
     private static final long serialVersionUID = 613281561348L;
     public ATMParameterSet atm;
 
@@ -60,9 +60,9 @@ public class UserLevelParameterSet implements Serializable {
 
     private String DSSProjectName = "New Project";
     private String projectFileName;
-    
+
     public String SEGMENT_COLOR_STYLE;
-    
+
     public UserLevelParameterSet(Seed seed) {
         //initArrays();
         if (seed != null) {
@@ -73,7 +73,7 @@ public class UserLevelParameterSet implements Serializable {
         }
         atm = new ATMParameterSet(seed);
         //atm.useDefaults();
-        
+
         SEGMENT_COLOR_STYLE = DSSGraphicHelper.COLOR_BY_LOS;
 
     }
@@ -106,7 +106,7 @@ public class UserLevelParameterSet implements Serializable {
     public void setProjectFileName(String projectFileName) {
         this.projectFileName = projectFileName;
     }
-    
+
     private void updateATMParams(Seed seed) {
         atm = new ATMParameterSet(seed);
     }
@@ -203,15 +203,21 @@ public class UserLevelParameterSet implements Serializable {
         }
 
         // Weather
-        if (seed.getWeatherAdjustmentFactors() != null) {
-            WeatherCAFs_GP = seed.getWeatherAdjustmentFactors()[0];
-            WeatherDAFs_GP = seed.getWeatherAdjustmentFactors()[2];
-            WeatherSAFs_GP = seed.getWeatherAdjustmentFactors()[1];
+        if (seed.getWeatherCAF() != null) {
+            WeatherCAFs_GP = seed.getWeatherCAF();
         } else {
             WeatherCAFs_GP = new float[11];
             useDefaultWeatherCAFs();
+        }
+        if (seed.getWeatherDAF() != null) {
+            WeatherDAFs_GP = seed.getWeatherDAF();
+        } else {
             WeatherDAFs_GP = new float[11];
             useDefaultWeatherDAFs();
+        }
+        if (seed.getWeatherSAF() != null) {
+            WeatherSAFs_GP = seed.getWeatherSAF();
+        } else {
             WeatherSAFs_GP = new float[11];
             useDefaultWeatherSAFs(70);
         }
