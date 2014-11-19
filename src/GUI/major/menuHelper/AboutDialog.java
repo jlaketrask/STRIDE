@@ -1,6 +1,6 @@
 package GUI.major.menuHelper;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;

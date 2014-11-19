@@ -1,6 +1,6 @@
 package GUI.major.tableHelper;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellEditor;

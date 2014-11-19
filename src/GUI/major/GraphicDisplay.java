@@ -1,6 +1,7 @@
 package GUI.major;
 
-import GUI.DSS.GraphicHelper.DSSGraphicHelper;
+import Toolbox.DSS.GUI.major.MainWindow;
+import Toolbox.DSS.GUI.GraphicHelper.DSSGraphicHelper;
 import GUI.major.graphicHelper.GraphicColorSetting;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;

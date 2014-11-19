@@ -1,7 +1,7 @@
 package GUI.settingHelper;
 
 import GUI.major.GraphicDisplay;
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import GUI.seedEditAndIOHelper.ConfigIO;
 import java.awt.Font;
 import java.awt.event.ActionEvent;

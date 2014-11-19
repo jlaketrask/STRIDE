@@ -5,7 +5,7 @@
  */
 package GUI.ATDMHelper.summary;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.util.Arrays;

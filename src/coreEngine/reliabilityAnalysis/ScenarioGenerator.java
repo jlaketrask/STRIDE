@@ -1,6 +1,6 @@
 package coreEngine.reliabilityAnalysis;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import coreEngine.Helper.CEConst;
 import static coreEngine.Helper.CEConst.IDS_MAIN_NUM_LANES_IN;
 import static coreEngine.Helper.CEConst.IDS_NUM_PERIOD;

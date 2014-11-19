@@ -1,12 +1,10 @@
-package GUI.major;
+package Toolbox.DSS.GUI.major;
 
-import Toolbox.DSS.GUI.major.MainWindow;
-import GUI.major.tableHelper.SegIOTableWithSetting;
+import Toolbox.DSS.GUI.major.MainWindowUser;
+import Toolbox.DSS.GUI.major.tableHelper.SegATMTable;
 import GUI.major.tableHelper.SplitTableJPanel;
-import GUI.major.tableHelper.TableCellSetting;
 import coreEngine.Seed;
 import java.awt.Font;
-import java.util.ArrayList;
 import javax.swing.BoundedRangeModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -16,18 +14,20 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Shu Liu
  */
-public class TableDisplay extends javax.swing.JPanel {
+public class TableDisplaySegmentATM extends javax.swing.JPanel {
 
-    private MainWindow mainWindow;
+    private MainWindowUser mainWindow;
+    private SegATMTable segATMTable;
+    private final SplitTableJPanel segIOSplitTable;
 
     /**
      * Creates new form TableDisplay
      */
-    public TableDisplay() {
+    public TableDisplaySegmentATM() {
         initComponents();
-        segIOTable = new SegIOTableWithSetting();
-        segIOSplitTable
-                = new SplitTableJPanel(segIOTable.getFirstColumnTable(), segIOTable.getRestColumnTable());
+        //segIOTable = new SegIOTableWithSetting();
+        segATMTable = new SegATMTable();
+        segIOSplitTable = new SplitTableJPanel(segATMTable.getFirstColumnTable(), segATMTable.getRestColumnTable());
         segIOSplitTable.setDividerLocation(270);
         add(segIOSplitTable);
 
@@ -35,7 +35,7 @@ public class TableDisplay extends javax.swing.JPanel {
         ListSelectionListener listener = new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                int col = segIOTable.getRestColumnTable().getSelectedColumn();
+                int col = segATMTable.getRestColumnTable().getSelectedColumn();
                 if (col >= 0) {
                     mainWindow.segmentSelectedByTable(col);
                 }
@@ -43,40 +43,24 @@ public class TableDisplay extends javax.swing.JPanel {
         };
 
         //segIOTable.getRestColumnTable().getSelectionModel().addListSelectionListener(listener);
-        segIOTable.getRestColumnTable().getColumnModel().getSelectionModel().addListSelectionListener(listener);
+        segATMTable.getRestColumnTable().getColumnModel().getSelectionModel().addListSelectionListener(listener);
     }
 
     /**
      * Show data for a particular seed, scenario and period
      *
      * @param seed seed to be displayed
-     * @param scen index of scenario to be displayed
-     * @param atdm
      * @param period index of period to be displayed
      */
-    public void selectSeedScenATDMPeriod(Seed seed, int scen, int atdm, int period) {
-        segIOTable.selectSeedScenPeriod(seed, scen, atdm, period);
-    }
-
-    /**
-     * Show input
-     */
-    public void showInput() {
-        segIOTable.showInput();
-    }
-
-    /**
-     * Show output
-     */
-    public void showOutput() {
-        segIOTable.showOutput();
+    public void selectSeedScenATDMPeriod(Seed seed, int period) {
+        segATMTable.selectSeedScenPeriod(seed, period);
     }
 
     /**
      * Update table
      */
     public void update() {
-        segIOTable.update();
+        segATMTable.update();
     }
 
     /**
@@ -87,20 +71,13 @@ public class TableDisplay extends javax.swing.JPanel {
     public void setHighlight(int seg) {
         //set which segment to be highlighted
         if (seg >= 0) {
-            segIOTable.getRestColumnTable().setColumnSelectionInterval(seg, seg);
+            segATMTable.getRestColumnTable().setHighlightCol(seg);
         }
     }
-
-    public void showGPOnly() {
-        segIOTable.showGPOnly();
-    }
-
-    public void showMLOnly() {
-        segIOTable.showMLOnly();
-    }
-
-    public void showGPML() {
-        segIOTable.showGPML();
+    
+    public void setEditLock(boolean lock) {
+        segATMTable.setEditLock(lock);
+        segIOSplitTable.setEnabled(!lock);
     }
 
     /**
@@ -121,27 +98,19 @@ public class TableDisplay extends javax.swing.JPanel {
      *
      * @param mainWindow main window instance
      */
-    public void setMainWindow(MainWindow mainWindow) {
+    public void setMainWindow(MainWindowUser mainWindow) {
         this.mainWindow = mainWindow;
-        segIOTable.setMainWindow(mainWindow);
+        segATMTable.setMainWindow(mainWindow);
     }
 
+    /**
     /**
      * Getter for segIOTable
      *
      * @return segIOTable instance
      */
-    public SegIOTableWithSetting getSegIOTable() {
-        return segIOTable;
-    }
-
-    /**
-     * Setter for new cell settings to be used
-     *
-     * @param cellSettings new cell settings to be used
-     */
-    public void setCellSettings(ArrayList<TableCellSetting> cellSettings) {
-        segIOTable.setCellSettings(cellSettings);
+    public SegATMTable getSegIOTable() {
+        return segATMTable;
     }
 
     /**
@@ -150,20 +119,28 @@ public class TableDisplay extends javax.swing.JPanel {
      * @param newTableFont new table font
      */
     public void setTableFont(Font newTableFont) {
-        segIOTable.setTableFont(newTableFont);
-        segIOTable.getFirstColumnTable().setFont(newTableFont);
-        segIOTable.getFirstColumnTable().setRowHeight(newTableFont.getSize() + 2);
-        segIOTable.getRestColumnTable().setFont(newTableFont);
-        segIOTable.getRestColumnTable().setRowHeight(newTableFont.getSize() + 2);
+        //segATMTable.setTableFont(newTableFont);
+        segATMTable.getFirstColumnTable().setFont(newTableFont);
+        segATMTable.getFirstColumnTable().setRowHeight(newTableFont.getSize() + 2);
+        segATMTable.getRestColumnTable().setFont(newTableFont);
+        segATMTable.getRestColumnTable().setRowHeight(newTableFont.getSize() + 2);
     }
 
     public BoundedRangeModel getScrollModel() {
         return segIOSplitTable.getScrollModel();
     }
+    
+    public void setScrollModel(BoundedRangeModel scrollModel) {
+        segIOSplitTable.setScrollModel(scrollModel);
+    }
+    
+    
+    public void selectSeedScenPeriod(Seed seed, int period) {
+        segATMTable.selectSeedScenPeriod(seed, period);
+    }
 
     // </editor-fold>
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    private SegIOTableWithSetting segIOTable;
-    private final SplitTableJPanel segIOSplitTable;
+
 }

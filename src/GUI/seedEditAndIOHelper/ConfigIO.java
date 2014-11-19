@@ -2,7 +2,7 @@ package GUI.seedEditAndIOHelper;
 
 import GUI.major.graphicHelper.GraphicColorSetting;
 import GUI.major.tableHelper.TableCellSetting;
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import coreEngine.Helper.CEConst;
 
 import java.io.*;

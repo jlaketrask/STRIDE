@@ -1,5 +1,6 @@
 package GUI.major;
 
+import Toolbox.DSS.GUI.major.MainWindow;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;

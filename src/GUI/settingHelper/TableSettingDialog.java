@@ -1,7 +1,7 @@
 package GUI.settingHelper;
 
 import GUI.seedEditAndIOHelper.ConfigIO;
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import GUI.major.tableHelper.SegIOTableWithSetting;
 import java.awt.Font;
 import java.awt.event.ActionEvent;

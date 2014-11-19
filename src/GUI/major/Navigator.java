@@ -1,5 +1,6 @@
 package GUI.major;
 
+import Toolbox.DSS.GUI.major.MainWindow;
 import coreEngine.Helper.CEConst;
 import coreEngine.Seed;
 import java.awt.Rectangle;

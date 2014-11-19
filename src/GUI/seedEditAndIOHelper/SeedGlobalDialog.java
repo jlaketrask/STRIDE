@@ -1,6 +1,6 @@
 package GUI.seedEditAndIOHelper;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import coreEngine.Helper.CEConst;
 import coreEngine.Helper.CETime;
 import coreEngine.Seed;

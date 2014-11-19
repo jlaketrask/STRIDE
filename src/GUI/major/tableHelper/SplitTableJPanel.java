@@ -1,6 +1,6 @@
 package GUI.major.tableHelper;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import GUI.seedEditAndIOHelper.ExcelAdapter;
 import java.awt.Point;
 import java.awt.event.MouseEvent;

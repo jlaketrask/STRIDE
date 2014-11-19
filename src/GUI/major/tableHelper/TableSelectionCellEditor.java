@@ -5,7 +5,7 @@
  */
 package GUI.major.tableHelper;
 
-import GUI.major.MainWindow;
+import Toolbox.DSS.GUI.major.MainWindow;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;

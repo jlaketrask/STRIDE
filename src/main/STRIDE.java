@@ -5,7 +5,7 @@
  */
 package main;
 
-import GUI.major.MainWindowStart;
+import Toolbox.DSS.GUI.major.MainWindowStart;
 
 /**
  *
